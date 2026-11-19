@@ -106,7 +106,7 @@ export function Molecule({ kind, className }: { kind: MoleculeKind; className?: 
   return (
     <svg ref={ref} viewBox="0 0 116 100" className={cn("molecule overflow-visible", on && "is-on", className)} aria-hidden>
       <g className="orbit" opacity="0.5">
-        <ellipse cx="58" cy="50" rx="54" ry="20" fill="none" stroke="#cbdcc1" strokeDasharray="2 5" />
+        <ellipse cx="58" cy="50" rx="54" ry="20" fill="none" style={{ stroke: "var(--t-200)" }} strokeDasharray="2 5" />
       </g>
       {bonds.map(([a, b], i) => (
         <line
@@ -116,22 +116,21 @@ export function Molecule({ kind, className }: { kind: MoleculeKind; className?: 
           y1={a.y}
           x2={b.x}
           y2={b.y}
-          stroke="#5f7d4d"
           strokeWidth="2"
           strokeLinecap="round"
-          style={{ transitionDelay: `${i * 70}ms` }}
+          style={{ stroke: "var(--t-600)", transitionDelay: `${i * 70}ms` }}
         />
       ))}
       {atoms.map((a, i) =>
         a.label ? (
           <g key={i} className="atom">
-            <circle cx={a.x} cy={a.y} r={a.label.length > 2 ? 9 : 7} fill={a.gold ? "#fff7e0" : "#fff"} stroke={a.gold ? "#b8860b" : "#5f7d4d"} strokeWidth="1.4" />
-            <text x={a.x} y={a.y + 2.6} textAnchor="middle" fontSize={a.label.length > 2 ? 5.5 : 7} fontFamily="Jost, sans-serif" fontWeight="600" fill={a.gold ? "#8a6212" : "#3a5130"}>
+            <circle cx={a.x} cy={a.y} r={a.label.length > 2 ? 9 : 7} fill={a.gold ? "#fff7e0" : "#fff"} style={{ stroke: a.gold ? "#b8860b" : "var(--t-600)" }} strokeWidth="1.4" />
+            <text x={a.x} y={a.y + 2.6} textAnchor="middle" fontSize={a.label.length > 2 ? 5.5 : 7} fontFamily="Jost, sans-serif" fontWeight="600" style={{ fill: a.gold ? "#8a6212" : "var(--t-800)" }}>
               {a.label}
             </text>
           </g>
         ) : (
-          <circle key={i} className="atom" cx={a.x} cy={a.y} r={a.gold ? 4 : 3} fill={a.gold ? "#e3b341" : "#93ad86"} />
+          <circle key={i} className="atom" cx={a.x} cy={a.y} r={a.gold ? 4 : 3} style={{ fill: a.gold ? "#e3b341" : "var(--t-400)" }} />
         ),
       )}
     </svg>

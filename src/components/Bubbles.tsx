@@ -15,16 +15,16 @@ const seeds = [
 
 export function Bubbles({ className, count = 10 }: { className?: string; count?: number }) {
   return (
-    <div className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)} aria-hidden>
+    <div className={cn("bubbles pointer-events-none absolute inset-0 overflow-hidden", className)} aria-hidden>
       {seeds.slice(0, count).map((b, i) => (
         <span
           key={i}
-          className="bubble absolute -bottom-8 rounded-full border border-white/90 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.95),rgba(203,220,193,0.35)_55%,rgba(147,173,134,0.15))] shadow-[inset_0_-2px_6px_rgba(95,125,77,0.18)]"
+          className="bubble absolute -bottom-8 rounded-full border border-white/90 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.95),rgb(var(--bubble)/0.3)_55%,rgb(var(--bubble)/0.15))] shadow-[inset_0_-2px_6px_rgb(var(--tint)/0.18)]"
           style={{
             left: `${b.left}%`,
             width: b.size,
             height: b.size,
-            animationDuration: `${b.dur}s`,
+            animationDuration: `calc(${b.dur}s * var(--motion))`,
             animationDelay: `${b.delay}s`,
           }}
         />
@@ -35,12 +35,12 @@ export function Bubbles({ className, count = 10 }: { className?: string; count?:
 
 export function Droplet({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 40 52" className={className} style={style} aria-hidden>
+    <svg viewBox="0 0 40 52" className={cn("droplet", className)} style={style} aria-hidden>
       <defs>
         <radialGradient id="dropfill" cx="35%" cy="35%" r="70%">
           <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="55%" stopColor="#e7f1e2" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="#93ad86" stopOpacity="0.55" />
+          <stop offset="55%" style={{ stopColor: "var(--t-50)", stopOpacity: 0.85 }} />
+          <stop offset="100%" style={{ stopColor: "var(--t-400)", stopOpacity: 0.55 }} />
         </radialGradient>
       </defs>
       <path

@@ -1,6 +1,7 @@
 import { Leaf, Sparkles, Users } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { Droplet } from "@/components/Bubbles"
+import { GoldSwirl } from "@/components/GoldSwirl"
 import { Marquee } from "@/components/Marquee"
 import { gsap, registerGsap } from "@/lib/gsap"
 
@@ -39,12 +40,13 @@ export function BrandIntro() {
   return (
     <>
       <Marquee items={marquee} />
-      <section id="intro" ref={ref} className="relative overflow-hidden bg-ivory py-20 md:py-28">
+      <section id="intro" ref={ref} className="relative overflow-hidden bg-ivory py-20 md:py-28 theme-a:md:py-40">
         <Droplet className="float absolute top-16 left-[8%] w-10 opacity-80" />
         <Droplet className="float absolute right-[10%] bottom-20 w-14" style={{ animationDelay: "1.5s" }} />
-        <div className="mx-auto max-w-5xl px-6 text-center">
+        <GoldSwirl className="top-[10%] left-[-10%] h-[70%] w-[120%] opacity-40" />
+        <div className="relative mx-auto max-w-5xl px-6 text-center theme-a:max-w-6xl">
           <p className="eyebrow">Our story</p>
-          <h2 className="intro-statement mt-5 text-[clamp(2.1rem,5vw,4.4rem)] leading-[1.08] font-normal">
+          <h2 className="intro-statement mt-5 text-[clamp(2.1rem,5vw,4.4rem)] leading-[1.08] font-normal theme-a:text-[clamp(2.6rem,6.4vw,6rem)] theme-a:leading-[1.02]">
             {statement.split(" ").map((w, i) => (
               <span
                 key={i}

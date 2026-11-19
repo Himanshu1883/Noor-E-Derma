@@ -28,7 +28,7 @@ export function ProductCard({ product }: { product: Product }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="group glass relative flex flex-col rounded-[32px] p-3 transition-shadow duration-500 hover:shadow-[0_0_0_1.5px_rgba(227,179,65,0.6),0_30px_60px_-24px_rgba(95,125,77,0.45)]"
+      className="group glass relative flex flex-col rounded-[32px] p-3 transition-shadow duration-500 hover:shadow-[0_0_0_1.5px_rgba(227,179,65,0.6),0_30px_60px_-24px_rgb(var(--tint)/0.45)]"
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect()
         setTilt({ x: ((e.clientY - r.top) / r.height - 0.5) * -8, y: ((e.clientX - r.left) / r.width - 0.5) * 10 })

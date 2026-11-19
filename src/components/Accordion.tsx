@@ -15,7 +15,7 @@ export function Accordion({ items }: { items: { q: string; a: string }[] }) {
             key={item.q}
             className={cn(
               "rounded-3xl border px-6 py-4 transition",
-              isOpen ? "border-sage-200 bg-white shadow-[0_16px_40px_-24px_rgba(58,81,48,0.35)]" : "border-sage-100 bg-white/60",
+              isOpen ? "border-sage-200 bg-white shadow-[0_16px_40px_-24px_rgb(var(--tint)/0.35)]" : "border-sage-100 bg-white/60",
             )}
           >
             <button

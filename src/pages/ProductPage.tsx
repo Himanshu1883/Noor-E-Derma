@@ -141,7 +141,7 @@ export function ProductPage() {
             >
               {viewer && enable3d ? (
                 <Suspense fallback={null}>
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,#fff,#eef4ea_70%)]">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,#fff,var(--t-50)_70%)]">
                     <ProductBoxScene progress={spin} urls={[gallery[0].src]} />
                   </div>
                   <span className="glass absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs">Move your cursor to rotate</span>

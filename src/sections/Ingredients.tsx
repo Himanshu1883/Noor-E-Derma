@@ -48,13 +48,13 @@ function IngredientCard({ item, open, onToggle, big }: { item: Ingredient; open:
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       className={cn(
-        "group glass relative flex flex-col overflow-hidden rounded-[32px] p-6 text-left transition-shadow hover:shadow-[0_0_0_1.5px_rgba(147,173,134,0.6),0_24px_50px_-24px_rgba(58,81,48,0.4)]",
+        "group glass relative flex flex-col overflow-hidden rounded-[32px] p-6 text-left transition-shadow hover:shadow-[0_0_0_1.5px_rgb(var(--bubble)/0.6),0_24px_50px_-24px_rgb(var(--tint)/0.4)]",
         layout[item.id],
       )}
     >
       <div
         className={cn(
-          "relative flex items-center justify-center rounded-3xl bg-[radial-gradient(circle_at_50%_40%,#fff,#eef4ea_70%)]",
+          "relative flex items-center justify-center rounded-3xl bg-[radial-gradient(circle_at_50%_40%,#fff,var(--t-50)_70%)]",
           big ? "h-56 md:min-h-72 md:flex-1" : "h-40",
         )}
       >

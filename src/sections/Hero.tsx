@@ -3,7 +3,9 @@ import { ArrowRight, Droplets, FlaskConical, Leaf, Sparkles, Timer } from "lucid
 import { useEffect, useRef, useState } from "react"
 import { Bubbles, Droplet } from "@/components/Bubbles"
 import { GoldButton } from "@/components/GoldButton"
+import { GoldSwirl } from "@/components/GoldSwirl"
 import { PartnerBadge } from "@/components/PartnerBadge"
+import { useTheme } from "@/context/ThemeContext"
 import { useUI } from "@/context/UIContext"
 import { getHeroSlides, type HeroChip, type HeroSlide } from "@/data/hero"
 import { getLenis } from "@/hooks/useLenis"
@@ -19,9 +21,10 @@ const chipIcons: Record<HeroChip["icon"], typeof Timer> = {
 }
 
 function Headline({ slide, play }: { slide: HeroSlide; play: boolean }) {
+  const slow = useTheme().theme === "a" ? 1.6 : 1
   let n = 0
   return (
-    <h1 className="text-[clamp(3rem,6.2vw,6.1rem)] leading-[0.95] font-medium text-ink">
+    <h1 className="text-[clamp(3rem,6.2vw,6.1rem)] leading-[0.95] font-medium text-ink theme-a:text-[clamp(3.6rem,7.6vw,8rem)] theme-a:leading-[0.9]">
       {slide.headline.map((line, li) => (
         <span key={li} className="block">
           {line.map((word, wi) => {
@@ -32,7 +35,7 @@ function Headline({ slide, play }: { slide: HeroSlide; play: boolean }) {
                   className={cn("inline-block", word.accent && "gold-text pr-[0.06em] italic")}
                   initial={{ y: "110%" }}
                   animate={play ? { y: "0%" } : { y: "110%" }}
-                  transition={{ duration: 0.9, delay: 0.1 + i * 0.09, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.9 * slow, delay: (0.1 + i * 0.09) * slow, ease: [0.22, 1, 0.36, 1] }}
                 >
                   {word.text}
                 </motion.span>
@@ -47,10 +50,11 @@ function Headline({ slide, play }: { slide: HeroSlide; play: boolean }) {
 
 function SlideText({ slide, play }: { slide: HeroSlide; play: boolean }) {
   const right = slide.layout === "text-right"
+  const slow = useTheme().theme === "a" ? 1.6 : 1
   const fade = (d: number) => ({
     initial: { opacity: 0, y: 18 },
     animate: play ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 },
-    transition: { duration: 0.7, delay: d, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 0.7 * slow, delay: d * slow, ease: [0.22, 1, 0.36, 1] as const },
   })
 
   return (
@@ -114,7 +118,7 @@ function SlideImage({ slide, play }: { slide: HeroSlide; play: boolean }) {
       transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
       className="hero-image relative h-full w-full"
     >
-      <div className="relative h-full w-full overflow-hidden rounded-[36px] shadow-[0_40px_80px_-40px_rgba(58,81,48,0.55)] ring-1 ring-white md:rounded-[44px]">
+      <div className="relative h-full w-full overflow-hidden rounded-[36px] shadow-[0_40px_80px_-40px_rgb(var(--tint)/0.55)] ring-1 ring-white md:rounded-[44px] theme-a:rounded-[6px] theme-a:ring-[rgba(184,134,11,0.35)] md:theme-a:rounded-[6px]">
         <img
           src={slide.image}
           alt=""
@@ -122,6 +126,7 @@ function SlideImage({ slide, play }: { slide: HeroSlide; play: boolean }) {
           style={{ objectPosition: slide.imagePosition }}
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_60%,rgba(38,50,31,0.18))]" />
+        <div className="only-a pointer-events-none absolute inset-3 border border-white/60 md:inset-4" />
       </div>
       {slide.chips.map((chip, i) => {
         const Icon = chipIcons[chip.icon]
@@ -160,15 +165,18 @@ function Slide({
   play,
   className,
   style,
+  children,
 }: {
   slide: HeroSlide
   play: boolean
   className?: string
   style?: React.CSSProperties
+  children?: React.ReactNode
 }) {
   const right = slide.layout === "text-right"
   return (
     <div className={cn("absolute inset-0 isolate", className)} style={style}>
+      {children}
       <div className="mx-auto grid h-full max-w-7xl grid-rows-[auto_1fr] items-center gap-5 px-5 pt-24 pb-8 md:grid-cols-12 md:grid-rows-1 md:gap-10 md:px-8 md:pt-24 md:pb-14">
         <div className={cn("md:col-span-5", right ? "md:order-2 md:col-start-8" : "md:order-1")}>
           <SlideText slide={slide} play={play} />
@@ -234,13 +242,16 @@ export function Hero() {
   return (
     <section ref={root} className="relative h-svh min-h-[640px] overflow-hidden dewy">
       <Bubbles className="opacity-70" count={8} />
+      <GoldSwirl className="bottom-[4%] left-[-5%] h-[38%] w-[70%] opacity-80" />
       <Slide slide={slides[0]} play={!loading} className="slide-a" />
       <Slide
         slide={slides[1]}
         play={!loading && active === 1}
         className="slide-b dewy-sage"
         style={{ clipPath: "circle(0% at 50% 55%)" }}
-      />
+      >
+        <GoldSwirl flip className="top-[12%] right-[-5%] h-[40%] w-[65%] opacity-70" />
+      </Slide>
 
       <div className="absolute right-5 bottom-5 z-20 hidden items-center gap-2 md:right-8 md:flex">
         {slides.map((s, i) => (

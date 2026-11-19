@@ -1,38 +1,94 @@
 @import "tailwindcss";
 @import "lenis/dist/lenis.css";
 
-@theme {
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+/*
+ * Two switchable themes driven by html[data-theme]:
+ *   a = champagne marble editorial (Variant A)
+ *   c = ivory, sage & glass (Variant C)
+ * Components use the same token names; only the values change.
+ */
+
+@custom-variant theme-a (&:where([data-theme="a"], [data-theme="a"] *));
+
+@theme inline {
+  --font-display: var(--t-display);
   --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
 
-  --color-ivory: #fffdf7;
-  --color-mist: #f5f8f1;
-  --color-sage-50: #eef4ea;
-  --color-sage-100: #e2ecdc;
-  --color-sage-200: #cbdcc1;
-  --color-sage-400: #93ad86;
-  --color-sage-600: #5f7d4d;
-  --color-sage-800: #3a5130;
-  --color-ink: #26321f;
-  --color-aqua: #dcefe8;
+  --color-ivory: var(--t-ivory);
+  --color-sage-50: var(--t-50);
+  --color-sage-100: var(--t-100);
+  --color-sage-200: var(--t-200);
+  --color-sage-400: var(--t-400);
+  --color-sage-600: var(--t-600);
+  --color-sage-800: var(--t-800);
+  --color-ink: var(--t-ink);
   --color-peach: #fbe8d5;
   --color-gold: #b8860b;
   --color-gold-bright: #e3b341;
   --color-gold-deep: #8a6212;
 }
 
+:root,
+:root[data-theme="a"] {
+  --t-display: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --t-display-adjust: 0.5;
+  --t-ivory: #fffbf2;
+  --t-bg-2: #f8ebcf;
+  --t-50: #f7eedc;
+  --t-100: #efe2c6;
+  --t-200: #e3cfa6;
+  --t-400: #c9a96b;
+  --t-600: #4f6b3a;
+  --t-800: #3a2a12;
+  --t-ink: #2e2210;
+  /* rgb triplets for tinted shadows and translucent fills */
+  --tint: 138 98 18;
+  --mist-1: 251 232 213;
+  --mist-2: 248 235 207;
+  --mist-3: 227 179 65;
+  --bubble: 227 179 65;
+  --cta-from: #3a2a12;
+  --cta-via: #6b4e1e;
+  --cta-to: #8a6212;
+  --motion: 1.7;
+}
+
+:root[data-theme="c"] {
+  --t-display: "Fraunces", ui-serif, Georgia, serif;
+  --t-display-adjust: none;
+  --t-ivory: #fffdf7;
+  --t-bg-2: #eef4ea;
+  --t-50: #eef4ea;
+  --t-100: #e2ecdc;
+  --t-200: #cbdcc1;
+  --t-400: #93ad86;
+  --t-600: #5f7d4d;
+  --t-800: #3a5130;
+  --t-ink: #26321f;
+  --tint: 58 81 48;
+  --mist-1: 203 220 193;
+  --mist-2: 220 239 232;
+  --mist-3: 251 232 213;
+  --bubble: 147 173 134;
+  --cta-from: #3a5130;
+  --cta-via: #5f7d4d;
+  --cta-to: #7f9a6f;
+  --motion: 1;
+}
+
 @layer base {
   html {
-    background: #fffdf7;
+    background: var(--t-ivory);
   }
 
   body {
     margin: 0;
     color: var(--color-ink);
     font-family: var(--font-sans);
-    background: #fffdf7;
+    background: var(--t-ivory);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.6s ease, color 0.6s ease;
   }
 
   h1,
@@ -44,8 +100,28 @@
   }
 
   ::selection {
-    background: rgba(147, 173, 134, 0.35);
+    background: rgb(var(--bubble) / 0.35);
   }
+}
+
+/* Variant A: editorial serif — Cormorant has a small x-height, so scale it up. */
+[data-theme="a"] h1,
+[data-theme="a"] h2,
+[data-theme="a"] h3 {
+  font-size-adjust: var(--t-display-adjust);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+[data-theme="a"] body {
+  font-weight: 300;
+}
+
+/* Thin gold hairlines between editorial sections. */
+[data-theme="a"] main > section + section,
+[data-theme="a"] main > section + div + section {
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.45), transparent) 1;
 }
 
 @utility gold-text {
@@ -66,22 +142,22 @@
   border: 1px solid rgba(255, 255, 255, 0.85);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.9) inset,
-    0 18px 50px -20px rgba(58, 81, 48, 0.25);
+    0 18px 50px -20px rgb(var(--tint) / 0.25);
 }
 
 @utility dewy {
-  background-color: #fffdf7;
+  background-color: var(--t-ivory);
   background-image:
-    radial-gradient(40% 50% at 8% 12%, rgba(203, 220, 193, 0.75), transparent 70%),
-    radial-gradient(35% 45% at 92% 18%, rgba(220, 239, 232, 0.9), transparent 70%),
-    radial-gradient(40% 50% at 70% 95%, rgba(251, 232, 213, 0.8), transparent 70%);
+    radial-gradient(40% 50% at 8% 12%, rgb(var(--mist-1) / 0.75), transparent 70%),
+    radial-gradient(35% 45% at 92% 18%, rgb(var(--mist-2) / 0.9), transparent 70%),
+    radial-gradient(40% 50% at 70% 95%, rgb(var(--mist-3) / 0.18), transparent 70%);
 }
 
 @utility dewy-sage {
-  background-color: #eef4ea;
+  background-color: var(--t-bg-2);
   background-image:
     radial-gradient(45% 55% at 15% 20%, rgba(255, 253, 247, 0.9), transparent 70%),
-    radial-gradient(40% 50% at 85% 80%, rgba(220, 239, 232, 0.95), transparent 70%),
+    radial-gradient(40% 50% at 85% 80%, rgb(var(--mist-2) / 0.95), transparent 70%),
     radial-gradient(30% 40% at 60% 10%, rgba(227, 179, 65, 0.12), transparent 70%);
 }
 
@@ -92,6 +168,53 @@
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--color-sage-600);
+}
+
+/* Variant A surfaces: paper-white cards with gold hairline borders, veined marble backgrounds. */
+[data-theme="a"] .glass {
+  background: rgba(255, 251, 242, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(184, 134, 11, 0.22);
+  box-shadow: 0 24px 60px -36px rgb(var(--tint) / 0.35);
+}
+
+[data-theme="a"] .dewy,
+[data-theme="a"] .dewy-sage {
+  background-image:
+    linear-gradient(115deg, transparent 38%, rgba(184, 134, 11, 0.07) 39%, transparent 41%),
+    linear-gradient(160deg, transparent 58%, rgba(138, 98, 18, 0.05) 59%, transparent 60.5%),
+    linear-gradient(95deg, transparent 72%, rgba(184, 134, 11, 0.05) 72.6%, transparent 74%),
+    radial-gradient(45% 55% at 12% 15%, rgba(255, 255, 255, 0.9), transparent 70%),
+    radial-gradient(40% 50% at 88% 85%, rgb(var(--mist-1) / 0.8), transparent 70%),
+    radial-gradient(35% 40% at 70% 5%, rgba(227, 179, 65, 0.12), transparent 70%);
+}
+
+[data-theme="a"] .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: var(--color-gold-deep);
+}
+
+[data-theme="a"] .eyebrow::before {
+  content: "";
+  width: 2.2rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #b8860b);
+}
+
+.only-a,
+.only-c {
+  display: none;
+}
+[data-theme="a"] .bubbles,
+[data-theme="a"] .droplet {
+  display: none;
+}
+[data-theme="a"] .only-a,
+[data-theme="c"] .only-c {
+  display: block;
 }
 
 .grain-overlay {
@@ -129,21 +252,27 @@
   to { transform: translateX(120%); }
 }
 
-.float { animation: float-y 6s ease-in-out infinite; }
-.bubble { animation: rise linear infinite; }
-.marquee-track { animation: marquee 36s linear infinite; }
+@keyframes swirl-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(0, -18px, 0) rotate(2deg); }
+}
+
+.float { animation: float-y calc(6s * var(--motion)) ease-in-out infinite; }
+.bubble { animation-name: rise; animation-timing-function: linear; animation-iteration-count: infinite; }
+.marquee-track { animation: marquee calc(36s * var(--motion)) linear infinite; }
 .marquee-track:hover { animation-play-state: paused; }
+.swirl { animation: swirl-drift 14s ease-in-out infinite; }
 
 .molecule .bond {
   stroke-dasharray: 60;
   stroke-dashoffset: 60;
-  transition: stroke-dashoffset 1.1s ease;
+  transition: stroke-dashoffset calc(1.1s * var(--motion)) ease;
 }
 .molecule.is-on .bond,
 .group:hover .molecule .bond { stroke-dashoffset: 0; }
 .molecule .atom { transform-box: fill-box; transform-origin: center; transition: transform 0.4s ease; }
 .group:hover .molecule .atom { transform: scale(1.25); }
-.molecule .orbit { transform-box: view-box; transform-origin: 50% 50%; animation: spin-slow 14s linear infinite; }
+.molecule .orbit { transform-box: view-box; transform-origin: 50% 50%; animation: spin-slow calc(14s * var(--motion)) linear infinite; }
 
 .shine::after {
   content: "";
@@ -156,6 +285,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .float, .bubble, .marquee-track, .molecule .orbit, .shine::after { animation: none !important; }
+  .float, .bubble, .marquee-track, .swirl, .molecule .orbit, .shine::after { animation: none !important; }
   .molecule .bond { stroke-dashoffset: 0; }
 }

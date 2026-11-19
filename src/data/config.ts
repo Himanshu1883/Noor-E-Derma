@@ -7,7 +7,15 @@ export const BRAND = {
   shortTagline: "SKIN THAT GLOWS • CONFIDENCE THAT SHOWS",
 } as const
 
-export const DRAFT_LABEL = "Draft v1"
+export const DRAFT_LABEL = "Draft v2"
+
+/** "a" = champagne marble editorial, "c" = ivory sage & glass. Visitors can switch with the on-page toggle. */
+export type ThemeId = "a" | "c"
+export const DEFAULT_THEME: ThemeId = "a"
+export const THEMES: { id: ThemeId; label: string }[] = [
+  { id: "a", label: "Variant A" },
+  { id: "c", label: "Variant C" },
+]
 
 /** Placeholder launch window for the CTA countdown. */
 export const LAUNCH_OFFER_ENDS = "2026-12-01T23:59:59+05:30"

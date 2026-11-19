@@ -6,6 +6,7 @@ import { mkdirSync } from "node:fs"
 const path = process.argv[2] || "/"
 const width = Number(process.argv[3] || 1440)
 const height = Number(process.argv[4] || 900)
+const theme = process.argv[5] || "a"
 const out = "shots"
 mkdirSync(out, { recursive: true })
 
@@ -14,6 +15,7 @@ const browser = await chromium.launch({
   args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"],
 })
 const page = await browser.newPage({ viewport: { width, height } })
+await page.addInitScript((t) => localStorage.setItem("nd-theme", t), theme)
 const errors = []
 page.on("pageerror", (e) => errors.push(String(e)))
 page.on("console", (m) => m.type() === "error" && errors.push(m.text()))
@@ -22,7 +24,7 @@ await page.goto(`http://localhost:5173${path}`, { waitUntil: "networkidle" })
 await page.waitForTimeout(2600)
 
 const total = await page.evaluate(() => document.documentElement.scrollHeight)
-const tag = path === "/" ? "home" : path.split("/").pop()
+const tag = `${theme}-${path === "/" ? "home" : path.split("/").pop()}`
 let i = 0
 for (let y = 0; y < total; y += height) {
   await page.mouse.wheel(0, i === 0 ? 0 : height)

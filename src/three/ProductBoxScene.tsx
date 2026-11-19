@@ -2,6 +2,7 @@ import { ContactShadows, Environment, Lightformer, useTexture } from "@react-thr
 import { Canvas, useFrame } from "@react-three/fiber"
 import { Suspense, useMemo, useRef } from "react"
 import * as THREE from "three"
+import { useTheme } from "@/context/ThemeContext"
 import { ASSETS } from "@/data/config"
 
 /** Where the box artwork sits inside each square card image (fractions of 1024px). */
@@ -78,6 +79,7 @@ export default function ProductBoxScene({
   urls?: string[]
 }) {
   const single = urls.length === 1
+  const { theme } = useTheme()
 
   return (
     <Canvas camera={{ position: [0, 0.3, 6.4], fov: 30 }} dpr={[1, 1.75]} gl={{ alpha: true, antialias: true }} shadows>
@@ -107,7 +109,7 @@ export default function ProductBoxScene({
           <Lightformer intensity={1.4} position={[-5, 1, 2]} rotation-y={Math.PI / 2} scale={[4, 4, 1]} color="#fff4dc" />
           <Lightformer intensity={1.2} position={[5, 0, 1]} rotation-y={-Math.PI / 2} scale={[4, 4, 1]} color="#e8f2e2" />
         </Environment>
-        <ContactShadows position={[0, -1.35, 0]} opacity={0.32} scale={7} blur={2.6} far={3} color="#3a5130" />
+        <ContactShadows position={[0, -1.35, 0]} opacity={0.32} scale={7} blur={2.6} far={3} color={theme === "a" ? "#3a2a12" : "#3a5130"} />
       </Suspense>
     </Canvas>
   )

@@ -19,7 +19,7 @@ export function scrollToHash(hash: string) {
   el.scrollIntoView({ behavior: "smooth", block: "start" })
 }
 
-export function useLenis(enabled: boolean) {
+export function useLenis(enabled: boolean, duration = 1.15) {
   useEffect(() => {
     registerGsap()
     if (!enabled) return
@@ -27,7 +27,7 @@ export function useLenis(enabled: boolean) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     const instance = new Lenis({
       autoRaf: false,
-      duration: reduced ? 0.4 : 1.15,
+      duration: reduced ? 0.4 : duration,
       smoothWheel: !reduced,
     })
     lenis = instance
@@ -49,5 +49,5 @@ export function useLenis(enabled: boolean) {
       instance.destroy()
       if (lenis === instance) lenis = null
     }
-  }, [enabled])
+  }, [enabled, duration])
 }

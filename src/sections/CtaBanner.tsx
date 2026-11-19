@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Bubbles } from "@/components/Bubbles"
 import { GoldButton } from "@/components/GoldButton"
+import { GoldSwirl } from "@/components/GoldSwirl"
 import { useCart } from "@/context/CartContext"
 import { useUI } from "@/context/UIContext"
 import { ASSETS, BUNDLE, LAUNCH_OFFER_ENDS } from "@/data/config"
@@ -36,8 +37,9 @@ export function CtaBanner() {
 
   return (
     <section className="bg-ivory px-3 pb-3 md:px-6 md:pb-6">
-      <div className="relative mx-auto grid max-w-7xl overflow-hidden rounded-[40px] bg-[linear-gradient(135deg,#3a5130,#5f7d4d_60%,#7f9a6f)] text-white md:grid-cols-2">
+      <div className="relative mx-auto grid max-w-7xl overflow-hidden rounded-[40px] theme-a:rounded-[8px] bg-[linear-gradient(135deg,var(--cta-from),var(--cta-via)_60%,var(--cta-to))] text-white md:grid-cols-2">
         <Bubbles count={8} className="opacity-50" />
+        <GoldSwirl className="bottom-0 left-0 h-[60%] w-full opacity-60" />
         <div className="relative p-8 md:p-14">
           <span className="inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-gold-bright ring-1 ring-white/20">
             Limited launch offer

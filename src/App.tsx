@@ -9,6 +9,7 @@ import { Loader } from "@/components/Loader"
 import { Navbar } from "@/components/Navbar"
 import { QuickViewDrawer } from "@/components/QuickViewDrawer"
 import { ScrollProgress } from "@/components/ScrollProgress"
+import { useTheme } from "@/context/ThemeContext"
 import { useUI } from "@/context/UIContext"
 import { scrollToHash, useLenis } from "@/hooks/useLenis"
 import { registerGsap, ScrollTrigger } from "@/lib/gsap"
@@ -18,7 +19,8 @@ import { ProductPage } from "@/pages/ProductPage"
 export default function App() {
   const { loading } = useUI()
   const location = useLocation()
-  useLenis(!loading)
+  const { theme } = useTheme()
+  useLenis(!loading, theme === "a" ? 1.7 : 1.15)
 
   useEffect(() => {
     registerGsap()
