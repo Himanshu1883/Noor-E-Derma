@@ -1,7 +1,8 @@
+"use client"
+
 import { AnimatePresence, motion } from "framer-motion"
 import { Check, X } from "lucide-react"
 import { GoldButton } from "@/components/GoldButton"
-import { PartnerBadge } from "@/components/PartnerBadge"
 import { StarRating } from "@/components/StarRating"
 import { useCart } from "@/context/CartContext"
 import { useUI } from "@/context/UIContext"
@@ -37,7 +38,6 @@ export function QuickViewDrawer() {
               <button type="button" onClick={closeQuickView} aria-label="Close" className="glass absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full">
                 <X size={16} />
               </button>
-              {product.partnerBrand ? <PartnerBadge className="absolute bottom-4 left-4" label={product.partnerBrand.label} /> : null}
             </div>
             <div className="p-6">
               <p className="eyebrow">Quick view</p>
@@ -65,20 +65,16 @@ export function QuickViewDrawer() {
                 ))}
               </div>
               <GoldButton
+                variant="black"
                 className="mt-7 w-full"
                 onClick={() => {
-                  add(product)
+                  void add(product)
                   closeQuickView()
                   setCartOpen(true)
                 }}
               >
                 Add to Cart · {formatINR(product.price)}
               </GoldButton>
-              {product.partnerBrand ? (
-                <p className="mt-4 text-[12px] leading-relaxed text-ink/50">
-                  Sold as a partner product. This is not a Noor E Derma product; NICONI Professional trademarks belong to their owners.
-                </p>
-              ) : null}
             </div>
           </motion.aside>
         </>

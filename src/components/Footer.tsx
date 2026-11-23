@@ -1,8 +1,10 @@
+"use client"
+
 import { ArrowRight } from "lucide-react"
+import Link from "next/link"
 import { useState, type FormEvent } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
-import { ASSETS, BRAND, SHOW_NICONI } from "@/data/config"
-import { scrollToHash } from "@/hooks/useLenis"
+import { ASSETS, BRAND } from "@/data/config"
+import { COMPANY, FOOTER_COMPANY, FOOTER_POLICIES, FOOTER_SHOP, FOOTER_SUPPORT } from "@/data/site"
 
 const socials = [
   {
@@ -30,15 +32,25 @@ const socials = [
   },
 ]
 
+function Col({ title, links }: { title: string; links: readonly { label: string; href: string }[] }) {
+  return (
+    <div>
+      <p className="text-xs font-medium tracking-[0.2em] text-gold-bright uppercase">{title}</p>
+      <ul className="mt-4 space-y-2.5 text-[15px] font-medium text-white/75">
+        {links.map((l) => (
+          <li key={l.href}>
+            <Link className="hover:text-white" href={l.href}>
+              {l.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export function Footer() {
   const [note, setNote] = useState("")
-  const location = useLocation()
-  const navigate = useNavigate()
-
-  const go = (hash: string) => {
-    if (location.pathname !== "/") navigate(`/${hash}`)
-    else scrollToHash(hash)
-  }
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -52,30 +64,25 @@ export function Footer() {
           <div className="inline-flex rounded-3xl bg-ivory px-5 py-3">
             <img src={ASSETS.logo} alt={BRAND.name} className="h-14 w-auto" />
           </div>
-          <p className="mt-5 max-w-xs font-display text-xl text-white/90 italic">{BRAND.tagline}</p>
+          <p className="font-highlight mt-5 max-w-xs text-xl text-white/90">{BRAND.tagline}</p>
+          <p className="mt-3 max-w-xs text-xs text-white/45">{COMPANY.note}</p>
         </div>
         <div className="md:col-span-2">
-          <h3 className="text-xs font-medium tracking-[0.2em] text-gold-bright uppercase">Shop</h3>
-          <ul className="mt-4 space-y-2.5 text-[15px] text-white/75">
-            <li><Link className="hover:text-white" to="/product/tan-eraser">Tan Eraser</Link></li>
-            <li><Link className="hover:text-white" to="/product/daily-detox-face-wash">Daily Detox</Link></li>
-            <li><button className="hover:text-white" type="button" onClick={() => go("#shop")}>All products</button></li>
-          </ul>
+          <Col title="Shop" links={FOOTER_SHOP} />
         </div>
         <div className="md:col-span-2">
-          <h3 className="text-xs font-medium tracking-[0.2em] text-gold-bright uppercase">Company</h3>
-          <ul className="mt-4 space-y-2.5 text-[15px] text-white/75">
-            <li><button className="hover:text-white" type="button" onClick={() => go("#intro")}>Our story</button></li>
-            <li><button className="hover:text-white" type="button" onClick={() => go("#ingredients")}>Ingredients</button></li>
-            <li><button className="hover:text-white" type="button" onClick={() => go("#results")}>Results</button></li>
-          </ul>
+          <Col title="Company" links={FOOTER_COMPANY} />
         </div>
         <div className="md:col-span-4">
-          <h3 className="text-xs font-medium tracking-[0.2em] text-gold-bright uppercase">Support & newsletter</h3>
-          <ul className="mt-4 flex gap-5 text-[15px] text-white/75">
-            <li><button className="hover:text-white" type="button" onClick={() => go("#faq")}>FAQ</button></li>
-            <li>Shipping</li>
-            <li>Returns</li>
+          <Col title="Support" links={FOOTER_SUPPORT} />
+          <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-white/55">
+            {FOOTER_POLICIES.map((l) => (
+              <li key={l.href}>
+                <Link className="hover:text-white" href={l.href}>
+                  {l.label}
+                </Link>
+              </li>
+            ))}
           </ul>
           <form onSubmit={onSubmit} className="mt-5 flex rounded-full bg-white/10 p-1.5 ring-1 ring-white/15">
             <input
@@ -109,11 +116,6 @@ export function Footer() {
             ))}
           </div>
         </div>
-        {SHOW_NICONI ? (
-          <p className="mx-auto max-w-7xl px-6 pb-5 text-[11px] text-white/40 md:px-8">
-            NICONI Professional is a partner brand; trademarks belong to their owners.
-          </p>
-        ) : null}
       </div>
     </footer>
   )

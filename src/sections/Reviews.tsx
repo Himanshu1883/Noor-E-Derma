@@ -1,3 +1,5 @@
+"use client"
+
 import { BadgeCheck, Star } from "lucide-react"
 import { StarRating } from "@/components/StarRating"
 import { reviews } from "@/data/reviews"

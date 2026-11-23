@@ -1,5 +1,4 @@
-/** Brand-safety switch. Flip to false to hide every NICONI reference. */
-export const SHOW_NICONI = true
+import { mediaUrl } from "@/data/media-map"
 
 export const BRAND = {
   name: "NOOR E DERMA",
@@ -28,10 +27,11 @@ export const BUNDLE = {
 } as const
 
 export const ASSETS = {
-  logo: "/assets/logo-nd.png",
-  hero1: "/assets/hero-1-noor-duo.jpg",
-  hero2: "/assets/hero-2-niconi-kit.jpg",
-  cardTan: "/assets/card-tan-eraser.jpg",
-  cardDetox: "/assets/card-daily-detox.jpg",
-  cardNiconi: "/assets/card-niconi-kit.jpg",
-} as const
+  logo: mediaUrl("/assets/logo-nd.png"),
+  hero1: mediaUrl("/assets/hero-1-noor-duo.jpg"),
+  hero2: mediaUrl("/assets/tan-eraser-kit.jpg"),
+  cardTan: mediaUrl("/assets/card-tan-eraser.jpg"),
+  cardDetox: mediaUrl("/assets/card-daily-detox.jpg"),
+  kitTan: mediaUrl("/assets/tan-eraser-kit.jpg"),
+  videoTan: mediaUrl("/assets/tan_eraser.mp4"),
+}

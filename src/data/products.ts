@@ -8,7 +8,7 @@
  * Product claims are limited to on-pack copy from the provided artwork.
  */
 
-import { ASSETS, BUNDLE, SHOW_NICONI } from "@/data/config"
+import { ASSETS, BUNDLE } from "@/data/config"
 
 export type ProductImage = {
   src: string
@@ -17,6 +17,8 @@ export type ProductImage = {
   position?: string
   /** Zoom factor for detail crops of the same artwork. */
   scale?: number
+  type?: "image" | "video"
+  poster?: string
 }
 
 export type Benefit = {
@@ -60,10 +62,6 @@ export type Product = {
   howToUse: HowToStep[]
   faqs: FaqItem[]
   badges: string[]
-  partnerBrand?: {
-    name: string
-    label: string
-  }
   hasDetailPage: boolean
   kitIncludes?: string[]
   isBundle?: boolean
@@ -80,7 +78,7 @@ export const tanEraser: Product = {
   displayName: "TAN ERASER",
   tagline: "For Sun Tanned & Dull Looking Skin",
   description:
-    "A Noor E Derma face & body treatment with glutathione + kojic acid, formulated to help remove the look of tan, brighten skin and even skin tone. On-pack claim: erases tan in 20 minutes.",
+    "A Noor E Derma face & body treatment with glutathione + kojic acid, formulated to help remove the look of tan, brighten skin and even skin tone. On-pack claim: erases tan in 20 minutes. 210ml. For men and women. Use after Daily Detox, or shop both as the Glow Duo.",
   price: 1299,
   compareAt: 1799,
   netWeight: "210ml",
@@ -88,6 +86,7 @@ export const tanEraser: Product = {
   reviewCount: 128,
   images: [
     { src: ASSETS.cardTan, alt: "Noor E Derma Tan Eraser box" },
+    { src: ASSETS.videoTan, alt: "Tan Eraser video", type: "video", poster: ASSETS.cardTan },
     { src: ASSETS.hero1, alt: "Tan Eraser on a marble counter", position: "42% center" },
     { src: ASSETS.cardTan, alt: "Tan Eraser key actives detail", position: "50% 52%", scale: 1.9 },
   ],
@@ -133,7 +132,7 @@ export const dailyDetox: Product = {
   tagline: "Face Wash",
   cardLine: "With Niacinamide, Vitamin E, BHA & Aloe Vera",
   description:
-    "A daily face wash with niacinamide, vitamin E, BHA and aloe vera. On-pack benefits: cleanses deeply, refreshes skin, rejuvenates skin.",
+    "A daily face wash with niacinamide, vitamin E, BHA and aloe vera. On-pack benefits: cleanses deeply, refreshes skin, rejuvenates skin. 100 ml. Morning and evening, or as needed, then continue with Tan Eraser when skin looks sun-tanned or dull.",
   price: 449,
   compareAt: 599,
   netWeight: "100 ml",
@@ -179,56 +178,57 @@ export const dailyDetox: Product = {
   hasDetailPage: true,
 }
 
-export const niconiKit: Product = {
-  id: "niconi-gluta-kojic",
-  slug: "niconi-gluta-kojic-spa",
-  name: "Gluta-Kojic Spa Collection",
-  displayName: "GLUTA-KOJIC SPA COLLECTION",
-  tagline: "Partner brand: NICONI Professional",
+export const tanEraserKit: Product = {
+  id: "tan-eraser-kit",
+  slug: "tan-eraser-kit",
+  name: "Tan Eraser Ritual Kit",
+  displayName: "TAN ERASER RITUAL KIT",
+  tagline: "For Sun Tanned & Dull Looking Skin",
   description:
-    "A NICONI Professional kit with Gluta-Kojic Lotion, Powder and Skin Polish, plus an applicator brush and mixing bowl. Packaging claims: with glutathione, kojic acid, vitamin C, niacinamide and AHA — brightens skin tone, evens skin texture, reduces dark spots, adds natural glow.",
+    "The complete Noor E Derma Tan Eraser ritual: 210ml lotion, a travel bottle, a jar, applicator brush and mixing bowl. With glutathione + kojic acid. On-card: cleanses, exfoliates, brightens, nourishes, smoothens — for a fairer, brighter skin. Face & body, men & women. Erases tan in 20 minutes.",
   price: 1999,
-  rating: 4.7,
-  reviewCount: 64,
+  compareAt: 2499,
+  rating: 4.8,
+  reviewCount: 54,
   images: [
-    { src: ASSETS.cardNiconi, alt: "NICONI Professional Gluta-Kojic Spa Collection" },
-    { src: ASSETS.hero2, alt: "NICONI Gluta-Kojic kit flat lay" },
+    { src: ASSETS.kitTan, alt: "Noor E Derma Tan Eraser Ritual Kit on marble" },
+    { src: ASSETS.videoTan, alt: "Tan Eraser video", type: "video", poster: ASSETS.kitTan },
+    { src: ASSETS.cardTan, alt: "Tan Eraser pack" },
   ],
   benefits: [
-    { label: "Brightens Skin Tone", detail: "On-pack claim from NICONI Professional.", icon: "sparkles" },
-    { label: "Evens Skin Texture", detail: "On-pack claim from NICONI Professional.", icon: "droplet" },
-    { label: "Reduces Dark Spots", detail: "On-pack claim from NICONI Professional.", icon: "sun" },
-    { label: "Adds Natural Glow", detail: "On-pack claim from NICONI Professional.", icon: "leaf" },
+    { label: "Cleanses", detail: "On-card benefit from the Tan Eraser kit.", icon: "droplet" },
+    { label: "Exfoliates", detail: "On-card benefit from the Tan Eraser kit.", icon: "refresh" },
+    { label: "Brightens", detail: "On-card benefit: for a fairer, brighter skin.", icon: "sparkles" },
+    { label: "Nourishes", detail: "On-card benefit from the Tan Eraser kit.", icon: "leaf" },
+    { label: "Smoothens", detail: "On-card benefit from the Tan Eraser kit.", icon: "face" },
   ],
   actives: [
-    { name: "Glutathione", note: "Listed on NICONI Gluta-Kojic packaging." },
-    { name: "Kojic Acid", note: "Listed on NICONI Gluta-Kojic packaging." },
-    { name: "Vitamin C", note: "Listed on NICONI Gluta-Kojic packaging." },
-    { name: "Niacinamide", note: "Listed on NICONI Gluta-Kojic packaging." },
-    { name: "AHA", note: "Listed on NICONI Gluta-Kojic packaging." },
+    { name: "Glutathione", note: "Printed on the Tan Eraser pack with kojic acid." },
+    { name: "Kojic Acid", note: "Printed on the Tan Eraser pack with glutathione." },
   ],
   howToUse: [
-    { step: 1, title: "Polish", body: "Use Gluta-Kojic Skin Polish as directed on the NICONI pack." },
-    { step: 2, title: "Mix", body: "Prepare Gluta-Kojic Powder in the bowl with the applicator brush." },
-    { step: 3, title: "Treat", body: "Follow with Gluta-Kojic Lotion for brighter, even-toned looking skin." },
+    { step: 1, title: "Prep", body: "Cleanse the skin. Mix a small amount of jar formula in the bowl with the brush if using the polish step." },
+    { step: 2, title: "Apply", body: "Smooth Tan Eraser lotion over sun-tanned or dull-looking areas on face or body." },
+    { step: 3, title: "Wait 20 minutes", body: "On-pack: erases tan in 20 minutes." },
+    { step: 4, title: "Rinse", body: "Rinse with lukewarm water and pat dry. Moisturise; wear sunscreen in the day." },
   ],
   faqs: [
     {
-      q: "Is this a Noor E Derma product?",
-      a: "No. This is a partner-brand kit from NICONI Professional. Trademarks belong to their owners.",
+      q: "What is in the kit?",
+      a: "Tan Eraser 210ml lotion, a travel-size bottle, a jar, an applicator brush and a mixing bowl.",
+    },
+    {
+      q: "Is it for men and women?",
+      a: "Yes. The pack states Face & Body | Men & Women.",
     },
   ],
-  badges: ["Partner brand: NICONI Professional"],
-  partnerBrand: {
-    name: "NICONI Professional",
-    label: "Partner brand: NICONI Professional",
-  },
-  hasDetailPage: false,
-  cardLine: "Lotion, powder, polish, brush & bowl",
+  badges: ["Face & Body", "Men & Women", "Glutathione + Kojic Acid"],
+  hasDetailPage: true,
+  cardLine: "Lotion, travel, jar, brush & bowl",
   kitIncludes: [
-    "Gluta-Kojic Lotion",
-    "Gluta-Kojic Powder",
-    "Gluta-Kojic Skin Polish",
+    "Tan Eraser lotion — 210ml",
+    "Travel-size Tan Eraser",
+    "Tan Eraser jar",
     "Applicator brush",
     "Mixing bowl",
   ],
@@ -261,18 +261,32 @@ export const glowDuo: Product = {
     { name: "Glutathione + Kojic Acid", note: "Tan Eraser" },
     { name: "Niacinamide, Vitamin E, BHA, Aloe Vera", note: "Daily Detox" },
   ],
-  howToUse: tanEraser.howToUse,
-  faqs: [],
+  howToUse: [
+    { step: 1, title: "Cleanse", body: "Daily Detox Face Wash — wet, lather, rinse." },
+    { step: 2, title: "Apply Tan Eraser", body: "Smooth an even layer over sun-tanned or dull-looking skin." },
+    { step: 3, title: "Wait 20 minutes", body: "On-pack: erases tan in 20 minutes." },
+    { step: 4, title: "Rinse & glow", body: "Rinse, moisturise, and wear sunscreen in the day." },
+  ],
+  faqs: [
+    {
+      q: "What is in the Glow Duo?",
+      a: "Tan Eraser (210ml) and Daily Detox Face Wash (100 ml), together for less than buying both apart. Placeholder pricing for this design draft.",
+    },
+    {
+      q: "How do I use the pair?",
+      a: "Cleanse with Daily Detox, then apply Tan Eraser on sun-tanned or dull-looking skin, wait 20 minutes, rinse. Full steps sit on How to use.",
+    },
+  ],
   badges: ["Limited launch offer"],
-  hasDetailPage: false,
+  hasDetailPage: true,
   isBundle: true,
   bundleOf: [tanEraser.id, dailyDetox.id],
 }
 
-export const noorProducts = [tanEraser, dailyDetox]
+export const noorProducts = [tanEraser, dailyDetox, tanEraserKit]
 
 export function getCatalog(): Product[] {
-  return SHOW_NICONI ? [...noorProducts, niconiKit] : [...noorProducts, glowDuo]
+  return [...noorProducts, glowDuo]
 }
 
 export function getFeaturedProducts(): Product[] {
@@ -280,7 +294,7 @@ export function getFeaturedProducts(): Product[] {
 }
 
 export function getProductBySlug(slug: string): Product | undefined {
-  return [tanEraser, dailyDetox, niconiKit, glowDuo].find((p) => p.slug === slug)
+  return [tanEraser, dailyDetox, tanEraserKit, glowDuo].find((p) => p.slug === slug)
 }
 
 export function getDetailProduct(slug: string): Product | undefined {

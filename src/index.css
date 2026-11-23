@@ -11,8 +11,8 @@
 @custom-variant theme-a (&:where([data-theme="a"], [data-theme="a"] *));
 
 @theme inline {
-  --font-display: var(--t-display);
-  --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading-family);
+  --font-sans: var(--font-body-family);
 
   --color-ivory: var(--t-ivory);
   --color-sage-50: var(--t-50);
@@ -30,8 +30,31 @@
 
 :root,
 :root[data-theme="a"] {
-  --t-display: "Cormorant Garamond", ui-serif, Georgia, serif;
-  --t-display-adjust: 0.5;
+  --font-body-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-body-weight: 400;
+  --font-body-weight-bolder: 500;
+  --font-menu-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-menu-weight: 500;
+  --font-btn-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-btn-weight: 500;
+  --font-heading-family: "Arapey", ui-serif, Georgia, serif;
+  --font-heading-style: normal;
+  --font-heading-weight: 400;
+  --font-heading-transform: none;
+  --font-heading-spacing: 0px;
+  --font-subheading-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-subheading-weight: 500;
+  --font-subheading-transform: uppercase;
+  --font-pcard-title-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-pcard-title-weight: 500;
+  --font-pcard-title-size: 1.5rem;
+  --font-highlight-text-family: "Arapey", ui-serif, Georgia, serif;
+  --font-highlight-text-weight: 400;
+  --font-highlight-text-style: italic;
+  --font-mega-family: "Arapey", ui-serif, Georgia, serif;
+  --font-mega-weight: 400;
+  --font-mega-transform: uppercase;
+  --btn-transform: uppercase;
   --t-ivory: #fffbf2;
   --t-bg-2: #f8ebcf;
   --t-50: #f7eedc;
@@ -54,8 +77,6 @@
 }
 
 :root[data-theme="c"] {
-  --t-display: "Fraunces", ui-serif, Georgia, serif;
-  --t-display-adjust: none;
   --t-ivory: #fffdf7;
   --t-bg-2: #eef4ea;
   --t-50: #eef4ea;
@@ -84,7 +105,8 @@
   body {
     margin: 0;
     color: var(--color-ink);
-    font-family: var(--font-sans);
+    font-family: var(--font-body-family);
+    font-weight: var(--font-body-weight);
     background: var(--t-ivory);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
@@ -93,10 +115,22 @@
 
   h1,
   h2,
-  h3 {
-    font-family: var(--font-display);
-    font-optical-sizing: auto;
-    letter-spacing: -0.02em;
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading-family);
+    font-style: var(--font-heading-style);
+    font-weight: var(--font-heading-weight) !important;
+    letter-spacing: var(--font-heading-spacing);
+    text-transform: var(--font-heading-transform);
+  }
+
+  h3.font-pcard {
+    font-family: var(--font-pcard-title-family) !important;
+    font-weight: var(--font-pcard-title-weight) !important;
+    letter-spacing: 0;
+    text-transform: none;
   }
 
   ::selection {
@@ -104,17 +138,22 @@
   }
 }
 
-/* Variant A: editorial serif — Cormorant has a small x-height, so scale it up. */
-[data-theme="a"] h1,
-[data-theme="a"] h2,
-[data-theme="a"] h3 {
-  font-size-adjust: var(--t-display-adjust);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+.gold-text.italic,
+h1.italic,
+h2.italic,
+h3 .italic,
+h1 .italic,
+h2 .italic,
+.font-highlight {
+  font-family: var(--font-highlight-text-family);
+  font-style: var(--font-highlight-text-style);
+  font-weight: var(--font-highlight-text-weight);
 }
 
-[data-theme="a"] body {
-  font-weight: 300;
+.font-mega {
+  font-family: var(--font-mega-family);
+  font-weight: var(--font-mega-weight);
+  text-transform: var(--font-mega-transform);
 }
 
 /* Thin gold hairlines between editorial sections. */
@@ -122,6 +161,13 @@
 [data-theme="a"] main > section + div + section {
   border-top: 1px solid transparent;
   border-image: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.45), transparent) 1;
+}
+
+@utility font-pcard {
+  font-family: var(--font-pcard-title-family);
+  font-weight: var(--font-pcard-title-weight);
+  font-size: var(--font-pcard-title-size);
+  line-height: 1.2;
 }
 
 @utility gold-text {
@@ -162,11 +208,11 @@
 }
 
 @utility eyebrow {
-  font-family: var(--font-sans);
+  font-family: var(--font-subheading-family);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: var(--font-subheading-weight);
   letter-spacing: 0.32em;
-  text-transform: uppercase;
+  text-transform: var(--font-subheading-transform);
   color: var(--color-sage-600);
 }
 

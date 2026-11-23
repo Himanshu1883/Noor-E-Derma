@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useRef, useState } from "react"
 import { Bubbles } from "@/components/Bubbles"
 import { ASSETS } from "@/data/config"
@@ -104,7 +106,7 @@ export function Ritual() {
               <span className="glass absolute top-4 left-4 rounded-full px-3 py-1 text-xs font-medium">{panel.product}</span>
             </div>
             <div className="relative flex flex-col justify-center p-6 md:p-10">
-              <span className="pointer-events-none absolute top-2 right-6 font-display text-[7rem] leading-none font-semibold text-sage-100 md:text-[9rem]">
+              <span className="font-mega pointer-events-none absolute top-2 right-6 text-[7rem] leading-none text-sage-100 md:text-[9rem]">
                 {panel.num}
               </span>
               <p className="relative text-sm font-medium text-gold-deep">Step {panel.num}</p>

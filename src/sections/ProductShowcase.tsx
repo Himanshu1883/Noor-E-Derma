@@ -1,6 +1,19 @@
+"use client"
+
 import { AnimatePresence, motion } from "framer-motion"
 import { ArrowRight, Droplets, FlaskConical, Leaf, Sparkles, Timer, Users } from "lucide-react"
-import { lazy, Suspense, useEffect, useRef, useState } from "react"
+import dynamic from "next/dynamic"
+import { Component, Suspense, useEffect, useRef, useState, type ReactNode } from "react"
+
+class SceneGuard extends Component<{ children: ReactNode; fallback: ReactNode }, { failed: boolean }> {
+  state = { failed: false }
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children
+  }
+}
 import { GoldButton } from "@/components/GoldButton"
 import { ASSETS } from "@/data/config"
 import { dailyDetox, tanEraser } from "@/data/products"
@@ -9,7 +22,7 @@ import { gsap, registerGsap } from "@/lib/gsap"
 import { formatINR } from "@/lib/format"
 import { cn } from "@/lib/cn"
 
-const ProductBoxScene = lazy(() => import("@/three/ProductBoxScene"))
+const ProductBoxScene = dynamic(() => import("@/three/ProductBoxScene"), { ssr: false })
 
 const stages = [
   {
@@ -99,9 +112,15 @@ export function ProductShowcase() {
 
         <div className="relative h-full min-h-[300px] md:col-span-5">
           {enable3d ? (
-            <Suspense fallback={null}>
-              <ProductBoxScene progress={progress} />
-            </Suspense>
+            <SceneGuard
+              fallback={
+                <img src={current.image} alt={current.product.name} className="absolute inset-0 m-auto max-h-full w-auto rounded-[32px] object-contain" />
+              }
+            >
+              <Suspense fallback={null}>
+                <ProductBoxScene progress={progress} />
+              </Suspense>
+            </SceneGuard>
           ) : (
             <AnimatePresence mode="wait">
               <motion.img

@@ -21,6 +21,6 @@ export const homeFaqs = [
   },
   {
     q: "Shipping & returns?",
-    a: "Placeholder for the design draft: complimentary shipping on launch orders, easy returns within 7 days of delivery on unopened products. Final policy will be confirmed before store launch.",
+    a: "See Shipping and Refunds under Policies. This draft: dispatch in 2–4 business days, replacements for wrong or damaged parcels. Opened skincare is not returned for hygiene reasons. Final policy will be confirmed before launch.",
   },
 ]

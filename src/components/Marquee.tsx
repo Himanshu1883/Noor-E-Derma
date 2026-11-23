@@ -1,3 +1,5 @@
+"use client"
+
 import { Sparkle } from "lucide-react"
 
 export function Marquee({ items }: { items: string[] }) {

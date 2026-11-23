@@ -21,6 +21,7 @@ export function scrollToHash(hash: string) {
 
 export function useLenis(enabled: boolean, duration = 1.15) {
   useEffect(() => {
+    if (typeof window === "undefined") return
     registerGsap()
     if (!enabled) return
 

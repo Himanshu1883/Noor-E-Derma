@@ -1,14 +1,19 @@
+"use client"
+
 import { ContactShadows, Environment, Lightformer, useTexture } from "@react-three/drei"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { Suspense, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { useTheme } from "@/context/ThemeContext"
-import { ASSETS } from "@/data/config"
+
+/** Local pack shots for WebGL — same files stored in GridFS, served as static textures so a media-API blip cannot crash the homepage. */
+const BOX_TAN = "/assets/card-tan-eraser.jpg"
+const BOX_DETOX = "/assets/card-daily-detox.jpg"
 
 /** Where the box artwork sits inside each square card image (fractions of 1024px). */
 const CROPS: Record<string, { x0: number; x1: number; y0: number; y1: number }> = {
-  [ASSETS.cardTan]: { x0: 0.208, x1: 0.789, y0: 0.054, y1: 0.916 },
-  [ASSETS.cardDetox]: { x0: 0.266, x1: 0.733, y0: 0.056, y1: 0.907 },
+  [BOX_TAN]: { x0: 0.208, x1: 0.789, y0: 0.054, y1: 0.916 },
+  [BOX_DETOX]: { x0: 0.266, x1: 0.733, y0: 0.056, y1: 0.907 },
 }
 
 export type ProgressRef = { current: number }
@@ -73,7 +78,7 @@ const smooth = (a: number, b: number, x: number) => {
 
 export default function ProductBoxScene({
   progress,
-  urls = [ASSETS.cardTan, ASSETS.cardDetox],
+  urls = [BOX_TAN, BOX_DETOX],
 }: {
   progress: ProgressRef
   urls?: string[]

@@ -1,3 +1,5 @@
+"use client"
+
 import { Leaf, Sparkles, Users } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { Droplet } from "@/components/Bubbles"

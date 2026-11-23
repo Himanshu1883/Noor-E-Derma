@@ -20,7 +20,8 @@ const errors = []
 page.on("pageerror", (e) => errors.push(String(e)))
 page.on("console", (m) => m.type() === "error" && errors.push(m.text()))
 
-await page.goto(`http://localhost:5173${path}`, { waitUntil: "networkidle" })
+const origin = process.env.SHOT_ORIGIN || "http://localhost:3000"
+await page.goto(`${origin}${path}`, { waitUntil: "networkidle" })
 await page.waitForTimeout(2600)
 
 const total = await page.evaluate(() => document.documentElement.scrollHeight)

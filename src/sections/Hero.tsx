@@ -1,10 +1,11 @@
+"use client"
+
 import { motion } from "framer-motion"
 import { ArrowRight, Droplets, FlaskConical, Leaf, Sparkles, Timer } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { Bubbles, Droplet } from "@/components/Bubbles"
 import { GoldButton } from "@/components/GoldButton"
 import { GoldSwirl } from "@/components/GoldSwirl"
-import { PartnerBadge } from "@/components/PartnerBadge"
 import { useTheme } from "@/context/ThemeContext"
 import { useUI } from "@/context/UIContext"
 import { getHeroSlides, type HeroChip, type HeroSlide } from "@/data/hero"
@@ -24,7 +25,7 @@ function Headline({ slide, play }: { slide: HeroSlide; play: boolean }) {
   const slow = useTheme().theme === "a" ? 1.6 : 1
   let n = 0
   return (
-    <h1 className="text-[clamp(3rem,6.2vw,6.1rem)] leading-[0.95] font-medium text-ink theme-a:text-[clamp(3.6rem,7.6vw,8rem)] theme-a:leading-[0.9]">
+    <h1 className="text-[clamp(3rem,6.2vw,6.1rem)] leading-[0.95] text-ink theme-a:text-[clamp(3.6rem,7.6vw,8rem)] theme-a:leading-[0.9]">
       {slide.headline.map((line, li) => (
         <span key={li} className="block">
           {line.map((word, wi) => {
@@ -62,11 +63,6 @@ function SlideText({ slide, play }: { slide: HeroSlide; play: boolean }) {
       <motion.div {...fade(0)} className="flex flex-wrap items-center gap-2">
         <span className="eyebrow">{slide.kicker}</span>
       </motion.div>
-      {slide.partnerBadge ? (
-        <motion.div {...fade(0.05)} className="mt-3">
-          <PartnerBadge label={slide.partnerBadge} />
-        </motion.div>
-      ) : null}
       <div className="mt-4">
         <Headline slide={slide} play={play} />
       </div>
@@ -253,7 +249,7 @@ export function Hero() {
         <GoldSwirl flip className="top-[12%] right-[-5%] h-[40%] w-[65%] opacity-70" />
       </Slide>
 
-      <div className="absolute right-5 bottom-5 z-20 hidden items-center gap-2 md:right-8 md:flex">
+      {/* <div className="absolute right-5 bottom-5 z-20 hidden items-center gap-2 md:right-8 md:flex">
         {slides.map((s, i) => (
           <button
             key={s.id}
@@ -284,7 +280,7 @@ export function Hero() {
           />
         </span>
         Scroll
-      </div>
+      </div> */}
     </section>
   )
 }

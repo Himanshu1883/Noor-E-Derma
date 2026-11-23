@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/cn"
 
@@ -125,7 +127,7 @@ export function Molecule({ kind, className }: { kind: MoleculeKind; className?: 
         a.label ? (
           <g key={i} className="atom">
             <circle cx={a.x} cy={a.y} r={a.label.length > 2 ? 9 : 7} fill={a.gold ? "#fff7e0" : "#fff"} style={{ stroke: a.gold ? "#b8860b" : "var(--t-600)" }} strokeWidth="1.4" />
-            <text x={a.x} y={a.y + 2.6} textAnchor="middle" fontSize={a.label.length > 2 ? 5.5 : 7} fontFamily="Jost, sans-serif" fontWeight="600" style={{ fill: a.gold ? "#8a6212" : "var(--t-800)" }}>
+            <text x={a.x} y={a.y + 2.6} textAnchor="middle" fontSize={a.label.length > 2 ? 5.5 : 7} fontFamily="Archivo, sans-serif" fontWeight="500" style={{ fill: a.gold ? "#8a6212" : "var(--t-800)" }}>
               {a.label}
             </text>
           </g>

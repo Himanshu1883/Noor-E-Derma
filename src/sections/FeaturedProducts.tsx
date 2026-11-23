@@ -1,3 +1,6 @@
+"use client"
+
+import Link from "next/link"
 import { ProductCard } from "@/components/ProductCard"
 import { getFeaturedProducts } from "@/data/products"
 
@@ -14,10 +17,12 @@ export function FeaturedProducts() {
               Your <span className="gold-text italic">glow</span> essentials
             </h2>
           </div>
-          <p className="max-w-sm text-ink/60">
-            Two Noor E Derma hero products
-            {products[2]?.partnerBrand ? ", plus a spa kit from our partner brand." : ", plus the Glow Duo bundle."}
-          </p>
+          <div className="max-w-sm">
+            <p className="text-ink/60">Tan Eraser, Daily Detox, the Ritual Kit, and the Glow Duo.</p>
+            <Link href="/shop" className="mt-3 inline-block text-sm text-gold-deep">
+              View all products →
+            </Link>
+          </div>
         </div>
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (

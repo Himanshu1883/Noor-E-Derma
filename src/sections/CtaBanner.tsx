@@ -1,3 +1,5 @@
+"use client"
+
 import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Bubbles } from "@/components/Bubbles"
@@ -65,7 +67,7 @@ export function CtaBanner() {
           <GoldButton
             className="mt-8 px-8 py-4 text-[15px]"
             onClick={() => {
-              add(glowDuo)
+              void add(glowDuo)
               setCartOpen(true)
             }}
           >

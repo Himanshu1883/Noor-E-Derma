@@ -1,6 +1,8 @@
+"use client"
+
 import { ArrowUpRight } from "lucide-react"
+import Link from "next/link"
 import { useEffect, useRef } from "react"
-import { Link } from "react-router-dom"
 import { ASSETS } from "@/data/config"
 import { gsap, registerGsap } from "@/lib/gsap"
 
@@ -49,7 +51,7 @@ export function WhoItsFor() {
         </h2>
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {cards.map((c) => (
-            <Link key={c.title} to={c.to} className="group relative block h-[440px] overflow-hidden rounded-[36px]">
+            <Link key={c.title} href={c.to} className="group relative block h-[440px] overflow-hidden rounded-[36px]">
               <img
                 data-parallax
                 src={c.image}

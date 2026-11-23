@@ -32,7 +32,7 @@ export const ingredients: Ingredient[] = [
     aka: "Tripeptide",
     benefit: "The glow-hero in Tan Eraser.",
     detail: "A tripeptide made of three amino acids, paired with kojic acid on the Tan Eraser pack.",
-    foundIn: ["Tan Eraser"],
+    foundIn: ["Tan Eraser", "Ritual Kit"],
   },
   {
     id: "kojic",
@@ -40,7 +40,7 @@ export const ingredients: Ingredient[] = [
     aka: "Fermentation-derived",
     benefit: "Glutathione's partner for even-looking tone.",
     detail: "Produced by fungi during fermentation; the second named active on the Tan Eraser pack.",
-    foundIn: ["Tan Eraser"],
+    foundIn: ["Tan Eraser", "Ritual Kit"],
   },
   {
     id: "vitamin-e",

@@ -1,3 +1,5 @@
+"use client"
+
 import { MessageCircle } from "lucide-react"
 import { Accordion } from "@/components/Accordion"
 import { GoldButton } from "@/components/GoldButton"
@@ -13,7 +15,7 @@ export function FAQ() {
             Questions, <span className="gold-text italic">answered</span>
           </h2>
           <p className="mt-4 max-w-sm text-ink/60">Always follow the directions on your pack. Still unsure? Our team is happy to help.</p>
-          <GoldButton variant="outline" className="mt-6" href="mailto:hello@noorederma.example">
+          <GoldButton variant="outline" className="mt-6" to="/contact">
             <MessageCircle size={16} /> Contact us
           </GoldButton>
         </div>

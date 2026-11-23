@@ -1,3 +1,5 @@
+"use client"
+
 import { Smile, Sparkles, Timer } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { BeforeAfterSlider } from "@/components/BeforeAfterSlider"

@@ -1,5 +1,4 @@
-import { ASSETS, SHOW_NICONI } from "@/data/config"
-import { niconiKit } from "@/data/products"
+import { ASSETS } from "@/data/config"
 
 export type HeroWord = { text: string; accent?: boolean }
 
@@ -19,7 +18,6 @@ export type HeroSlide = {
   image: string
   imagePosition: string
   layout: "text-left" | "text-right"
-  partnerBadge?: string
   chips: HeroChip[]
   primaryCta: { label: string; href: string }
   secondaryCta?: { label: string; href: string }
@@ -40,41 +38,23 @@ export function getHeroSlides(): HeroSlide[] {
       { icon: "timer", title: "20 min", sub: "Erases tan" },
       { icon: "flask", title: "Glutathione + Kojic", sub: "Key actives" },
     ],
-    primaryCta: { label: "Shop Now", href: "#shop" },
+    primaryCta: { label: "Shop Now", href: "/shop" },
     secondaryCta: { label: "Explore Details", href: "/product/tan-eraser" },
   }
 
-  const niconi: HeroSlide = {
-    id: "niconi",
-    kicker: "Partner collection",
-    headline: [[{ text: "Gluta-Kojic" }], [{ text: "Spa", accent: true }, { text: "Collection" }]],
-    sub: "Lotion, powder, skin polish, brush and bowl: a complete at-home spa ritual.",
-    benefits: ["Brightens Skin Tone", "Evens Skin Texture", "Reduces Dark Spots", "Adds Natural Glow"],
-    image: ASSETS.hero2,
+  const kit: HeroSlide = {
+    id: "tan-eraser-kit",
+    kicker: "The complete ritual",
+    headline: [[{ text: "Tan" }], [{ text: "Eraser", accent: true }, { text: "Kit" }]],
+    sub: "Lotion, travel, jar, brush and bowl — the at-home tan ritual. Cleanses, exfoliates, brightens, nourishes, smoothens.",
+    benefits: ["Cleanses", "Exfoliates", "Brightens", "Nourishes", "Smoothens"],
+    image: ASSETS.kitTan,
     imagePosition: "center",
     layout: "text-right",
-    partnerBadge: niconiKit.partnerBrand?.label,
-    chips: [{ icon: "sparkle", title: "5-piece kit", sub: "NICONI Professional" }],
-    primaryCta: { label: "View Collection", href: "#shop" },
+    chips: [{ icon: "sparkle", title: "5-piece kit", sub: "Noor E Derma" }],
+    primaryCta: { label: "View the kit", href: "/product/tan-eraser-kit" },
+    secondaryCta: { label: "Shop all", href: "/shop" },
   }
 
-  const detox: HeroSlide = {
-    id: "daily-detox",
-    kicker: "The daily ritual",
-    headline: [[{ text: "Daily" }], [{ text: "Detox", accent: true }]],
-    sub: "Niacinamide, Vitamin E, BHA and Aloe Vera. Cleanses deeply, refreshes and rejuvenates.",
-    badge: "Face Wash • 100 ml",
-    benefits: ["Cleanses Deeply", "Refreshes Skin", "Rejuvenates Skin"],
-    image: ASSETS.cardDetox,
-    imagePosition: "center",
-    layout: "text-right",
-    chips: [
-      { icon: "leaf", title: "Aloe Vera", sub: "Key active" },
-      { icon: "drop", title: "Niacinamide + BHA", sub: "Key actives" },
-    ],
-    primaryCta: { label: "Shop Face Wash", href: "/product/daily-detox-face-wash" },
-    secondaryCta: { label: "See the Ritual", href: "#ritual" },
-  }
-
-  return [duo, SHOW_NICONI ? niconi : detox]
+  return [duo, kit]
 }

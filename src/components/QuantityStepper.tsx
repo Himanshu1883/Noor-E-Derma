@@ -1,3 +1,5 @@
+"use client"
+
 import { Minus, Plus } from "lucide-react"
 
 export function QuantityStepper({

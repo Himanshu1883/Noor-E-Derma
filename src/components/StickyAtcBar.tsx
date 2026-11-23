@@ -1,3 +1,5 @@
+"use client"
+
 import { AnimatePresence, motion } from "framer-motion"
 import { GoldButton } from "@/components/GoldButton"
 import { useCart } from "@/context/CartContext"
@@ -22,13 +24,14 @@ export function StickyAtcBar({ product, quantity, visible }: { product: Product;
           <div className="glass flex items-center gap-3 rounded-full p-2 pl-2.5">
             <img src={product.images[0].src} alt="" className="h-12 w-12 rounded-full object-cover" />
             <div className="min-w-0 flex-1">
-              <p className="truncate font-display text-[15px]">{product.name}</p>
+              <p className="font-pcard truncate !text-[15px]">{product.name}</p>
               <p className="text-sm font-semibold text-gold-deep">{formatINR(product.price)}</p>
             </div>
             <GoldButton
+              variant="black"
               className="px-5 py-3"
               onClick={() => {
-                add(product, quantity)
+                void add(product, quantity)
                 setCartOpen(true)
               }}
             >
