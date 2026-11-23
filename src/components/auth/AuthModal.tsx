@@ -1,7 +1,7 @@
 "use client"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { X } from "lucide-react"
+import { Loader2, X } from "lucide-react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect, useState, type FormEvent } from "react"
 import { toast } from "sonner"
@@ -174,7 +174,14 @@ function AuthModalInner() {
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               className="pointer-events-auto w-full max-w-[420px]"
             >
-              <div className="max-h-[min(92svh,640px)] overflow-y-auto rounded-[28px] bg-ivory p-6 shadow-[0_28px_70px_-24px_rgb(var(--tint)/0.5)] ring-1 ring-sage-100 [scrollbar-width:none] md:p-8">
+              <div className="relative max-h-[min(92svh,640px)] overflow-y-auto rounded-[28px] bg-ivory p-6 shadow-[0_28px_70px_-24px_rgb(var(--tint)/0.5)] ring-1 ring-sage-100 [scrollbar-width:none] md:p-8">
+                {pending ? (
+                  <div className="absolute inset-0 z-20 grid place-items-center rounded-[28px] bg-ivory/80 backdrop-blur-[2px]">
+                    <span className="grid h-14 w-14 place-items-center rounded-full bg-white shadow-sm ring-1 ring-sage-100">
+                      <Loader2 className="h-7 w-7 animate-spin text-ink" aria-label="Loading" />
+                    </span>
+                  </div>
+                ) : null}
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="eyebrow">{authMode === "register" ? "Join the ritual" : "Welcome back"}</p>
@@ -229,8 +236,8 @@ function AuthModalInner() {
                   ) : authMode === "register" ? (
                     <p className="text-[12px] text-ink/50">Use at least 8 characters with a letter and a number.</p>
                   ) : null}
-                  <GoldButton type="submit" className="mt-1 w-full">
-                    {pending ? "Please wait…" : authMode === "forgot" ? "Send reset link" : authMode === "register" ? "Create account" : "Sign in"}
+                  <GoldButton type="submit" className="mt-1 w-full" disabled={pending}>
+                    {authMode === "forgot" ? "Send reset link" : authMode === "register" ? "Create account" : "Sign in"}
                   </GoldButton>
                 </form>
 

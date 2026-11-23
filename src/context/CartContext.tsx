@@ -46,6 +46,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([])
   const [ready, setReady] = useState(false)
   const linesRef = useRef(lines)
+  const genRef = useRef(0)
+  const queueRef = useRef(Promise.resolve())
   linesRef.current = lines
 
   const apply = useCallback((payload: { lines?: CartLine[] }) => {
@@ -54,20 +56,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setLines(next)
   }, [])
 
+  const enqueue = useCallback(<T,>(task: () => Promise<T>) => {
+    const next = queueRef.current.then(task, task)
+    queueRef.current = next.then(
+      () => undefined,
+      () => undefined,
+    )
+    return next
+  }, [])
+
   const persist = useCallback(
-    async (productId: string, quantity: number) => {
-      const data = await api<{ lines: CartLine[] }>("/api/cart", {
-        method: "POST",
-        body: JSON.stringify({ productId, quantity }),
-      })
-      apply(data)
-    },
-    [apply],
+    (productId: string, quantity: number, gen: number) =>
+      enqueue(async () => {
+        const data = await api<{ lines: CartLine[] }>("/api/cart", {
+          method: "POST",
+          body: JSON.stringify({ productId, quantity }),
+        })
+        if (genRef.current === gen) apply(data)
+      }),
+    [apply, enqueue],
   )
 
   const refresh = useCallback(async () => {
+    const gen = genRef.current
     try {
       const data = await api<{ lines: CartLine[] }>("/api/cart")
+      if (genRef.current !== gen) return
       apply(data)
     } catch {
       /* storefront still works without a live database */
@@ -88,12 +102,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const next = hit
         ? prev.map((line) => (matches(line, product.slug, product) ? { ...line, quantity: nextQty } : line))
         : [...prev, { productId: product.slug, product, quantity: nextQty }]
+      const gen = ++genRef.current
       linesRef.current = next
       setLines(next)
       toast.success("Added to bag")
       try {
-        await persist(product.slug, nextQty)
+        await persist(product.slug, nextQty, gen)
       } catch (err) {
+        if (genRef.current !== gen) return
+        linesRef.current = prev
+        setLines(prev)
         toast.error(err instanceof Error ? err.message : "Could not add to bag")
       }
     },
@@ -106,16 +124,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const line = prev.find((item) => matches(item, id))
       const key = line?.product.slug ?? line?.productId ?? id
       const next = prev.filter((item) => !matches(item, id))
+      const gen = ++genRef.current
       linesRef.current = next
       setLines(next)
+      toast.success("Removed from bag")
       try {
-        await persist(key, 0)
-      } catch {
-        toast.error("Could not remove item")
-        await refresh()
+        await persist(key, 0, gen)
+      } catch (err) {
+        if (genRef.current !== gen) return
+        linesRef.current = prev
+        setLines(prev)
+        toast.error(err instanceof Error ? err.message : "Could not remove item")
       }
     },
-    [persist, refresh],
+    [persist],
   )
 
   const setQuantity = useCallback(
@@ -128,26 +150,35 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const line = prev.find((item) => matches(item, id))
       const key = line?.product.slug ?? line?.productId ?? id
       const next = prev.map((item) => (matches(item, id) ? { ...item, quantity } : item))
+      const gen = ++genRef.current
       linesRef.current = next
       setLines(next)
       try {
-        await persist(key, quantity)
+        await persist(key, quantity, gen)
       } catch {
-        await refresh()
+        if (genRef.current !== gen) return
+        linesRef.current = prev
+        setLines(prev)
       }
     },
-    [persist, refresh, remove],
+    [persist, remove],
   )
 
   const clear = useCallback(async () => {
+    const prev = linesRef.current
+    const gen = ++genRef.current
     linesRef.current = []
     setLines([])
     try {
-      await api("/api/cart", { method: "DELETE" })
+      await enqueue(async () => {
+        await api("/api/cart", { method: "DELETE" })
+      })
     } catch {
-      /* local fallback */
+      if (genRef.current !== gen) return
+      linesRef.current = prev
+      setLines(prev)
     }
-  }, [])
+  }, [enqueue])
 
   const value = useMemo<CartContextValue>(() => {
     const count = lines.reduce((sum, line) => sum + line.quantity, 0)

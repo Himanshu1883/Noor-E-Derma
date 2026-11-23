@@ -14,6 +14,7 @@ type Props = {
   to?: string
   href?: string
   type?: "button" | "submit"
+  disabled?: boolean
   onClick?: () => void
 }
 
@@ -33,11 +34,13 @@ export function GoldButton({
   to,
   href,
   type = "button",
+  disabled,
   onClick,
 }: Props) {
   const classes = cn(
     "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[13px] font-medium tracking-[0.12em] uppercase transition duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]",
     styles[variant],
+    disabled && "pointer-events-none opacity-60",
     className,
   )
 
@@ -68,7 +71,7 @@ export function GoldButton({
   }
 
   return (
-    <button type={type} onClick={onClick} className={classes}>
+    <button type={type} onClick={onClick} className={classes} disabled={disabled}>
       {children}
     </button>
   )
