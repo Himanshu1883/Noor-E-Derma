@@ -13,7 +13,8 @@ const mediaAssetSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
-export type MediaAssetDoc = HydratedDocument<InferSchemaType<typeof mediaAssetSchema>>
+export type MediaAssetAttrs = InferSchemaType<typeof mediaAssetSchema>
+export type MediaAssetDoc = HydratedDocument<MediaAssetAttrs>
 
-export const MediaAsset: Model<MediaAssetDoc> =
-  mongoose.models.MediaAsset || mongoose.model<MediaAssetDoc>("MediaAsset", mediaAssetSchema)
+export const MediaAsset: Model<MediaAssetAttrs> =
+  mongoose.models.MediaAsset || mongoose.model<MediaAssetAttrs>("MediaAsset", mediaAssetSchema)

@@ -16,7 +16,8 @@ const settingsSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
-export type SettingsDoc = HydratedDocument<InferSchemaType<typeof settingsSchema>>
+export type SettingsAttrs = InferSchemaType<typeof settingsSchema>
+export type SettingsDoc = HydratedDocument<SettingsAttrs>
 
-export const Settings: Model<SettingsDoc> =
-  mongoose.models.Settings || mongoose.model<SettingsDoc>("Settings", settingsSchema)
+export const Settings: Model<SettingsAttrs> =
+  mongoose.models.Settings || mongoose.model<SettingsAttrs>("Settings", settingsSchema)

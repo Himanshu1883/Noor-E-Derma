@@ -18,6 +18,7 @@ const cartSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
-export type CartDoc = HydratedDocument<InferSchemaType<typeof cartSchema>>
+export type CartAttrs = InferSchemaType<typeof cartSchema>
+export type CartDoc = HydratedDocument<CartAttrs>
 
-export const Cart: Model<CartDoc> = mongoose.models.Cart || mongoose.model<CartDoc>("Cart", cartSchema)
+export const Cart: Model<CartAttrs> = mongoose.models.Cart || mongoose.model<CartAttrs>("Cart", cartSchema)

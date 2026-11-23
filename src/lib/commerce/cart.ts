@@ -76,7 +76,9 @@ export async function setCartLine(productId: string, quantity: number) {
   const cart = await loadCart()
   const pid = String(product._id)
   const nextQty = Math.max(0, Math.min(20, quantity, max || quantity))
-  const remaining = cart.lines.filter((l) => String(l.productId) !== pid)
+  const remaining = cart.lines
+    .filter((l) => String(l.productId) !== pid)
+    .map((l) => ({ productId: l.productId, quantity: l.quantity }))
   if (nextQty > 0) remaining.push({ productId: product._id, quantity: nextQty })
   cart.set("lines", remaining)
   await cart.save()

@@ -69,6 +69,7 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
-export type OrderDoc = HydratedDocument<InferSchemaType<typeof orderSchema>>
+export type OrderAttrs = InferSchemaType<typeof orderSchema>
+export type OrderDoc = HydratedDocument<OrderAttrs>
 
-export const Order: Model<OrderDoc> = mongoose.models.Order || mongoose.model<OrderDoc>("Order", orderSchema)
+export const Order: Model<OrderAttrs> = mongoose.models.Order || mongoose.model<OrderAttrs>("Order", orderSchema)

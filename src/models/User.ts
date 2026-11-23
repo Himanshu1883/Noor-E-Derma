@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
-export type UserDoc = HydratedDocument<InferSchemaType<typeof userSchema>>
+export type UserAttrs = InferSchemaType<typeof userSchema>
+export type UserDoc = HydratedDocument<UserAttrs>
 
-export const User: Model<UserDoc> = mongoose.models.User || mongoose.model<UserDoc>("User", userSchema)
+export const User: Model<UserAttrs> = mongoose.models.User || mongoose.model<UserAttrs>("User", userSchema)

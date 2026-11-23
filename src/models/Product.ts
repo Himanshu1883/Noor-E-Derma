@@ -49,7 +49,8 @@ const productSchema = new mongoose.Schema(
 
 productSchema.index({ name: "text", tagline: "text", description: "text" })
 
-export type ProductDoc = HydratedDocument<InferSchemaType<typeof productSchema>>
+export type ProductAttrs = InferSchemaType<typeof productSchema>
+export type ProductDoc = HydratedDocument<ProductAttrs>
 
-export const Product: Model<ProductDoc> =
-  mongoose.models.Product || mongoose.model<ProductDoc>("Product", productSchema)
+export const Product: Model<ProductAttrs> =
+  mongoose.models.Product || mongoose.model<ProductAttrs>("Product", productSchema)
