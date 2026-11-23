@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { ZodError, type ZodType } from "zod"
-import { env, originOf } from "@/lib/env"
+import { allowedOrigins } from "@/lib/env"
 import { logger } from "@/lib/logger"
 
 export class ApiError extends Error {
@@ -45,8 +45,7 @@ export function assertSameOrigin(request: Request) {
   if (url.pathname.includes("/webhook")) return
   const origin = request.headers.get("origin")
   if (!origin) return
-  const allowed = originOf(env.appUrl)
-  if (origin !== allowed) throw new ApiError(403, "Invalid request origin")
+  if (!allowedOrigins(request).has(origin)) throw new ApiError(403, "Invalid request origin")
 }
 
 export function withHandler(fn: (request: Request, context?: unknown) => Promise<Response>) {
