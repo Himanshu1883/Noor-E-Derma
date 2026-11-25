@@ -16,10 +16,11 @@ import { StickyAtcBar } from "@/components/StickyAtcBar"
 import { TrustBadges } from "@/components/TrustBadges"
 import { useCart } from "@/context/CartContext"
 import { useUI } from "@/context/UIContext"
-import { getCatalog, getDetailProduct, type Benefit } from "@/data/products"
+import { getCatalog, getDetailProduct, type Benefit, type Product } from "@/data/products"
 import { reviews } from "@/data/reviews"
 import { getLenis } from "@/hooks/useLenis"
 import { useShouldRender3D } from "@/hooks/useMedia"
+import { api } from "@/lib/client"
 import { cn } from "@/lib/cn"
 import { formatINR, savePercent } from "@/lib/format"
 import { gsap, registerGsap } from "@/lib/gsap"
@@ -56,7 +57,9 @@ function SectionTitle({ eyebrow, title, accent }: { eyebrow: string; title: stri
 }
 
 export function ProductPage({ slug }: { slug: string }) {
-  const product = getDetailProduct(slug)
+  const fallback = getDetailProduct(slug)
+  const [live, setLive] = useState<Product | null>(null)
+  const product = live ?? fallback
   const { add } = useCart()
   const { setCartOpen } = useUI()
   const enable3d = useShouldRender3D()
@@ -71,6 +74,20 @@ export function ProductPage({ slug }: { slug: string }) {
   const timelineRef = useRef<HTMLOListElement>(null)
   const spin = useRef(0.5)
   const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    void api<{ product: Product }>(`/api/products/${encodeURIComponent(slug)}`)
+      .then((data) => {
+        if (!cancelled && data.product) setLive({ ...fallback, ...data.product } as Product)
+      })
+      .catch(() => {
+        if (!cancelled) setLive(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [slug, fallback])
 
   useEffect(() => {
     getLenis()?.scrollTo(0, { immediate: true })
@@ -253,6 +270,16 @@ export function ProductPage({ slug }: { slug: string }) {
               </div>
               <p className="mt-1 text-xs text-ink/45">Inclusive of all taxes · {product.netWeight}</p>
               <p className="mt-5 leading-relaxed text-ink/70">{product.description}</p>
+              {product.customFields?.length ? (
+                <dl className="mt-5 overflow-hidden rounded-3xl bg-white/70 ring-1 ring-sage-100">
+                  {product.customFields.map((field) => (
+                    <div key={field.label} className="flex justify-between gap-4 border-t border-sage-50 px-4 py-3 text-sm first:border-t-0">
+                      <dt className="text-ink/50">{field.label}</dt>
+                      <dd className="font-medium">{field.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
               <div className="mt-5 flex flex-wrap gap-2">
                 {product.badges.map((b) => (
                   <span key={b} className="rounded-full bg-sage-50 px-3 py-1.5 text-[13px] text-sage-800">{b}</span>

@@ -15,7 +15,7 @@ const cartSchema = new mongoose.Schema(
     },
     couponCode: { type: String, default: "" },
   },
-  { timestamps: true },
+  { timestamps: true, versionKey: false },
 )
 
 export type CartAttrs = InferSchemaType<typeof cartSchema>

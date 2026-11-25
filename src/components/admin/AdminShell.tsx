@@ -11,16 +11,18 @@ import {
   ShoppingBag,
   Store,
   Tag,
+  UserRound,
   Users,
   Warehouse,
   X,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Logo } from "@/components/Logo"
 import { useAuth } from "@/context/AuthContext"
 import { initials } from "@/components/admin/ui"
+import { api } from "@/lib/client"
 import { cn } from "@/lib/cn"
 import { toast } from "sonner"
 
@@ -32,6 +34,7 @@ const links = [
   { href: "/admin/users", label: "Customers", icon: Users },
   { href: "/admin/coupons", label: "Coupons", icon: Tag },
   { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/profile", label: "Profile", icon: UserRound },
 ]
 
 function isActive(pathname: string, href: string) {
@@ -44,6 +47,22 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
   const router = useRouter()
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    for (const link of links) router.prefetch(link.href)
+    const id = window.setTimeout(() => {
+      void Promise.allSettled([
+        api("/api/admin/summary"),
+        api("/api/admin/products"),
+        api("/api/admin/inventory"),
+        api("/api/admin/users"),
+        api("/api/admin/coupons"),
+        api("/api/admin/orders"),
+        api("/api/admin/settings"),
+      ])
+    }, 120)
+    return () => window.clearTimeout(id)
+  }, [router])
 
   const signOut = async () => {
     await logout()

@@ -28,6 +28,8 @@ export const BUNDLE = {
 
 export const ASSETS = {
   logo: mediaUrl("/assets/logo-nd.png"),
+  logoMark: mediaUrl("/assets/logo-nd-mark.png"),
+  logoText: mediaUrl("/assets/logo-nd-text.png"),
   hero1: mediaUrl("/assets/hero-1-noor-duo.jpg"),
   hero2: mediaUrl("/assets/tan-eraser-kit.jpg"),
   cardTan: mediaUrl("/assets/card-tan-eraser.jpg"),

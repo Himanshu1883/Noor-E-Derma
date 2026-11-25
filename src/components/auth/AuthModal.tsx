@@ -7,6 +7,7 @@ import { Suspense, useEffect, useState, type FormEvent } from "react"
 import { toast } from "sonner"
 import { GoldButton } from "@/components/GoldButton"
 import { useAuth } from "@/context/AuthContext"
+import type { PublicUser } from "@/lib/auth/types"
 import { useUI, type AuthMode } from "@/context/UIContext"
 import { getLenis } from "@/hooks/useLenis"
 import { api } from "@/lib/client"
@@ -23,10 +24,11 @@ function GoogleMark() {
   )
 }
 
-function GoogleButton({ label }: { label: string }) {
+function GoogleButton({ label, next }: { label: string; next?: string }) {
+  const href = next ? `/api/auth/google?next=${encodeURIComponent(next)}` : "/api/auth/google"
   return (
     <a
-      href="/api/auth/google"
+      href={href}
       className="flex h-10 w-full items-center justify-center gap-[10px] rounded-[4px] border border-[#747775] bg-white px-3 text-[14px] leading-5 font-medium tracking-[0.25px] text-[#1f1f1f] transition hover:bg-[#f8faff] hover:shadow-[0_1px_2px_0_rgba(60,64,67,0.3),0_1px_3px_1px_rgba(60,64,67,0.15)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b57d0] active:bg-[#f1f3f4]"
       style={{ fontFamily: "Roboto, Arial, sans-serif" }}
     >
@@ -62,7 +64,7 @@ function Field({
 }
 
 function AuthModalInner() {
-  const { refresh } = useAuth()
+  const { applyUser } = useAuth()
   const { authOpen, authMode, authNext, authError, openAuth, closeAuth } = useUI()
   const router = useRouter()
   const pathname = usePathname()
@@ -98,10 +100,15 @@ function AuthModalInner() {
     }
   }, [authOpen, closeAuth])
 
-  const go = (href: string) => {
+  const stayOrGo = (user: PublicUser) => {
     closeAuth()
-    router.push(href)
-    router.refresh()
+    if (user.role === "admin") {
+      router.push(authNext.startsWith("/admin") ? authNext : "/admin")
+      return
+    }
+    if (authNext && authNext !== pathname) {
+      router.push(authNext)
+    }
   }
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -119,7 +126,7 @@ function AuthModalInner() {
         return
       }
       if (authMode === "register") {
-        await api("/api/auth/register", {
+        const data = await api<{ user: PublicUser }>("/api/auth/register", {
           method: "POST",
           body: JSON.stringify({
             name: form.get("name"),
@@ -127,16 +134,18 @@ function AuthModalInner() {
             password: form.get("password"),
           }),
         })
+        applyUser(data.user)
         toast.success("Account created. Check your email to verify.")
-      } else {
-        await api("/api/auth/login", {
-          method: "POST",
-          body: JSON.stringify({ email: form.get("email"), password: form.get("password") }),
-        })
-        toast.success("Signed in")
+        stayOrGo(data.user)
+        return
       }
-      await refresh()
-      go(authNext || (pathname === "/" ? "/account" : pathname))
+      const data = await api<{ user: PublicUser }>("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email: form.get("email"), password: form.get("password") }),
+      })
+      applyUser(data.user)
+      toast.success("Signed in")
+      stayOrGo(data.user)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong")
     } finally {
@@ -204,7 +213,7 @@ function AuthModalInner() {
                 {authMode !== "forgot" ? (
                   <>
                     <div className="mt-6">
-                      <GoogleButton label={googleLabel} />
+                      <GoogleButton label={googleLabel} next={authNext || pathname} />
                     </div>
                     <div className="my-5 flex items-center gap-3 text-[11px] tracking-[0.18em] text-ink/40 uppercase">
                       <span className="h-px flex-1 bg-sage-100" />
@@ -236,7 +245,7 @@ function AuthModalInner() {
                   ) : authMode === "register" ? (
                     <p className="text-[12px] text-ink/50">Use at least 8 characters with a letter and a number.</p>
                   ) : null}
-                  <GoldButton type="submit" className="mt-1 w-full" disabled={pending}>
+                  <GoldButton type="submit" className="mt-1 w-full" loading={pending}>
                     {authMode === "forgot" ? "Send reset link" : authMode === "register" ? "Create account" : "Sign in"}
                   </GoldButton>
                 </form>

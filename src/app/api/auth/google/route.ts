@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server"
-import { errorResponse } from "@/lib/api"
 import { googleAuthUrl } from "@/lib/auth/google"
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const url = await googleAuthUrl()
+    const next = new URL(request.url).searchParams.get("next") ?? ""
+    const url = await googleAuthUrl(next)
     return NextResponse.redirect(url)
   } catch (err) {
-    return errorResponse(err)
+    const origin = new URL(request.url).origin
+    const message = err instanceof Error ? err.message : "Google sign-in failed"
+    return NextResponse.redirect(`${origin}/?auth=login&error=${encodeURIComponent(message)}`)
   }
 }

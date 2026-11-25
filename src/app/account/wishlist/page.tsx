@@ -5,13 +5,14 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { AccountCard, thumbSrc } from "@/components/account/ui"
+import { PageBusy } from "@/components/Busy"
 import { GoldButton } from "@/components/GoldButton"
 import { api } from "@/lib/client"
 import { formatINR } from "@/lib/format"
 import type { Product } from "@/data/products"
 
 export default function WishlistPage() {
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<Product[] | null>(null)
   const load = () =>
     api<{ products: Product[] }>("/api/wishlist")
       .then((d) => setProducts(d.products))
@@ -34,9 +35,11 @@ export default function WishlistPage() {
     <div>
       <p className="eyebrow">Account</p>
       <h1 className="mt-2 text-4xl md:text-5xl">Wishlist</h1>
-      <p className="mt-2 text-sm text-ink/55">Rituals you saved for later · {products.length} items</p>
+      <p className="mt-2 text-sm text-ink/55">Rituals you saved for later · {products?.length ?? 0} items</p>
 
-      {products.length ? (
+      {products == null ? (
+        <PageBusy label="Loading wishlist" />
+      ) : products.length ? (
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {products.map((p) => (
             <li key={p.slug}>

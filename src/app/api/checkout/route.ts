@@ -1,11 +1,14 @@
 import { ApiError, json, parseJson, withHandler } from "@/lib/api"
 import { getSessionUser, requireUser } from "@/lib/auth/session"
 import { loadCart, serializeCart } from "@/lib/commerce/cart"
-import { expireReservations, reserveStock } from "@/lib/commerce/inventory"
+import { expireReservations, releaseStock, reserveStock } from "@/lib/commerce/inventory"
 import { quoteTotals } from "@/lib/commerce/pricing"
-import { razorpayClient, razorpayEnabled } from "@/lib/commerce/razorpay"
+import { confirmCod } from "@/lib/commerce/orders"
+import { createRazorpayOrder, razorpayEnabled } from "@/lib/commerce/razorpay"
+import { ensureTimeline } from "@/lib/commerce/tracking"
 import { orderNumber } from "@/lib/crypto"
 import { connectDb } from "@/lib/db"
+import { env } from "@/lib/env"
 import { sendOrderEmail } from "@/lib/mail"
 import { checkoutSchema } from "@/lib/validators"
 import { formatINR } from "@/lib/format"
@@ -15,6 +18,7 @@ import { User } from "@/models/User"
 
 export const POST = withHandler(async (request) => {
   await expireReservations()
+  await connectDb()
   const body = await parseJson(request, checkoutSchema)
   const user = await getSessionUser()
   const cart = await loadCart()
@@ -55,9 +59,13 @@ export const POST = withHandler(async (request) => {
     couponCode: totals.couponCode,
     status: "pending_payment",
     paymentStatus: "pending",
+    paymentMethod: body.paymentMethod === "cod" ? "cod" : "razorpay",
     inventoryReserved: true,
     reservationExpiresAt: new Date(Date.now() + 30 * 60 * 1000),
+    timeline: [],
   })
+  ensureTimeline(order, "placed")
+  await order.save()
 
   await reserveStock(
     dbLines.map((l) => ({ productId: String(l.productId), quantity: l.quantity })),
@@ -81,31 +89,59 @@ export const POST = withHandler(async (request) => {
     await User.findByIdAndUpdate(user._id, { $push: { addresses: next }, phone: user.phone || body.phone, name: user.name || body.name })
   }
 
-  if (!razorpayEnabled()) {
-    throw new ApiError(503, "Payment gateway is not configured. Add Razorpay keys to .env.local.")
+  if (body.paymentMethod === "cod") {
+    await confirmCod(order)
+    return json({
+      paymentMethod: "cod" as const,
+      orderId: String(order._id),
+      orderNumber: order.orderNumber,
+      amount: totals.total,
+    })
   }
 
-  const rzp = razorpayClient()
-  const rzpOrder = await rzp.orders.create({
-    amount: totals.total * 100,
-    currency: "INR",
-    receipt: order.orderNumber,
-    notes: { orderId: String(order._id) },
-  })
-  order.razorpayOrderId = rzpOrder.id
-  await order.save()
-  await sendOrderEmail(order.email, order.orderNumber, "awaiting payment", formatINR(order.total))
+  if (!razorpayEnabled()) {
+    throw new ApiError(
+      503,
+      "Razorpay test keys are not configured. Use Cash on Delivery, or add real RAZORPAY_KEY_ID (rzp_test_…) and RAZORPAY_KEY_SECRET from the Razorpay Dashboard.",
+    )
+  }
 
-  return json({
-    orderId: String(order._id),
-    orderNumber: order.orderNumber,
-    amount: totals.total,
-    razorpayOrderId: rzpOrder.id,
-    razorpayKey: process.env.RAZORPAY_KEY_ID,
-    name: order.name,
-    email: order.email,
-    phone: order.phone,
-  })
+  try {
+    const rzpOrder = await createRazorpayOrder({
+      amountInr: totals.total,
+      receipt: order.orderNumber,
+      notes: { orderId: String(order._id) },
+    })
+    order.razorpayOrderId = rzpOrder.id
+    order.paymentMethod = "razorpay"
+    await order.save()
+    void sendOrderEmail(order.email, order.orderNumber, "awaiting payment", formatINR(order.total)).catch(() => undefined)
+
+    return json({
+      paymentMethod: "razorpay" as const,
+      orderId: String(order._id),
+      orderNumber: order.orderNumber,
+      amount: totals.total,
+      razorpayOrderId: rzpOrder.id,
+      razorpayKey: env.razorpayKeyId,
+      name: order.name,
+      email: order.email,
+      phone: order.phone,
+    })
+  } catch (err) {
+    await releaseStock(
+      dbLines.map((l) => ({ productId: String(l.productId), quantity: l.quantity })),
+      String(order._id),
+      "Razorpay order failed",
+    )
+    order.inventoryReserved = false
+    order.status = "cancelled"
+    order.paymentStatus = "failed"
+    order.cancelReason = "Razorpay order create failed"
+    order.cancelledAt = new Date()
+    await order.save()
+    throw err
+  }
 })
 
 export const GET = withHandler(async () => {
@@ -116,6 +152,7 @@ export const GET = withHandler(async () => {
   return json({
     cart: serialized,
     totals,
+    razorpayEnabled: razorpayEnabled(),
     profile: {
       name: user.name,
       email: user.email,

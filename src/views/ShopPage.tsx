@@ -1,19 +1,54 @@
 "use client"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { ProductCard } from "@/components/ProductCard"
 import { PageHeader } from "@/components/page/PageHeader"
 import { ShopFilterBar, ShopFilters } from "@/components/shop/ShopFilters"
+import { StorefrontProductEditModal } from "@/components/shop/StorefrontProductEditModal"
+import { useAuth } from "@/context/AuthContext"
 import { productsFor, type Collection } from "@/data/collections"
+import type { Product } from "@/data/products"
 import { getLenis } from "@/hooks/useLenis"
+import { api, bustApi } from "@/lib/client"
 import { sortProducts, type ShopSort } from "@/lib/shop"
 
+function matchesCollection(product: Product, collection?: Collection) {
+  if (!collection) return true
+  if (product.categorySlugs?.includes(collection.slug)) return true
+  if (collection.ids.includes(product.id) || collection.ids.includes(product.slug)) return true
+  const sku = (product.sku ?? "").toUpperCase().replace(/-/g, "")
+  return collection.ids.some((id) => id.replace(/-/g, "").toUpperCase() === sku)
+}
+
+function editKey(product: Product) {
+  return product._id || product.sku || product.slug
+}
+
 export function ShopPage({ collection }: { collection?: Collection }) {
-  const catalog = productsFor(collection)
+  const { user } = useAuth()
+  const isAdmin = user?.role === "admin"
+  const [live, setLive] = useState<Product[] | null>(null)
+  const [editKeyValue, setEditKeyValue] = useState<string | null>(null)
+  const closeEdit = useCallback(() => setEditKeyValue(null), [])
+  const catalog = useMemo(() => {
+    if (live?.length) return live.filter((p) => matchesCollection(p, collection))
+    return productsFor(collection)
+  }, [collection, live])
   const [sort, setSort] = useState<ShopSort>("featured")
   const [mobileOpen, setMobileOpen] = useState(false)
   const products = useMemo(() => sortProducts(catalog, sort), [catalog, sort])
+
+  const loadLive = useCallback(() => {
+    bustApi("/api/products")
+    return api<{ products: Product[] }>("/api/products?limit=48")
+      .then((d) => setLive(d.products))
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    void loadLive()
+  }, [loadLive])
 
   useEffect(() => {
     const lenis = getLenis()
@@ -58,7 +93,12 @@ export function ShopPage({ collection }: { collection?: Collection }) {
           {products.length ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((product) => (
-                <ProductCard key={product.id} product={product} compact />
+                <ProductCard
+                  key={product._id || product.slug}
+                  product={product}
+                  compact
+                  onAdminEdit={isAdmin ? () => setEditKeyValue(editKey(product)) : undefined}
+                />
               ))}
             </div>
           ) : (
@@ -96,6 +136,10 @@ export function ShopPage({ collection }: { collection?: Collection }) {
           </>
         ) : null}
       </AnimatePresence>
+
+      {isAdmin && editKeyValue ? (
+        <StorefrontProductEditModal productKey={editKeyValue} onClose={closeEdit} onSaved={loadLive} />
+      ) : null}
     </main>
   )
 }

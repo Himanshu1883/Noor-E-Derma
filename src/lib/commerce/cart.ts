@@ -74,13 +74,25 @@ export async function setCartLine(productId: string, quantity: number) {
   const max = availableStock(product)
   if (quantity > 0 && max < 1) throw new ApiError(409, "This product is out of stock")
   const cart = await loadCart()
-  const pid = String(product._id)
+  const pid = product._id
   const nextQty = Math.max(0, Math.min(20, quantity, max || quantity))
-  const remaining = cart.lines
-    .filter((l) => String(l.productId) !== pid)
-    .map((l) => ({ productId: l.productId, quantity: l.quantity }))
-  if (nextQty > 0) remaining.push({ productId: product._id, quantity: nextQty })
-  cart.set("lines", remaining)
-  await cart.save()
-  return serializeCart(cart)
+  const filter = { _id: cart._id }
+
+  if (nextQty <= 0) {
+    await Cart.updateOne(filter, { $pull: { lines: { productId: pid } } })
+  } else {
+    const changed = await Cart.updateOne({ ...filter, "lines.productId": pid }, { $set: { "lines.$.quantity": nextQty } })
+    if (changed.matchedCount === 0) {
+      const pushed = await Cart.updateOne(
+        { ...filter, "lines.productId": { $ne: pid } },
+        { $push: { lines: { productId: pid, quantity: nextQty } } },
+      )
+      if (pushed.modifiedCount === 0) {
+        await Cart.updateOne({ ...filter, "lines.productId": pid }, { $set: { "lines.$.quantity": nextQty } })
+      }
+    }
+  }
+
+  const fresh = await Cart.findById(cart._id)
+  return serializeCart(fresh ?? cart)
 }

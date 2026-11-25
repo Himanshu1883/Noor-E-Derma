@@ -1,8 +1,9 @@
 "use client"
 
+import Link from "next/link"
 import { useEffect, useState, type FormEvent } from "react"
 import { toast } from "sonner"
-import { AdminCard, AdminHeader, fieldClass } from "@/components/admin/ui"
+import { AdminBusy, AdminCard, AdminHeader, fieldClass, hintClass, labelClass } from "@/components/admin/ui"
 import { GoldButton } from "@/components/GoldButton"
 import { api } from "@/lib/client"
 
@@ -29,15 +30,16 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-[12px] tracking-[0.16em] text-ink/45 uppercase">{label}</span>
+      <span className={labelClass}>{label}</span>
       {children}
-      {hint ? <span className="mt-1 block text-[11px] text-ink/40">{hint}</span> : null}
+      {hint ? <span className={hintClass}>{hint}</span> : null}
     </label>
   )
 }
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null)
+  const [pending, setPending] = useState(false)
   useEffect(() => {
     api<{ settings: Settings }>("/api/admin/settings").then((d) => setSettings(d.settings))
   }, [])
@@ -45,13 +47,14 @@ export default function SettingsPage() {
     return (
       <div>
         <AdminHeader eyebrow="Store" title="Settings" />
-        <p className="mt-8 text-sm text-ink/45">Loading store settings…</p>
+        <AdminBusy label="Loading settings" />
       </div>
     )
   }
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = new FormData(e.currentTarget)
+    setPending(true)
     try {
       await api("/api/admin/settings", {
         method: "PATCH",
@@ -70,6 +73,8 @@ export default function SettingsPage() {
       toast.success("Settings saved")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed")
+    } finally {
+      setPending(false)
     }
   }
   return (
@@ -78,6 +83,11 @@ export default function SettingsPage() {
         eyebrow="Store"
         title="Settings"
         description="How NOOR E DERMA presents itself at checkout — support, shipping, tax, and the announcement bar."
+        actions={
+          <Link href="/admin/profile" className="text-[12px] text-sage-700 hover:underline">
+            Admin profile
+          </Link>
+        }
       />
       <form onSubmit={onSubmit} className="mt-8 grid gap-6 lg:grid-cols-2">
         <AdminCard className="p-6">
@@ -116,7 +126,9 @@ export default function SettingsPage() {
               <input type="checkbox" name="paymentsEnabled" defaultChecked={settings.paymentsEnabled} className="h-4 w-4" />
               Payments enabled
             </label>
-            <GoldButton type="submit">Save settings</GoldButton>
+            <GoldButton type="submit" loading={pending}>
+              {pending ? "Saving" : "Save settings"}
+            </GoldButton>
           </div>
         </AdminCard>
       </form>

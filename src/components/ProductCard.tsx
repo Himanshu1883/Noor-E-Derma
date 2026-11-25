@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowUpRight, Plus } from "lucide-react"
+import { ArrowUpRight, Pencil, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { GoldButton } from "@/components/GoldButton"
@@ -12,12 +12,21 @@ import type { Product } from "@/data/products"
 import { cn } from "@/lib/cn"
 import { formatINR, savePercent } from "@/lib/format"
 
-export function ProductCard({ product, compact = false }: { product: Product; compact?: boolean }) {
+export function ProductCard({
+  product,
+  compact = false,
+  onAdminEdit,
+}: {
+  product: Product
+  compact?: boolean
+  onAdminEdit?: () => void
+}) {
   const { add } = useCart()
   const { setCartOpen, openQuickView } = useUI()
   const router = useRouter()
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const save = savePercent(product.price, product.compareAt)
+  const cover = product.images?.find((img) => img.type !== "video" && img.src) ?? product.images?.[0]
 
   const view = () => {
     if (product.hasDetailPage) router.push(`/product/${product.slug}`)
@@ -40,24 +49,45 @@ export function ProductCard({ product, compact = false }: { product: Product; co
       }}
       onMouseLeave={() => setTilt({ x: 0, y: 0 })}
     >
+      {onAdminEdit ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            onAdminEdit()
+          }}
+          className={cn(
+            "absolute z-20 inline-flex items-center gap-1 rounded-full bg-sage-800 font-medium tracking-[0.08em] text-white shadow-[0_8px_20px_-12px_rgba(0,0,0,0.45)] hover:bg-black",
+            compact ? "top-3.5 left-3.5 px-2 py-1 text-[10px]" : "top-5 left-5 px-2.5 py-1.5 text-[11px]",
+          )}
+        >
+          <Pencil size={compact ? 11 : 12} />
+          Edit
+        </button>
+      ) : null}
       <button
         type="button"
         onClick={view}
         className={cn("relative block overflow-hidden bg-peach", compact ? "rounded-[18px]" : "rounded-[26px]")}
         aria-label={`View ${product.name}`}
       >
-        <img
-          src={product.images[0].src}
-          alt={product.images[0].alt}
-          className={cn(
-            "w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]",
-            compact ? "aspect-[4/3]" : "aspect-square",
-          )}
-          style={{
-            objectPosition: product.images[0].position ?? "center",
-            transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-          }}
-        />
+        {cover ? (
+          <img
+            src={cover.src}
+            alt={cover.alt}
+            className={cn(
+              "w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]",
+              compact ? "aspect-[4/3]" : "aspect-square",
+            )}
+            style={{
+              objectPosition: cover.position ?? "center",
+              transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+            }}
+          />
+        ) : (
+          <div className={cn("bg-peach", compact ? "aspect-[4/3]" : "aspect-square")} />
+        )}
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
           {save > 0 ? (
             <span className="ml-auto rounded-full bg-sage-800 px-3 py-1 text-[11px] font-medium text-white">-{save}%</span>

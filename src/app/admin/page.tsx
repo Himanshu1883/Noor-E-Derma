@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react"
 import {
+  AdminBusy,
   AdminCard,
   AdminHeader,
   EmptyState,
@@ -68,8 +69,12 @@ type Summary = {
 export default function AdminHome() {
   const { user } = useAuth()
   const [data, setData] = useState<Summary | null>(null)
+  const [ready, setReady] = useState(false)
   useEffect(() => {
-    api<Summary>("/api/admin/summary").then(setData).catch(() => setData(null))
+    api<Summary>("/api/admin/summary")
+      .then(setData)
+      .catch(() => setData(null))
+      .finally(() => setReady(true))
   }, [])
 
   const maxDay = Math.max(1, ...(data?.daily.map((d) => d.total) ?? [1]))
@@ -79,6 +84,15 @@ export default function AdminHome() {
     { label: "Customers", value: data?.users ?? 0, hint: "Storefront accounts", icon: Users },
     { label: "Catalog", value: data?.products ?? 0, hint: `${data?.onHand ?? 0} units on hand`, icon: Package },
   ]
+
+  if (!ready) {
+    return (
+      <div>
+        <AdminHeader eyebrow="Dashboard" title={`Hello${user?.name ? `, ${user.name.split(" ")[0]}` : ""}`} />
+        <AdminBusy label="Loading dashboard" />
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -104,7 +118,7 @@ export default function AdminHome() {
           return (
             <AdminCard key={c.label} className="p-5">
               <div className="flex items-start justify-between">
-                <p className="text-[11px] tracking-[0.16em] text-ink/45 uppercase">{c.label}</p>
+                <p className="text-[12px] font-semibold tracking-[0.12em] text-ink/80 uppercase">{c.label}</p>
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-sage-50 text-sage-800">
                   <Icon size={15} />
                 </span>

@@ -23,6 +23,6 @@ export const POST = withHandler(async (request) => {
   await requireAdmin()
   const body = schema.parse(await request.json())
   await connectDb()
-  const category = await Category.findOneAndUpdate({ slug: body.slug }, body, { upsert: true, new: true })
+  const category = await Category.findOneAndUpdate({ slug: body.slug }, body, { upsert: true, returnDocument: "after" })
   return json({ category })
 })

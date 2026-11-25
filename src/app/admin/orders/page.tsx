@@ -4,6 +4,7 @@ import { Search, ShoppingBag, Truck } from "lucide-react"
 import { Fragment, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import {
+  AdminBusy,
   AdminCard,
   AdminHeader,
   EmptyState,
@@ -29,21 +30,30 @@ type Order = {
   trackingNumber?: string
   carrier?: string
   createdAt?: string
-  lines?: { name?: string; image?: string; quantity?: number; price?: number }[]
+  lines?: { name?: string; slug?: string; image?: string; quantity?: number; price?: number }[]
   shipping?: { city?: string; state?: string; pincode?: string }
 }
 
 const STATUSES = ["pending_payment", "paid", "confirmed", "packed", "shipped", "delivered", "cancelled", "refunded"]
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState<Order[]>([])
+  const [orders, setOrders] = useState<Order[] | null>(null)
   const [q, setQ] = useState("")
   const [filter, setFilter] = useState("all")
   const [openId, setOpenId] = useState<string | null>(null)
   const load = () => api<{ orders: Order[] }>("/api/admin/orders").then((d) => setOrders(d.orders))
   useEffect(() => {
+    const open = new URLSearchParams(window.location.search).get("open")
+    if (open) setQ(open)
     void load()
   }, [])
+  useEffect(() => {
+    if (!orders?.length) return
+    const open = new URLSearchParams(window.location.search).get("open")
+    if (!open) return
+    const match = orders.find((o) => o.orderNumber === open)
+    if (match) setOpenId(match._id)
+  }, [orders])
 
   const update = async (id: string, body: Record<string, string>) => {
     try {
@@ -57,12 +67,14 @@ export default function AdminOrders() {
 
   const visible = useMemo(() => {
     const needle = q.trim().toLowerCase()
-    return orders.filter((o) => {
+    return (orders ?? []).filter((o) => {
       if (filter !== "all" && o.status !== filter) return false
       if (!needle) return true
       return [o.orderNumber, o.email, o.name, o.phone].join(" ").toLowerCase().includes(needle)
     })
   }, [orders, q, filter])
+
+  const list = orders ?? []
 
   return (
     <div>
@@ -84,7 +96,7 @@ export default function AdminOrders() {
               }`}
             >
               {prettyStatus(s)}
-              {s !== "all" ? ` ${orders.filter((o) => o.status === s).length}` : ` ${orders.length}`}
+              {s !== "all" ? ` ${list.filter((o) => o.status === s).length}` : ` ${list.length}`}
             </button>
           ))}
         </div>
@@ -94,6 +106,9 @@ export default function AdminOrders() {
         </label>
       </div>
 
+      {orders == null ? (
+        <AdminBusy label="Loading orders" />
+      ) : (
       <AdminCard className="mt-4 overflow-hidden">
         {visible.length ? (
           <div className="overflow-x-auto">
@@ -165,7 +180,13 @@ export default function AdminOrders() {
                                 <li key={`${o._id}-line-${i}`} className="flex items-center gap-3">
                                   <Thumb src={line.image} alt={line.name} />
                                   <div className="flex-1">
-                                    <p className="text-sm">{line.name}</p>
+                                    {line.slug ? (
+                                      <a href={`/product/${line.slug}`} className="text-sm hover:text-sage-800 hover:underline" target="_blank" rel="noreferrer">
+                                        {line.name}
+                                      </a>
+                                    ) : (
+                                      <p className="text-sm">{line.name}</p>
+                                    )}
                                     <p className="text-[12px] text-ink/45">
                                       Qty {line.quantity} · {formatINR(line.price ?? 0)}
                                     </p>
@@ -202,6 +223,25 @@ export default function AdminOrders() {
                                   <Truck size={13} /> Ship
                                 </button>
                               </form>
+                              {["cancelled", "pending_payment", "refunded"].includes(o.status) ? (
+                                <button
+                                  type="button"
+                                  className="mt-3 text-[12px] text-red-700 hover:underline"
+                                  onClick={async () => {
+                                    if (!confirm(`Delete order ${o.orderNumber}?`)) return
+                                    try {
+                                      await api(`/api/admin/orders/${o._id}`, { method: "DELETE" })
+                                      toast.success("Order deleted")
+                                      setOpenId(null)
+                                      await load()
+                                    } catch (e) {
+                                      toast.error(e instanceof Error ? e.message : "Could not delete")
+                                    }
+                                  }}
+                                >
+                                  Delete order
+                                </button>
+                              ) : null}
                             </div>
                           </div>
                         </td>
@@ -220,6 +260,7 @@ export default function AdminOrders() {
           />
         )}
       </AdminCard>
+      )}
     </div>
   )
 }

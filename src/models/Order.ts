@@ -52,6 +52,21 @@ const orderSchema = new mongoose.Schema(
     couponCode: { type: String, default: "" },
     status: { type: String, enum: ORDER_STATUSES, default: "pending_payment", index: true },
     paymentStatus: { type: String, enum: PAYMENT_STATUSES, default: "pending", index: true },
+    paymentMethod: { type: String, enum: ["cod", "razorpay"], default: "razorpay", index: true },
+    timeline: {
+      type: [
+        new mongoose.Schema(
+          {
+            key: { type: String, required: true },
+            title: { type: String, default: "" },
+            detail: { type: String, default: "" },
+            at: { type: Date, default: Date.now },
+          },
+          { _id: false },
+        ),
+      ],
+      default: [],
+    },
     razorpayOrderId: { type: String, index: true, sparse: true },
     razorpayPaymentId: { type: String },
     trackingNumber: { type: String, default: "" },
@@ -72,4 +87,6 @@ const orderSchema = new mongoose.Schema(
 export type OrderAttrs = InferSchemaType<typeof orderSchema>
 export type OrderDoc = HydratedDocument<OrderAttrs>
 
-export const Order: Model<OrderAttrs> = mongoose.models.Order || mongoose.model<OrderAttrs>("Order", orderSchema)
+if (mongoose.models.Order) delete mongoose.models.Order
+
+export const Order: Model<OrderAttrs> = mongoose.model<OrderAttrs>("Order", orderSchema)

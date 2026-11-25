@@ -13,10 +13,12 @@ export default function SecurityPage() {
   const { user, logout } = useAuth()
   const router = useRouter()
   const [twoFa, setTwoFa] = useState(false)
+  const [pending, setPending] = useState(false)
 
   const changePassword = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = new FormData(e.currentTarget)
+    setPending(true)
     try {
       const data = await api<{ message: string }>("/api/account/password", {
         method: "POST",
@@ -27,6 +29,8 @@ export default function SecurityPage() {
       router.push("/?auth=login")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not change password")
+    } finally {
+      setPending(false)
     }
   }
 
@@ -44,8 +48,8 @@ export default function SecurityPage() {
           <form onSubmit={changePassword} className="space-y-3">
             <input name="currentPassword" type="password" required placeholder="Current password" className={fieldClass} />
             <input name="newPassword" type="password" required minLength={8} placeholder="New password (8+ chars)" className={fieldClass} />
-            <GoldButton type="submit" className="px-6 py-2.5 text-[12px]">
-              Update password
+            <GoldButton type="submit" size="sm" loading={pending}>
+              {pending ? "Updating" : "Update password"}
             </GoldButton>
           </form>
         </AccountCard>

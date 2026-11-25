@@ -10,25 +10,63 @@ function withProtocol(url: string) {
 }
 
 export const env = {
-  nodeEnv: process.env.NODE_ENV ?? "development",
-  isProd: process.env.NODE_ENV === "production",
-  appUrl: withProtocol(optional("APP_URL") || optional("VERCEL_PROJECT_PRODUCTION_URL") || "http://localhost:3003"),
-  extraOrigins: optional("ALLOWED_ORIGINS"),
-  mongodbUri: optional("MONGODB_URI"),
-  mongodbDb: optional("MONGODB_DB") || "noor-e-derma",
-  sessionSecret: optional("SESSION_SECRET"),
-  adminEmail: optional("ADMIN_EMAIL").toLowerCase(),
-  adminPassword: optional("ADMIN_PASSWORD"),
-  googleClientId: optional("GOOGLE_CLIENT_ID"),
-  googleClientSecret: optional("GOOGLE_CLIENT_SECRET"),
-  razorpayKeyId: optional("RAZORPAY_KEY_ID"),
-  razorpayKeySecret: optional("RAZORPAY_KEY_SECRET"),
-  razorpayWebhookSecret: optional("RAZORPAY_WEBHOOK_SECRET"),
-  smtpHost: optional("SMTP_HOST"),
-  smtpPort: Number(optional("SMTP_PORT") || "587"),
-  smtpUser: optional("SMTP_USER"),
-  smtpPass: optional("SMTP_PASS"),
-  smtpFrom: optional("SMTP_FROM") || "NOOR E DERMA <hello@noorederma.example>",
+  get nodeEnv() {
+    return process.env.NODE_ENV ?? "development"
+  },
+  get isProd() {
+    return process.env.NODE_ENV === "production"
+  },
+  get appUrl() {
+    return withProtocol(optional("APP_URL") || optional("VERCEL_PROJECT_PRODUCTION_URL") || "http://localhost:3000")
+  },
+  get extraOrigins() {
+    return optional("ALLOWED_ORIGINS")
+  },
+  get mongodbUri() {
+    return optional("MONGODB_URI")
+  },
+  get mongodbDb() {
+    return optional("MONGODB_DB") || "noor-e-derma"
+  },
+  get sessionSecret() {
+    return optional("SESSION_SECRET")
+  },
+  get adminEmail() {
+    return optional("ADMIN_EMAIL").toLowerCase()
+  },
+  get adminPassword() {
+    return optional("ADMIN_PASSWORD")
+  },
+  get googleClientId() {
+    return optional("GOOGLE_CLIENT_ID")
+  },
+  get googleClientSecret() {
+    return optional("GOOGLE_CLIENT_SECRET")
+  },
+  get razorpayKeyId() {
+    return optional("RAZORPAY_KEY_ID")
+  },
+  get razorpayKeySecret() {
+    return optional("RAZORPAY_KEY_SECRET")
+  },
+  get razorpayWebhookSecret() {
+    return optional("RAZORPAY_WEBHOOK_SECRET")
+  },
+  get smtpHost() {
+    return optional("SMTP_HOST")
+  },
+  get smtpPort() {
+    return Number(optional("SMTP_PORT") || "587")
+  },
+  get smtpUser() {
+    return optional("SMTP_USER")
+  },
+  get smtpPass() {
+    return optional("SMTP_PASS")
+  },
+  get smtpFrom() {
+    return optional("SMTP_FROM") || "NOOR E DERMA <hello@noorederma.example>"
+  },
 }
 
 export function originOf(url: string) {

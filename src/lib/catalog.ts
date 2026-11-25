@@ -11,6 +11,9 @@ export function toStoreProduct(doc: ProductDoc): StoreProduct & { stock: number;
   return {
     id: doc.slug,
     slug: doc.slug,
+    _id: String(doc._id),
+    sku: doc.sku,
+    categorySlugs: doc.categorySlugs ?? [],
     name: doc.name,
     displayName: doc.displayName || doc.name,
     tagline: doc.tagline,
@@ -23,7 +26,7 @@ export function toStoreProduct(doc: ProductDoc): StoreProduct & { stock: number;
     images: (doc.images ?? []).map((img) => ({
       src: img.src,
       alt: img.alt ?? "",
-      position: img.position ?? undefined,
+      position: img.position && img.position !== "front" ? img.position : undefined,
       scale: img.scale ?? undefined,
       type: img.type === "video" ? "video" : "image",
       poster: img.poster ?? undefined,
@@ -43,8 +46,10 @@ export function toStoreProduct(doc: ProductDoc): StoreProduct & { stock: number;
     bundleOf: doc.bundleOf?.length ? doc.bundleOf : undefined,
     ctaLabel: doc.ctaLabel || undefined,
     cardLine: doc.cardLine || undefined,
+    customFields: (doc.customFields ?? [])
+      .filter((f) => f.label && f.value)
+      .map((f) => ({ label: f.label ?? "", value: f.value ?? "" })),
     stock: availableStock(doc),
-    sku: doc.sku,
     lowStock: availableStock(doc) <= (doc.lowStockThreshold ?? 8),
   }
 }

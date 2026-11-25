@@ -69,8 +69,8 @@ export default function AddressesPage() {
             <input type="checkbox" name="isDefault" className="h-4 w-4" defaultChecked /> Default address
           </label>
           <div className="sm:col-span-2">
-            <GoldButton type="submit" className="px-6 py-2.5 text-[12px]">
-              {pending ? "Saving…" : "Save address"}
+            <GoldButton type="submit" size="sm" loading={pending}>
+              {pending ? "Saving" : "Save address"}
             </GoldButton>
           </div>
         </form>

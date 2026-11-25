@@ -11,7 +11,7 @@ export const GET = withHandler(async (request) => {
   await connectDb()
   const q = new URL(request.url).searchParams.get("q") ?? ""
   const filter = q ? { $or: [{ name: new RegExp(q, "i") }, { sku: new RegExp(q, "i") }, { slug: new RegExp(q, "i") }] } : {}
-  const products = await Product.find(filter).sort({ updatedAt: -1 })
+  const products = await Product.find(filter).sort({ updatedAt: -1 }).lean()
   return json({ products })
 })
 

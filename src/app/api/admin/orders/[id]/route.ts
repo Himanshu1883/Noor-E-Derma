@@ -6,6 +6,7 @@ import { releaseStock } from "@/lib/commerce/inventory"
 import { connectDb } from "@/lib/db"
 import { sendOrderEmail } from "@/lib/mail"
 import { formatINR } from "@/lib/format"
+import { ensureTimeline, type TrackStepKey } from "@/lib/commerce/tracking"
 import { ORDER_STATUSES, Order } from "@/models/Order"
 
 const schema = z.object({
@@ -50,7 +51,21 @@ export const PATCH = withHandler(async (request, context) => {
     order.paymentStatus = "refunded"
     order.refundedAt = new Date()
   }
-  if (body.status) order.status = body.status
+  if (body.status) {
+    order.status = body.status
+    const map: Record<string, TrackStepKey> = {
+      confirmed: "approved",
+      paid: "approved",
+      packed: "processed",
+      shipped: "shipped",
+      delivered: "delivered",
+    }
+    const step = map[body.status]
+    if (step) ensureTimeline(order, step)
+    if (body.status === "delivered") {
+      ensureTimeline(order, "delivered", `Your order is completed and delivered on ${new Date().toLocaleString("en-IN")}`)
+    }
+  }
   if (body.trackingNumber != null) order.trackingNumber = body.trackingNumber
   if (body.carrier != null) order.carrier = body.carrier
   if (body.trackingUrl != null) order.trackingUrl = body.trackingUrl
@@ -59,4 +74,18 @@ export const PATCH = withHandler(async (request, context) => {
   await audit({ actorId: String(admin._id), actorEmail: admin.email, action: "order.update", entity: "order", entityId: id, meta: body })
   await sendOrderEmail(order.email, order.orderNumber, order.status, formatINR(order.total))
   return json({ order })
+})
+
+export const DELETE = withHandler(async (_request, context) => {
+  const admin = await requireAdmin()
+  const { id } = await (context as { params: Promise<{ id: string }> }).params
+  await connectDb()
+  const order = await Order.findById(id)
+  if (!order) throw new ApiError(404, "Order not found")
+  if (!["cancelled", "pending_payment", "refunded"].includes(order.status)) {
+    throw new ApiError(400, "Only cancelled, unpaid, or refunded orders can be deleted")
+  }
+  await order.deleteOne()
+  await audit({ actorId: String(admin._id), actorEmail: admin.email, action: "order.delete", entity: "order", entityId: id })
+  return json({ ok: true })
 })

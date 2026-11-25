@@ -30,6 +30,7 @@ export function useLenis(enabled: boolean, duration = 1.15) {
       autoRaf: false,
       duration: reduced ? 0.4 : duration,
       smoothWheel: !reduced,
+      prevent: (node) => node.closest("[data-lenis-prevent]") != null,
     })
     lenis = instance
 

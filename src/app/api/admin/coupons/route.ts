@@ -7,7 +7,7 @@ import { Coupon } from "@/models/Coupon"
 export const GET = withHandler(async () => {
   await requireAdmin()
   await connectDb()
-  return json({ coupons: await Coupon.find().sort({ createdAt: -1 }) })
+  return json({ coupons: await Coupon.find().sort({ createdAt: -1 }).lean() })
 })
 
 export const POST = withHandler(async (request) => {

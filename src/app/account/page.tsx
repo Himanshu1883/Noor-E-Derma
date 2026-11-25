@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useEffect, useState, type FormEvent } from "react"
 import { toast } from "sonner"
 import { AccountCard, Avatar, StatusChip, fieldClass, formatDate, thumbSrc } from "@/components/account/ui"
+import { InlineBusy } from "@/components/Busy"
 import { GoldButton } from "@/components/GoldButton"
 import { useAuth } from "@/context/AuthContext"
 import { api } from "@/lib/client"
@@ -26,8 +27,8 @@ export default function AccountPage() {
   const [pending, setPending] = useState(false)
   const [pwOpen, setPwOpen] = useState(false)
   const [twoFa, setTwoFa] = useState(false)
-  const [orders, setOrders] = useState<Order[]>([])
-  const [wishlist, setWishlist] = useState<Product[]>([])
+  const [orders, setOrders] = useState<Order[] | null>(null)
+  const [wishlist, setWishlist] = useState<Product[] | null>(null)
 
   useEffect(() => {
     api<{ orders: Order[] }>("/api/orders")
@@ -139,8 +140,8 @@ export default function AccountPage() {
             </label>
             {editing ? (
               <div className="pt-2">
-                <GoldButton type="submit" className="px-6 py-2.5 text-[12px]">
-                  {pending ? "Saving…" : "Save Changes"}
+                <GoldButton type="submit" size="sm" loading={pending}>
+                  {pending ? "Saving" : "Save Changes"}
                 </GoldButton>
               </div>
             ) : null}
@@ -254,7 +255,9 @@ export default function AccountPage() {
               View All Orders →
             </Link>
           </div>
-          {orders.length ? (
+          {orders == null ? (
+            <InlineBusy label="Loading orders" />
+          ) : orders.length ? (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[520px] text-left text-sm">
                 <thead className="text-[11px] tracking-wide text-ink/40 uppercase">
@@ -311,13 +314,15 @@ export default function AccountPage() {
             <h2 className="flex items-center gap-2 text-lg">
               <Heart size={18} className="text-gold-deep" /> My Wishlist
             </h2>
-            <p className="mt-1 text-[12px] text-ink/45">Your saved products for later ({wishlist.length} items)</p>
+            <p className="mt-1 text-[12px] text-ink/65">Your saved products for later ({wishlist?.length ?? 0} items)</p>
           </div>
           <Link href="/account/wishlist" className="text-[12px] font-medium text-gold-deep">
             View Wishlist →
           </Link>
         </div>
-        {wishlist.length ? (
+        {wishlist == null ? (
+          <InlineBusy label="Loading wishlist" />
+        ) : wishlist.length ? (
           <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {wishlist.slice(0, 3).map((p) => (
               <li key={p.slug}>

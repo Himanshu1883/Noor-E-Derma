@@ -10,8 +10,8 @@ import { Product } from "@/models/Product"
 export const GET = withHandler(async () => {
   await requireAdmin()
   await connectDb()
-  const products = await Product.find().sort({ name: 1 })
-  const logs = await InventoryLog.find().sort({ createdAt: -1 }).limit(40)
+  const products = await Product.find().sort({ name: 1 }).lean()
+  const logs = await InventoryLog.find().sort({ createdAt: -1 }).limit(40).lean()
   return json({ products, logs })
 })
 

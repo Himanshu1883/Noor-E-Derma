@@ -41,6 +41,18 @@ const productSchema = new mongoose.Schema(
     badges: { type: [String], default: [] },
     kitIncludes: { type: [String], default: [] },
     ctaLabel: { type: String, default: "" },
+    customFields: {
+      type: [
+        new mongoose.Schema(
+          {
+            label: { type: String, default: "" },
+            value: { type: String, default: "" },
+          },
+          { _id: false },
+        ),
+      ],
+      default: [],
+    },
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
   },

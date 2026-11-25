@@ -17,16 +17,18 @@ export function QuantityStepper({
     <div className="inline-flex items-center rounded-full border border-sage-200 bg-white">
       <button
         type="button"
-        className="rounded-full p-2.5 text-sage-800 transition hover:bg-sage-50"
+        disabled={value <= min}
+        className="rounded-full p-2.5 text-sage-800 transition hover:bg-sage-50 disabled:opacity-30"
         onClick={() => onChange(Math.max(min, value - 1))}
         aria-label="Decrease quantity"
       >
         <Minus size={14} />
       </button>
-      <span className="min-w-8 text-center text-sm font-medium">{value}</span>
+      <span className="min-w-8 text-center text-sm font-medium tabular-nums">{value}</span>
       <button
         type="button"
-        className="rounded-full p-2.5 text-sage-800 transition hover:bg-sage-50"
+        disabled={value >= max}
+        className="rounded-full p-2.5 text-sage-800 transition hover:bg-sage-50 disabled:opacity-30"
         onClick={() => onChange(Math.min(max, value + 1))}
         aria-label="Increase quantity"
       >

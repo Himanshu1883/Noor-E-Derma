@@ -1,9 +1,9 @@
 "use client"
 
-import { Tag } from "lucide-react"
+import { Pencil, Tag, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { AdminCard, AdminHeader, EmptyState, fieldClass, formatDate, Pill } from "@/components/admin/ui"
+import { AdminBusy, AdminCard, AdminHeader, EmptyState, fieldClass, formatDate, Pill } from "@/components/admin/ui"
 import { GoldButton } from "@/components/GoldButton"
 import { api } from "@/lib/client"
 import { formatINR } from "@/lib/format"
@@ -21,7 +21,9 @@ type Coupon = {
 }
 
 export default function CouponsPage() {
-  const [coupons, setCoupons] = useState<Coupon[]>([])
+  const [coupons, setCoupons] = useState<Coupon[] | null>(null)
+  const [editing, setEditing] = useState<Coupon | null>(null)
+  const [pending, setPending] = useState(false)
   const load = () => api<{ coupons: Coupon[] }>("/api/admin/coupons").then((d) => setCoupons(d.coupons))
   useEffect(() => {
     void load()
@@ -32,48 +34,65 @@ export default function CouponsPage() {
       <AdminHeader
         eyebrow="Promotions"
         title="Coupons"
-        description="Launch codes, first-order gifts, and sitewide cuts. Usage counts only tick on paid orders."
+        description="Create, edit, pause, or delete codes. Usage counts only tick on paid orders."
       />
 
       <form
+        key={editing?._id ?? "new"}
         className="mt-6 grid gap-3 rounded-[24px] bg-white p-5 ring-1 ring-sage-100 md:grid-cols-4"
         onSubmit={async (e) => {
           e.preventDefault()
           const form = e.currentTarget
           const data = new FormData(form)
+          const payload = {
+            code: data.get("code"),
+            type: data.get("type"),
+            value: Number(data.get("value")),
+            minSubtotal: Number(data.get("min") || 0),
+            maxUses: Number(data.get("max") || 0),
+          }
+          setPending(true)
           try {
-            await api("/api/admin/coupons", {
-              method: "POST",
-              body: JSON.stringify({
-                code: data.get("code"),
-                type: data.get("type"),
-                value: Number(data.get("value")),
-                minSubtotal: Number(data.get("min") || 0),
-                maxUses: Number(data.get("max") || 0),
-              }),
-            })
-            toast.success("Coupon created")
-            form.reset()
+            if (editing) {
+              await api(`/api/admin/coupons/${editing._id}`, { method: "PATCH", body: JSON.stringify(payload) })
+              toast.success("Coupon updated")
+              setEditing(null)
+            } else {
+              await api("/api/admin/coupons", { method: "POST", body: JSON.stringify(payload) })
+              toast.success("Coupon created")
+              form.reset()
+            }
             await load()
           } catch (err) {
             toast.error(err instanceof Error ? err.message : "Failed")
+          } finally {
+            setPending(false)
           }
         }}
       >
-        <input name="code" required placeholder="CODE" className={fieldClass} />
-        <select name="type" className={fieldClass}>
+        <input name="code" required defaultValue={editing?.code} placeholder="CODE" className={fieldClass} />
+        <select name="type" defaultValue={editing?.type ?? "percent"} className={fieldClass}>
           <option value="percent">Percent off</option>
           <option value="fixed">Fixed ₹ off</option>
         </select>
-        <input name="value" type="number" required placeholder="Value" className={fieldClass} />
-        <input name="min" type="number" placeholder="Min subtotal" className={fieldClass} />
-        <input name="max" type="number" placeholder="Max uses (0 = open)" className={`${fieldClass} md:col-span-2`} />
-        <div className="md:col-span-2">
-          <GoldButton type="submit">Create coupon</GoldButton>
+        <input name="value" type="number" required defaultValue={editing?.value} placeholder="Value" className={fieldClass} />
+        <input name="min" type="number" defaultValue={editing?.minSubtotal} placeholder="Min subtotal" className={fieldClass} />
+        <input name="max" type="number" defaultValue={editing?.maxUses} placeholder="Max uses (0 = open)" className={`${fieldClass} md:col-span-2`} />
+        <div className="md:col-span-2 flex gap-2">
+          <GoldButton type="submit" loading={pending}>
+            {pending ? "Saving" : editing ? "Update coupon" : "Create coupon"}
+          </GoldButton>
+          {editing ? (
+            <button type="button" className="text-[12px] text-ink/50" onClick={() => setEditing(null)}>
+              Cancel
+            </button>
+          ) : null}
         </div>
       </form>
 
-      {coupons.length ? (
+      {coupons == null ? (
+        <AdminBusy label="Loading coupons" />
+      ) : coupons.length ? (
         <ul className="mt-6 grid gap-3 md:grid-cols-2">
           {coupons.map((c) => {
             const cap = c.maxUses > 0 ? c.maxUses : Math.max(c.usedCount, 1)
@@ -115,6 +134,23 @@ export default function CouponsPage() {
                       {c.maxUses ? ` / ${c.maxUses}` : " · unlimited"}
                       {c.expiresAt ? ` · expires ${formatDate(c.expiresAt)}` : ""}
                     </p>
+                  </div>
+                  <div className="mt-4 flex gap-4">
+                    <button type="button" className="inline-flex items-center gap-1 text-[12px] text-sage-700" onClick={() => setEditing(c)}>
+                      <Pencil size={12} /> Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 text-[12px] text-red-700"
+                      onClick={async () => {
+                        if (!confirm(`Delete coupon ${c.code}?`)) return
+                        await api(`/api/admin/coupons/${c._id}`, { method: "DELETE" })
+                        toast.success("Deleted")
+                        await load()
+                      }}
+                    >
+                      <Trash2 size={12} /> Delete
+                    </button>
                   </div>
                 </AdminCard>
               </li>

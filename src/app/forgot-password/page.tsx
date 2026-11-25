@@ -35,8 +35,8 @@ export default function Page() {
           <h1 className="mt-2 text-4xl">Reset password</h1>
           <form onSubmit={onSubmit} className="mt-6 space-y-3">
             <input name="email" type="email" required placeholder="Email" className="w-full rounded-full bg-white px-4 py-3 text-sm outline-none ring-1 ring-sage-100" />
-            <GoldButton type="submit" className="w-full">
-              {pending ? "Sending…" : "Send reset link"}
+            <GoldButton type="submit" className="w-full" loading={pending}>
+              {pending ? "Sending" : "Send reset link"}
             </GoldButton>
           </form>
         </div>

@@ -90,6 +90,15 @@ export const productInputSchema = z.object({
   badges: z.array(z.string()).optional().default([]),
   kitIncludes: z.array(z.string()).optional().default([]),
   ctaLabel: z.string().optional().default(""),
+  customFields: z
+    .array(
+      z.object({
+        label: z.string().trim().min(1).max(80),
+        value: z.string().trim().min(1).max(400),
+      }),
+    )
+    .optional()
+    .default([]),
 })
 
 export const checkoutSchema = z.object({
@@ -98,6 +107,7 @@ export const checkoutSchema = z.object({
   phone: z.string().trim().min(8).max(20),
   saveAddress: z.boolean().optional().default(true),
   couponCode: z.string().trim().max(40).optional().default(""),
+  paymentMethod: z.enum(["cod", "razorpay"]).optional().default("razorpay"),
   shipping: addressSchema.omit({ id: true, isDefault: true, label: true }),
 })
 

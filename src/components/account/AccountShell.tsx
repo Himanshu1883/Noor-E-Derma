@@ -19,6 +19,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Avatar } from "@/components/account/ui"
+import { InlineBusy } from "@/components/Busy"
 import { Logo } from "@/components/Logo"
 import { useAuth } from "@/context/AuthContext"
 import { cn } from "@/lib/cn"
@@ -73,7 +74,11 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   )
 
   if (loading) {
-    return <div className="min-h-svh bg-[#fbf6ea]" />
+    return (
+      <div className="grid min-h-svh place-items-center bg-[#fbf6ea]">
+        <InlineBusy label="Loading account" />
+      </div>
+    )
   }
 
   return (

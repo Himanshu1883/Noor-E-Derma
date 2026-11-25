@@ -12,6 +12,6 @@ export const GET = withHandler(async (request) => {
   const filter: Record<string, unknown> = {}
   if (status) filter.status = status
   if (q) filter.$or = [{ orderNumber: new RegExp(q, "i") }, { email: new RegExp(q, "i") }, { phone: new RegExp(q, "i") }]
-  const orders = await Order.find(filter).sort({ createdAt: -1 }).limit(100)
+  const orders = await Order.find(filter).sort({ createdAt: -1 }).limit(100).lean()
   return json({ orders })
 })

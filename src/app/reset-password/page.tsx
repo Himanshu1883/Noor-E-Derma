@@ -33,8 +33,8 @@ function ResetInner() {
       <form onSubmit={onSubmit} className="mx-auto w-full max-w-md rounded-[28px] bg-ivory p-7 ring-1 ring-sage-100">
         <h1 className="text-4xl">New password</h1>
         <input name="password" type="password" required minLength={8} className="mt-6 w-full rounded-full bg-white px-4 py-3 text-sm ring-1 ring-sage-100" placeholder="New password" />
-        <GoldButton type="submit" className="mt-4 w-full">
-          {pending ? "Saving…" : "Update password"}
+        <GoldButton type="submit" className="mt-4 w-full" loading={pending}>
+          {pending ? "Saving" : "Update password"}
         </GoldButton>
       </form>
     </main>

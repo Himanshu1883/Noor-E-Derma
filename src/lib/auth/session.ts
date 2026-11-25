@@ -11,6 +11,8 @@ export const SESSION_COOKIE = "nd_sid"
 export const GUEST_COOKIE = "nd_gid"
 const SESSION_DAYS = 14
 const SESSION_MS = SESSION_DAYS * 24 * 60 * 60 * 1000
+const sessionUserCache = new Map<string, { t: number; user: UserDoc }>()
+const SESSION_USER_TTL_MS = 5000
 
 export type { PublicUser }
 
@@ -67,8 +69,10 @@ export async function destroySession() {
   const jar = await cookies()
   const token = jar.get(SESSION_COOKIE)?.value
   if (token) {
+    const tokenHash = hashToken(token)
+    sessionUserCache.delete(tokenHash)
     await connectDb()
-    await Session.deleteOne({ tokenHash: hashToken(token) })
+    await Session.deleteOne({ tokenHash })
   }
   jar.set(SESSION_COOKIE, "", { ...cookieOptions(), maxAge: 0 })
 }
@@ -78,21 +82,46 @@ export async function destroyAllSessions(userId: string) {
   await Session.deleteMany({ userId })
 }
 
+export async function getSessionLite(): Promise<{ id: string; role: string } | null> {
+  const jar = await cookies()
+  const token = jar.get(SESSION_COOKIE)?.value
+  if (!token) return null
+  const tokenHash = hashToken(token)
+  const cached = sessionUserCache.get(tokenHash)
+  if (cached && Date.now() - cached.t < SESSION_USER_TTL_MS) {
+    return { id: String(cached.user._id), role: cached.user.role }
+  }
+  await connectDb()
+  const session = await Session.findOne({ tokenHash, expiresAt: { $gt: new Date() } }).select("userId").lean()
+  if (!session) return null
+  const user = await User.findById(session.userId).select("role status").lean()
+  if (!user || user.status !== "active") return null
+  return { id: String(user._id), role: user.role }
+}
+
 export async function getSessionUser(): Promise<UserDoc | null> {
   const jar = await cookies()
   const token = jar.get(SESSION_COOKIE)?.value
   if (!token) return null
+  const tokenHash = hashToken(token)
+  const cached = sessionUserCache.get(tokenHash)
+  if (cached && Date.now() - cached.t < SESSION_USER_TTL_MS) return cached.user
   await connectDb()
-  const session = await Session.findOne({ tokenHash: hashToken(token), expiresAt: { $gt: new Date() } })
+  const session = await Session.findOne({ tokenHash, expiresAt: { $gt: new Date() } })
+    .select("userId expiresAt")
+    .lean()
   if (!session) return null
   const user = await User.findById(session.userId)
-  if (!user || user.status !== "active") return null
+  if (!user || user.status !== "active") {
+    sessionUserCache.delete(tokenHash)
+    return null
+  }
   const remaining = session.expiresAt.getTime() - Date.now()
   if (remaining < SESSION_MS / 2) {
-    session.expiresAt = new Date(Date.now() + SESSION_MS)
-    await session.save()
+    await Session.updateOne({ _id: session._id }, { $set: { expiresAt: new Date(Date.now() + SESSION_MS) } })
     jar.set(SESSION_COOKIE, token, cookieOptions())
   }
+  sessionUserCache.set(tokenHash, { t: Date.now(), user })
   return user
 }
 

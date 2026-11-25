@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion"
 import { ShoppingBag, X } from "lucide-react"
+import { InlineBusy } from "@/components/Busy"
 import { GoldButton } from "@/components/GoldButton"
 import { QuantityStepper } from "@/components/QuantityStepper"
 import { useCart } from "@/context/CartContext"
@@ -10,7 +11,7 @@ import { formatINR } from "@/lib/format"
 
 export function CartDrawer() {
   const { cartOpen, setCartOpen } = useUI()
-  const { lines, subtotal, setQuantity, remove } = useCart()
+  const { lines, subtotal, setQuantity, remove, ready } = useCart()
 
   return (
     <AnimatePresence>
@@ -46,8 +47,12 @@ export function CartDrawer() {
                 <X size={16} />
               </button>
             </div>
-            <div className="flex-1 overflow-auto px-6">
-              {lines.length === 0 ? (
+            <div className="relative flex-1 overflow-auto px-6">
+              {!ready ? (
+                <div className="grid h-full place-items-center">
+                  <InlineBusy label="Loading bag" />
+                </div>
+              ) : lines.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
                   <span className="flex h-16 w-16 items-center justify-center rounded-full bg-sage-50 text-sage-600">
                     <ShoppingBag />

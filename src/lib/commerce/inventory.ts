@@ -15,7 +15,7 @@ export async function reserveStock(lines: { productId: string; quantity: number 
         $expr: { $gte: [{ $subtract: ["$stock", "$reserved"] }, line.quantity] },
       },
       { $inc: { reserved: line.quantity } },
-      { new: true },
+      { returnDocument: "after" },
     )
     if (!updated) {
       throw new ApiError(409, "One or more items are no longer in stock")
@@ -63,7 +63,10 @@ export async function commitStock(lines: { productId: string; quantity: number }
 export async function restock(productId: string, quantity: number, actorId?: string, note = "Restock") {
   await connectDb()
   if (quantity === 0) throw new ApiError(400, "Quantity cannot be zero")
-  const doc = await Product.findByIdAndUpdate(productId, { $inc: { stock: quantity } }, { new: true })
+  const current = await Product.findById(productId)
+  if (!current) throw new ApiError(404, "Product not found")
+  const nextStock = Math.max(0, (current.stock ?? 0) + quantity)
+  const doc = await Product.findByIdAndUpdate(productId, { $set: { stock: nextStock } }, { returnDocument: "after" })
   if (!doc) throw new ApiError(404, "Product not found")
   await InventoryLog.create({
     productId,

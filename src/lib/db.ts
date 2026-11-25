@@ -28,7 +28,12 @@ export async function connectDb() {
     cache.promise = mongoose.connect(env.mongodbUri, {
       dbName: env.mongodbDb,
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 12000,
+      minPoolSize: 1,
+      family: 4,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
+      socketTimeoutMS: 20_000,
+      maxIdleTimeMS: 60_000,
     })
   }
 

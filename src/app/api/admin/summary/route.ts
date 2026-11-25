@@ -12,23 +12,32 @@ export const GET = withHandler(async () => {
   start.setHours(0, 0, 0, 0)
   start.setDate(start.getDate() - 6)
 
-  const [orders, products, users, paid, statusGroups, catalog, lowStock, recent] = await Promise.all([
+  const [orders, products, users, paidStats, weekPaid, statusGroups, catalog, lowStock, recent] = await Promise.all([
     Order.countDocuments(),
     Product.countDocuments(),
     User.countDocuments({ role: "customer" }),
-    Order.find({ paymentStatus: "paid" }).select("total createdAt status"),
+    Order.aggregate<{ _id: null; revenue: number; count: number }>([
+      { $match: { paymentStatus: "paid" } },
+      { $group: { _id: null, revenue: { $sum: "$total" }, count: { $sum: 1 } } },
+    ]),
+    Order.find({ paymentStatus: "paid", createdAt: { $gte: start } })
+      .select("total createdAt")
+      .lean(),
     Order.aggregate<{ _id: string; n: number }>([{ $group: { _id: "$status", n: { $sum: 1 } } }]),
     Product.find({ active: true })
       .select("name slug sku price stock reserved images lowStockThreshold")
-      .sort({ name: 1 }),
+      .sort({ name: 1 })
+      .lean(),
     Product.find({
       active: true,
       $expr: { $lte: [{ $subtract: ["$stock", "$reserved"] }, "$lowStockThreshold"] },
-    }).select("name slug sku stock reserved lowStockThreshold images"),
-    Order.find().sort({ createdAt: -1 }).limit(8),
+    })
+      .select("name slug sku stock reserved lowStockThreshold images")
+      .lean(),
+    Order.find().sort({ createdAt: -1 }).limit(8).lean(),
   ])
-  const revenue = paid.reduce((sum, o) => sum + o.total, 0)
-  const weekPaid = paid.filter((o) => o.createdAt && o.createdAt >= start)
+  const revenue = paidStats[0]?.revenue ?? 0
+  const paidCount = paidStats[0]?.count ?? 0
   const daily = Array.from({ length: 7 }, (_, i) => {
     const day = new Date(start)
     day.setDate(start.getDate() + i)
@@ -46,8 +55,8 @@ export const GET = withHandler(async () => {
     products,
     users,
     revenue,
-    paidCount: paid.length,
-    averageOrder: paid.length ? Math.round(revenue / paid.length) : 0,
+    paidCount,
+    averageOrder: paidCount ? Math.round(revenue / paidCount) : 0,
     weekRevenue: weekPaid.reduce((sum, o) => sum + o.total, 0),
     pendingCount: statusGroups.find((s) => s._id === "pending_payment")?.n ?? 0,
     shippedCount: statusGroups.find((s) => s._id === "shipped")?.n ?? 0,

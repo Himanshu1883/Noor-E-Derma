@@ -47,6 +47,10 @@ export type FaqItem = {
 export type Product = {
   id: string
   slug: string
+  /** Mongo id when the product comes from the live catalog. */
+  _id?: string
+  sku?: string
+  categorySlugs?: string[]
   name: string
   displayName: string
   tagline: string
@@ -69,6 +73,7 @@ export type Product = {
   ctaLabel?: string
   /** Short one-liner for product cards; falls back to tagline. */
   cardLine?: string
+  customFields?: { label: string; value: string }[]
 }
 
 export const tanEraser: Product = {

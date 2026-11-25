@@ -11,7 +11,7 @@ export const GET = withHandler(async (request) => {
   const collection = url.searchParams.get("collection") ?? ""
   const sort = url.searchParams.get("sort") ?? "featured"
   const page = Math.max(1, Number(url.searchParams.get("page") || "1"))
-  const limit = Math.min(24, Math.max(1, Number(url.searchParams.get("limit") || "12")))
+  const limit = Math.min(48, Math.max(1, Number(url.searchParams.get("limit") || "24")))
   const filter: Record<string, unknown> = { active: true }
   if (q) filter.$text = { $search: q }
   if (collection) {

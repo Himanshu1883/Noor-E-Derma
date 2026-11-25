@@ -4,6 +4,7 @@ import { randomToken } from "@/lib/crypto"
 import { env } from "@/lib/env"
 
 const STATE_COOKIE = "nd_oauth_state"
+const NEXT_COOKIE = "nd_oauth_next"
 
 export function googleEnabled() {
   return Boolean(env.googleClientId && env.googleClientSecret)
@@ -13,17 +14,20 @@ export function googleRedirectUri() {
   return `${env.appUrl}/api/auth/google/callback`
 }
 
-export async function googleAuthUrl() {
+export async function googleAuthUrl(next = "") {
   if (!googleEnabled()) throw new ApiError(503, "Google login is not configured")
   const state = randomToken(16)
   const jar = await cookies()
-  jar.set(STATE_COOKIE, state, {
+  const cookie = {
     httpOnly: true,
     secure: env.isProd,
-    sameSite: "lax",
+    sameSite: "lax" as const,
     path: "/",
     maxAge: 600,
-  })
+  }
+  jar.set(STATE_COOKIE, state, cookie)
+  const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : ""
+  jar.set(NEXT_COOKIE, safeNext, cookie)
   const params = new URLSearchParams({
     client_id: env.googleClientId,
     redirect_uri: googleRedirectUri(),
@@ -67,4 +71,12 @@ export async function exchangeGoogleCode(code: string, state: string) {
   }
   if (!profile.email) throw new ApiError(400, "Google account has no email")
   return profile
+}
+
+export async function consumeGoogleNext() {
+  const jar = await cookies()
+  const next = jar.get(NEXT_COOKIE)?.value ?? ""
+  jar.set(NEXT_COOKIE, "", { httpOnly: true, path: "/", maxAge: 0 })
+  if (next.startsWith("/") && !next.startsWith("//")) return next
+  return ""
 }

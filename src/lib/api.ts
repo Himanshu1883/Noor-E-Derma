@@ -25,7 +25,8 @@ export function errorResponse(err: unknown) {
   if (err instanceof ApiError) {
     return json({ error: err.message, code: err.code }, err.status)
   }
-  logger.error("unhandled_api_error", { err: err instanceof Error ? err.message : String(err) })
+  const message = err instanceof Error ? err.message : typeof err === "object" && err ? JSON.stringify(err) : String(err)
+  logger.error("unhandled_api_error", { err: message })
   return json({ error: "Something went wrong. Please try again." }, 500)
 }
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { clientIp } from "@/lib/api"
-import { exchangeGoogleCode } from "@/lib/auth/google"
+import { consumeGoogleNext, exchangeGoogleCode } from "@/lib/auth/google"
 import { createSession } from "@/lib/auth/session"
 import { mergeGuestCart } from "@/lib/commerce/cart"
 import { connectDb } from "@/lib/db"
@@ -36,7 +36,8 @@ export async function GET(request: Request) {
     }
     await createSession(String(user._id), { ip: clientIp(request), userAgent: request.headers.get("user-agent") ?? "" })
     await mergeGuestCart(String(user._id))
-    const next = user.role === "admin" ? "/admin" : "/account"
+    const wanted = await consumeGoogleNext()
+    const next = user.role === "admin" ? (wanted.startsWith("/admin") ? wanted : "/admin") : wanted || "/"
     return NextResponse.redirect(`${env.appUrl}${next}`)
   } catch {
     return errRedirect("Google sign-in failed")

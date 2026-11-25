@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { redirect } from "next/navigation"
 import { dailyDetox, getDetailProduct, glowDuo, tanEraser, tanEraserKit } from "@/data/products"
 import { ProductPage } from "@/views/ProductPage"
 
@@ -19,6 +18,5 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  if (!getDetailProduct(slug)) redirect("/")
   return <ProductPage slug={slug} />
 }

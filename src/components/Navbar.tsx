@@ -4,7 +4,8 @@ import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDown, Menu, ShoppingBag, UserRound, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { AccountMenu } from "@/components/AccountMenu"
 import { GoldButton } from "@/components/GoldButton"
 import { Logo } from "@/components/Logo"
 import { useAuth } from "@/context/AuthContext"
@@ -46,12 +47,28 @@ function MenuLink({
 
 export function Navbar() {
   const { count } = useCart()
-  const { setCartOpen, openAuth } = useUI()
+  const { cartOpen, setCartOpen, openAuth } = useUI()
   const { user } = useAuth()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const [more, setMore] = useState(false)
   const pathname = usePathname()
+  const onCheckout = pathname === "/checkout" || pathname.startsWith("/checkout/")
+  const [badge, setBadge] = useState(count)
+  const badgeLocked = useRef(false)
+
+  useEffect(() => {
+    if (!onCheckout) {
+      badgeLocked.current = false
+      setBadge(count)
+      return
+    }
+    if (cartOpen) setCartOpen(false)
+    if (!badgeLocked.current) {
+      setBadge(count)
+      if (count > 0) badgeLocked.current = true
+    }
+  }, [count, onCheckout, cartOpen, setCartOpen])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -80,7 +97,7 @@ export function Navbar() {
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 md:px-6">
       <div
         className={cn(
-          "relative z-20 mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-full px-4 py-2 transition-all duration-500 md:px-6",
+          "relative z-20 mx-auto flex max-w-7xl items-center justify-between gap-4 overflow-visible rounded-full px-4 py-2 transition-all duration-500 md:px-6",
           open || scrolled ? "bg-ivory ring-1 ring-sage-100 shadow-[0_12px_40px_-24px_rgb(var(--tint)/0.45)]" : "border border-transparent",
         )}
       >
@@ -131,13 +148,7 @@ export function Navbar() {
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
-            <Link
-              href="/account"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70 text-ink"
-              aria-label="Account"
-            >
-              <UserRound size={18} />
-            </Link>
+            <AccountMenu />
           ) : (
             <button
               type="button"
@@ -154,19 +165,22 @@ export function Navbar() {
           <button
             type="button"
             className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/70 text-ink transition hover:bg-sage-50"
-            onClick={() => setCartOpen(true)}
+            onClick={() => {
+              if (onCheckout) return
+              setCartOpen(true)
+            }}
             aria-label="Open cart"
           >
             <ShoppingBag size={18} />
             <AnimatePresence>
-              {count > 0 ? (
+              {badge > 0 ? (
                 <motion.span
-                  key={count}
+                  key={onCheckout ? "checkout" : badge}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full gold-fill px-1 text-[10px] font-semibold text-white"
                 >
-                  {count}
+                  {badge}
                 </motion.span>
               ) : null}
             </AnimatePresence>

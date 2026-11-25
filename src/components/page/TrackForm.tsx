@@ -18,9 +18,11 @@ type Tracked = {
 
 export function TrackForm() {
   const [result, setResult] = useState<Tracked | null>(null)
+  const [pending, setPending] = useState(false)
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = new FormData(e.currentTarget)
+    setPending(true)
     try {
       const data = await api<Tracked>("/api/track", {
         method: "POST",
@@ -31,6 +33,8 @@ export function TrackForm() {
     } catch (err) {
       setResult(null)
       toast.error(err instanceof Error ? err.message : "Could not find that order")
+    } finally {
+      setPending(false)
     }
   }
   return (
@@ -38,7 +42,9 @@ export function TrackForm() {
       <form onSubmit={onSubmit} className="space-y-3">
         <input name="orderId" required placeholder="e.g. ND-20261123-AB12" className="w-full rounded-full bg-white/80 px-4 py-3 text-sm outline-none ring-1 ring-sage-100" />
         <input name="phone" required placeholder="Checkout phone" className="w-full rounded-full bg-white/80 px-4 py-3 text-sm outline-none ring-1 ring-sage-100" />
-        <GoldButton type="submit">Track</GoldButton>
+        <GoldButton type="submit" loading={pending}>
+          {pending ? "Looking up" : "Track"}
+        </GoldButton>
       </form>
       {result ? (
         <div className="mt-6 rounded-2xl bg-white/80 p-4 text-sm">

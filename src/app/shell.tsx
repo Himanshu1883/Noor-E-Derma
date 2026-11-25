@@ -26,6 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   useLenis(!loading && !bare, theme === "a" ? 1.7 : 1.15)
 
   useEffect(() => {
+    if (bare) return
     registerGsap()
     getLenis()?.scrollTo(0, { immediate: true })
     window.scrollTo(0, 0)
@@ -37,21 +38,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       window.clearTimeout(id)
       ScrollTrigger.getAll().forEach((t) => t.kill())
     }
-  }, [pathname])
+  }, [pathname, bare])
 
   useEffect(() => {
-    if (loading) return
+    if (loading || bare) return
     const id = window.setTimeout(() => ScrollTrigger.refresh(), 250)
     return () => window.clearTimeout(id)
-  }, [loading])
+  }, [loading, bare])
 
   useEffect(() => {
-    if (loading) return
+    if (loading || bare) return
     const hash = window.location.hash
     if (!hash) return
     const id = window.setTimeout(() => scrollToHash(hash), 500)
     return () => window.clearTimeout(id)
-  }, [pathname, loading])
+  }, [pathname, loading, bare])
 
   if (bare) return <>{children}</>
 

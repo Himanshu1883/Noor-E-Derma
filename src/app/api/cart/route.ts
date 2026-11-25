@@ -22,8 +22,7 @@ export const POST = withHandler(async (request) => {
 
 export const DELETE = withHandler(async () => {
   const cart = await loadCart()
-  cart.set("lines", [])
-  cart.couponCode = ""
-  await cart.save()
-  return json(await serializeCart(cart))
+  await cart.updateOne({ $set: { lines: [], couponCode: "" } })
+  const fresh = await loadCart()
+  return json(await serializeCart(fresh))
 })

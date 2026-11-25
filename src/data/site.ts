@@ -17,9 +17,9 @@ export const COMPANY = {
 } as const
 
 export const NAV_PRIMARY = [
-  { label: "Shop", href: "/shop" },
+  { label: "Shop All", href: "/shop" },
   { label: "Tan Eraser", href: "/product/tan-eraser" },
-  { label: "Daily Detox", href: "/product/daily-detox-face-wash" },
+  { label: "Face Wash", href: "/product/daily-detox-face-wash" },
   { label: "Combos", href: "/shop/combos" },
   { label: "How to use", href: "/how-to-use" },
   { label: "Journal", href: "/blog" },

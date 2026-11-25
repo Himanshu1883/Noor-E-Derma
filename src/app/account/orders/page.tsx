@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { ChevronRight, ShoppingBag } from "lucide-react"
 import { AccountCard, StatusChip, formatDate } from "@/components/account/ui"
+import { PageBusy } from "@/components/Busy"
 import { GoldButton } from "@/components/GoldButton"
 import { api } from "@/lib/client"
 import { formatINR } from "@/lib/format"
@@ -20,7 +21,7 @@ type Order = {
 }
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([])
+  const [orders, setOrders] = useState<Order[] | null>(null)
   useEffect(() => {
     api<{ orders: Order[] }>("/api/orders")
       .then((d) => setOrders(d.orders))
@@ -33,6 +34,9 @@ export default function OrdersPage() {
       <h1 className="mt-2 text-4xl md:text-5xl">Orders</h1>
       <p className="mt-2 text-sm text-ink/55">Every checkout, with pack shots, totals, and tracking when it ships.</p>
 
+      {orders == null ? (
+        <PageBusy label="Loading orders" />
+      ) : (
       <div className="mt-6 space-y-3">
         {orders.map((o) => (
           <AccountCard key={o._id} className="p-4 md:p-5">
@@ -68,6 +72,7 @@ export default function OrdersPage() {
           </AccountCard>
         ) : null}
       </div>
+      )}
     </div>
   )
 }
