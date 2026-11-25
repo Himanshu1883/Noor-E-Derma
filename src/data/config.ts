@@ -37,4 +37,5 @@ export const ASSETS = {
   kitTan: mediaUrl("/assets/tan-eraser-kit.jpg"),
   videoTan: mediaUrl("/assets/tan_eraser.mp4"),
   tanBeforeAfter: encodeURI(mediaUrl("/assets/Tan Eraser Before and After Glow.png")),
+  tanKitBanner: encodeURI(mediaUrl("/assets/Tan Eraser Kit for Brighter Skin.png")),
 }

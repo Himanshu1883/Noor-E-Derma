@@ -3,6 +3,7 @@
 import { BrandIntro } from "@/sections/BrandIntro"
 import { CtaBanner } from "@/sections/CtaBanner"
 import { FAQ } from "@/sections/FAQ"
+import { KitBanner } from "@/sections/KitBanner"
 import { FeaturedProducts } from "@/sections/FeaturedProducts"
 import { Hero } from "@/sections/Hero"
 import { Ingredients } from "@/sections/Ingredients"
@@ -26,6 +27,7 @@ export function HomePage() {
       <Reviews />
       <FAQ />
       <CtaBanner />
+      <KitBanner />
     </main>
   )
 }
