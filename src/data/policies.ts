@@ -7,33 +7,32 @@ export type PolicyDoc = {
   sections: { heading: string; copy: string[] }[]
 }
 
-const draft =
-  "This is placeholder policy copy for the Noor E Derma design draft. Final legal language will be confirmed before the live store opens."
-
 export const policies: PolicyDoc[] = [
   {
     slug: "shipping",
     title: "Shipping",
     accent: "policy",
-    updated: "Draft · Nov 2026",
-    intro: draft,
+    updated: "25 Nov 2026",
+    intro: "We ship across India. You will get tracking as soon as the parcel leaves us.",
     sections: [
       {
         heading: "Dispatch",
         copy: [
-          "Once an order is confirmed, we aim to dispatch within 2–4 business days. You will receive an email with the courier name and tracking number when the parcel leaves us.",
-          "Delivery estimates in this draft: 3–5 days after dispatch for most pin codes. Remote pin codes may take longer.",
+          "Confirmed orders are packed and handed to the courier within 2–4 business days.",
+          "Most pin codes arrive 3–7 days after dispatch. Remote areas can take longer.",
         ],
       },
       {
         heading: "Orders that have left us",
         copy: [
-          "Orders that have already been dispatched cannot be cancelled from the website. If you need help, write to hello@noorederma.example with your order ID.",
+          "Once a parcel is with the courier it cannot be cancelled from the website. Write to hello@noorederma.com with your order ID if you need help.",
         ],
       },
       {
         heading: "Track your parcel",
-        copy: ["Use the Track order page with your order ID and the phone number used at checkout. Live courier lookup will be connected when the backend is set up."],
+        copy: [
+          "Use Track order with your order ID and the phone number used at checkout. When a courier tracking number is added, it will appear on the same page.",
+        ],
       },
     ],
   },
@@ -41,8 +40,8 @@ export const policies: PolicyDoc[] = [
     slug: "refund",
     title: "Refunds &",
     accent: "replacements",
-    updated: "Draft · Nov 2026",
-    intro: "Personal-care products are hygiene-sensitive. This draft follows a replacement-first pattern common to Indian skincare stores.",
+    updated: "25 Nov 2026",
+    intro: "Personal-care products are hygiene-sensitive. We replace first when something arrives wrong or damaged.",
     sections: [
       {
         heading: "When we replace",
@@ -56,8 +55,8 @@ export const policies: PolicyDoc[] = [
       {
         heading: "How to request",
         copy: [
-          "Write to hello@noorederma.example within 24–72 hours of delivery.",
-          "Share: order ID, photos of the product, invoice, inner and outer packaging, and batch number, plus a short note on the issue.",
+          "Write to hello@noorederma.com within 72 hours of delivery.",
+          "Share your order ID, photos of the product, invoice, inner and outer packaging, batch number, and a short note on the issue.",
           "Please do not use an item you have raised a complaint about.",
         ],
       },
@@ -73,8 +72,7 @@ export const policies: PolicyDoc[] = [
       {
         heading: "Refunds",
         copy: [
-          "Where a refund is approved, it is issued to the original payment method (or bank transfer for COD). No cash refunds. Draft timing: 5–10 business days after approval.",
-          draft,
+          "Where a refund is approved, it is issued to the original payment method, or by bank transfer for COD. No cash refunds. Approved refunds typically reflect in 5–10 business days.",
         ],
       },
     ],
@@ -83,21 +81,21 @@ export const policies: PolicyDoc[] = [
     slug: "privacy",
     title: "Privacy",
     accent: "policy",
-    updated: "Draft · Nov 2026",
-    intro: draft,
+    updated: "25 Nov 2026",
+    intro: "We collect only what we need to fulfil your order and support you.",
     sections: [
       {
-        heading: "What we may collect",
+        heading: "What we collect",
         copy: [
           "Name, email, phone, shipping address, and order notes when you buy or contact us.",
-          "Payment details are handled by the checkout provider — we do not intend to store full card numbers on our own servers.",
+          "Payment details are handled by the checkout provider. We do not store full card numbers on our servers.",
         ],
       },
       {
         heading: "How we use it",
         copy: [
-          "To fulfil orders, send tracking, answer support, and (only if you opt in) email launches and offers.",
-          "You can ask us to update or delete your details by writing to hello@noorederma.example.",
+          "To fulfil orders, send tracking, answer support, and — only if you opt in — email launches and offers.",
+          "You can ask us to update or delete your details by writing to hello@noorederma.com.",
         ],
       },
     ],
@@ -106,26 +104,26 @@ export const policies: PolicyDoc[] = [
     slug: "terms",
     title: "Terms of",
     accent: "service",
-    updated: "Draft · Nov 2026",
-    intro: draft,
+    updated: "25 Nov 2026",
+    intro: "By browsing or placing an order you agree to these terms.",
     sections: [
       {
         heading: "Using this website",
         copy: [
-          "By browsing or placing an order you agree to these draft terms. We may update them; the date above will change when we do.",
+          "We may update these terms; the date above will change when we do.",
           "You must be 18 or older, or shop with a parent or guardian, to complete a purchase (Indian Contract Act, 1872).",
         ],
       },
       {
         heading: "Products and claims",
         copy: [
-          "Product claims on this site are limited to on-pack copy. Prices, ratings, and launch offers in this draft are placeholders.",
+          "Product claims on this site follow on-pack copy. Always read the pack before use and patch-test if you have sensitive skin.",
           "All products shown on this site are Noor E Derma, unless a page says otherwise.",
         ],
       },
       {
         heading: "Law",
-        copy: ["These draft terms are intended to be read under the laws of India. The governing city will be confirmed with the live legal entity."],
+        copy: ["These terms are governed by the laws of India."],
       },
     ],
   },

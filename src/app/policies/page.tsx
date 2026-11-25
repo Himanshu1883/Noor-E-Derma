@@ -5,7 +5,7 @@ import { policies } from "@/data/policies"
 
 export const metadata: Metadata = {
   title: "Policies",
-  description: "Shipping, refunds, privacy, and terms for the Noor E Derma design draft.",
+  description: "Shipping, refunds, privacy, and terms for Noor E Derma.",
 }
 
 export default function Page() {
@@ -16,7 +16,7 @@ export default function Page() {
         eyebrow="Fine print"
         title="Store"
         accent="policies"
-        lede="Placeholder documents for this design draft. Final legal copy ships with the live backend."
+        lede="Shipping, replacements, privacy, and the terms that apply when you shop with us."
       />
       <div className="mx-auto mt-12 grid max-w-7xl gap-4 px-5 sm:grid-cols-2 md:px-8">
         {policies.map((doc) => (

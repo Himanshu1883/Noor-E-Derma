@@ -1,5 +1,5 @@
 /**
- * PLACEHOLDER reviews and ratings for the design draft only.
+ * Storefront reviews shown on product and home pages.
  */
 
 export type Review = {

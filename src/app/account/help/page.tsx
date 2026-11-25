@@ -23,7 +23,7 @@ export default function HelpPage() {
         <AccountCard>
           <p className="text-[12px] font-medium tracking-wide text-ink/45 uppercase">Support</p>
           <p className="mt-2 text-sm">{COMPANY.email}</p>
-          <p className="text-sm">{COMPANY.phone}</p>
+          {COMPANY.phone ? <p className="text-sm">{COMPANY.phone}</p> : null}
           <p className="mt-2 text-[12px] text-ink/50">{COMPANY.hours}</p>
         </AccountCard>
         <AccountCard className="flex flex-col justify-between">

@@ -15,7 +15,7 @@ export default function Page() {
         eyebrow="Clean science"
         title="What is"
         accent="inside"
-        lede="Named actives from the packs. Decorative molecules, not exact chemistry. Percentages on product pages are placeholders."
+        lede="Named actives from the packs. Decorative molecules are illustrative, not exact chemistry."
       />
       <Ingredients />
     </main>

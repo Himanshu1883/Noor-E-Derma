@@ -16,7 +16,7 @@ export default function Page() {
         eyebrow="Journal"
         title="Skin"
         accent="school"
-        lede="Short reads on tan, dullness, and the two-step ritual. Educational copy for this draft — not medical advice."
+        lede="Short reads on tan, dullness, and the two-step ritual. Educational copy — not medical advice."
       />
       <div className="mx-auto mt-14 grid max-w-7xl gap-5 px-5 md:grid-cols-2 md:px-8">
         {posts.map((post) => (

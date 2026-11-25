@@ -1,13 +1,37 @@
+import { ASSETS } from "@/data/config"
 import type { Product as StoreProduct } from "@/data/products"
 import { getCatalog } from "@/data/products"
 import { connectDb, dbReady } from "@/lib/db"
 import { Product, type ProductDoc } from "@/models/Product"
 
+const TAN_RESULTS = {
+  src: ASSETS.tanBeforeAfter,
+  alt: "Tan Eraser before and after — visible results for brighter, even-toned skin",
+  contain: true as const,
+}
+
+function withTanResults<T extends { slug: string; images: StoreProduct["images"] }>(product: T): T {
+  if (product.slug !== "tan-eraser") return product
+  if (
+    product.images.some((img) => {
+      const src = decodeURI(img.src)
+      return img.src === TAN_RESULTS.src || src.includes("Before and After Glow")
+    })
+  ) {
+    return product
+  }
+  const rest = product.images
+  return {
+    ...product,
+    images: rest.length ? [rest[0], TAN_RESULTS, ...rest.slice(1)] : [TAN_RESULTS],
+  }
+}
+
 export function availableStock(doc: Pick<ProductDoc, "stock" | "reserved">) {
   return Math.max(0, (doc.stock ?? 0) - (doc.reserved ?? 0))
 }
 
-export function toStoreProduct(doc: ProductDoc): StoreProduct & { stock: number; sku: string; lowStock: boolean } {
+function mapStoreProduct(doc: ProductDoc): StoreProduct & { stock: number; sku: string; lowStock: boolean } {
   return {
     id: doc.slug,
     slug: doc.slug,
@@ -54,11 +78,15 @@ export function toStoreProduct(doc: ProductDoc): StoreProduct & { stock: number;
   }
 }
 
+export function toStoreProduct(doc: ProductDoc): StoreProduct & { stock: number; sku: string; lowStock: boolean } {
+  return withTanResults(mapStoreProduct(doc))
+}
+
 export async function listLiveProducts() {
-  if (!dbReady()) return getCatalog().map((p) => ({ ...p, stock: 50, sku: p.id.toUpperCase(), lowStock: false }))
+  if (!dbReady()) return getCatalog().map((p) => withTanResults({ ...p, stock: 50, sku: p.id.toUpperCase(), lowStock: false }))
   await connectDb()
   const docs = await Product.find({ active: true }).sort({ createdAt: 1 })
-  if (!docs.length) return getCatalog().map((p) => ({ ...p, stock: 50, sku: p.id.toUpperCase(), lowStock: false }))
+  if (!docs.length) return getCatalog().map((p) => withTanResults({ ...p, stock: 50, sku: p.id.toUpperCase(), lowStock: false }))
   return docs.map(toStoreProduct)
 }
 

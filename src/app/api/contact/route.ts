@@ -15,7 +15,7 @@ export const POST = withHandler(async (request) => {
     })
     .parse(await request.json())
   await sendMail({
-    to: process.env.SMTP_FROM?.replace(/.*<|>/g, "") || "hello@noorederma.example",
+    to: process.env.SMTP_FROM?.replace(/.*<|>/g, "") || "hello@noorederma.com",
     subject: `Contact: ${body.name}`,
     html: `<p>${body.name} (${body.email}, ${body.phone})</p><p>${body.comment}</p>`,
   })

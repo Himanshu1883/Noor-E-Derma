@@ -8,9 +8,9 @@ import { AccountCard, Avatar, StatusChip, fieldClass, formatDate, thumbSrc } fro
 import { InlineBusy } from "@/components/Busy"
 import { GoldButton } from "@/components/GoldButton"
 import { useAuth } from "@/context/AuthContext"
+import { useWishlist } from "@/context/WishlistContext"
 import { api } from "@/lib/client"
 import { formatINR } from "@/lib/format"
-import type { Product } from "@/data/products"
 
 type Order = {
   _id: string
@@ -28,15 +28,12 @@ export default function AccountPage() {
   const [pwOpen, setPwOpen] = useState(false)
   const [twoFa, setTwoFa] = useState(false)
   const [orders, setOrders] = useState<Order[] | null>(null)
-  const [wishlist, setWishlist] = useState<Product[] | null>(null)
+  const { products: wishlist, ready: wishlistReady } = useWishlist()
 
   useEffect(() => {
     api<{ orders: Order[] }>("/api/orders")
       .then((d) => setOrders(d.orders))
       .catch(() => setOrders([]))
-    api<{ products: Product[] }>("/api/wishlist")
-      .then((d) => setWishlist(d.products))
-      .catch(() => setWishlist([]))
   }, [])
 
   if (!user) return null
@@ -314,13 +311,13 @@ export default function AccountPage() {
             <h2 className="flex items-center gap-2 text-lg">
               <Heart size={18} className="text-gold-deep" /> My Wishlist
             </h2>
-            <p className="mt-1 text-[12px] text-ink/65">Your saved products for later ({wishlist?.length ?? 0} items)</p>
+            <p className="mt-1 text-[12px] text-ink/65">Your saved products for later ({wishlist.length} items)</p>
           </div>
           <Link href="/account/wishlist" className="text-[12px] font-medium text-gold-deep">
             View Wishlist →
           </Link>
         </div>
-        {wishlist == null ? (
+        {!wishlistReady ? (
           <InlineBusy label="Loading wishlist" />
         ) : wishlist.length ? (
           <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

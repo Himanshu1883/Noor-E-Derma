@@ -6,7 +6,7 @@ import { homeFaqs } from "@/data/faq"
 
 export const metadata: Metadata = {
   title: "FAQ",
-  description: "How to use Noor E Derma, how often, patch tests, and shipping — design-draft answers.",
+  description: "How to use Noor E Derma, how often, patch tests, and shipping.",
 }
 
 export default function Page() {

@@ -6,32 +6,6 @@ import { useState, type FormEvent } from "react"
 import { ASSETS, BRAND } from "@/data/config"
 import { COMPANY, FOOTER_COMPANY, FOOTER_POLICIES, FOOTER_SHOP, FOOTER_SUPPORT } from "@/data/site"
 
-const socials = [
-  {
-    label: "Instagram",
-    path: (
-      <>
-        <rect x="3" y="3" width="18" height="18" rx="5" />
-        <circle cx="12" cy="12" r="4" />
-        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" />
-      </>
-    ),
-  },
-  {
-    label: "YouTube",
-    path: (
-      <>
-        <rect x="2" y="6" width="20" height="12" rx="3" />
-        <path d="M10 9.5v5l5-2.5-5-2.5z" fill="currentColor" stroke="none" />
-      </>
-    ),
-  },
-  {
-    label: "Facebook",
-    path: <path d="M14 8h3V4h-3a4 4 0 0 0-4 4v2H8v4h2v6h4v-6h3l1-4h-4V8z" />,
-  },
-]
-
 function Col({ title, links }: { title: string; links: readonly { label: string; href: string }[] }) {
   return (
     <div>
@@ -65,7 +39,10 @@ export function Footer() {
             <img src={ASSETS.logo} alt={BRAND.name} className="h-14 w-auto" />
           </div>
           <p className="font-highlight mt-5 max-w-xs text-xl text-white/90">{BRAND.tagline}</p>
-          <p className="mt-3 max-w-xs text-xs text-white/45">{COMPANY.note}</p>
+          <p className="mt-3 max-w-xs text-sm text-white/60">{COMPANY.note}</p>
+          <a href={`mailto:${COMPANY.email}`} className="mt-3 inline-block text-sm text-gold-bright hover:text-white">
+            {COMPANY.email}
+          </a>
         </div>
         <div className="md:col-span-2">
           <Col title="Shop" links={FOOTER_SHOP} />
@@ -96,20 +73,11 @@ export function Footer() {
             </button>
           </form>
           {note ? <p className="mt-2 text-xs text-gold-bright">{note}</p> : null}
-          <div className="mt-5 flex gap-2.5">
-            {socials.map((s) => (
-              <a key={s.label} aria-label={s.label} href="#" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  {s.path}
-                </svg>
-              </a>
-            ))}
-          </div>
         </div>
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-5 text-xs text-white/55 md:flex-row md:items-center md:justify-between md:px-8">
-          <p>© {new Date().getFullYear()} Noor E Derma · Design draft: not final</p>
+          <p>© {new Date().getFullYear()} {COMPANY.legalName}. All rights reserved.</p>
           <div className="flex flex-wrap gap-2">
             {["UPI", "Visa", "Mastercard", "RuPay", "COD"].map((p) => (
               <span key={p} className="rounded-md bg-white/10 px-2 py-1">{p}</span>

@@ -28,7 +28,7 @@ export const posts: BlogPost[] = [
       },
       {
         heading: "A calm way to start",
-        copy: "Patch test first. Use as directed on pack. Follow with moisturiser, and daytime sunscreen after any tan-care ritual. This journal is educational for the design draft — it is not a medical claim and does not replace on-pack directions.",
+        copy: "Patch test first. Use as directed on pack. Follow with moisturiser, and daytime sunscreen after any tan-care ritual. This journal is educational — it is not a medical claim and does not replace on-pack directions.",
       },
     ],
   },
@@ -46,7 +46,7 @@ export const posts: BlogPost[] = [
       },
       {
         heading: "What we print on Tan Eraser",
-        copy: "Face & Body. Men & Women. For sun-tanned and dull-looking skin. With glutathione + kojic acid. Erases tan in 20 minutes. Those lines are the whole brief — we do not add extra clinical promises in this draft.",
+        copy: "Face & Body. Men & Women. For sun-tanned and dull-looking skin. With glutathione + kojic acid. Erases tan in 20 minutes. Those lines are the whole brief — we do not add extra clinical promises beyond the pack.",
       },
       {
         heading: "Pair it with a daily wash",
@@ -64,7 +64,7 @@ export const posts: BlogPost[] = [
     related: ["tan-eraser", "daily-detox"],
     body: [
       {
-        copy: "Set a timer. Tan Eraser is built around twenty minutes — the on-pack line is “erases tan in 20 minutes.” Here is the sequence we recommend in this draft.",
+        copy: "Set a timer. Tan Eraser is built around twenty minutes — the on-pack line is “erases tan in 20 minutes.” Here is the sequence we recommend.",
       },
       {
         heading: "The steps",
@@ -86,7 +86,7 @@ export const posts: BlogPost[] = [
     related: ["daily-detox"],
     body: [
       {
-        copy: "Daily Detox Face Wash lists four key actives on pack: niacinamide, vitamin E, BHA and aloe vera. On-pack benefits: cleanses deeply, refreshes skin, rejuvenates skin. Percentages you may see elsewhere on this draft site are placeholders, not lab assays.",
+        copy: "Daily Detox Face Wash lists four key actives on pack: niacinamide, vitamin E, BHA and aloe vera. On-pack benefits: cleanses deeply, refreshes skin, rejuvenates skin.",
       },
       {
         heading: "How it sits in the ritual",

@@ -1,57 +1,31 @@
 "use client"
 
-import { Heart } from "lucide-react"
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
 import { AccountCard, thumbSrc } from "@/components/account/ui"
 import { PageBusy } from "@/components/Busy"
 import { GoldButton } from "@/components/GoldButton"
-import { api } from "@/lib/client"
+import { HeartMark } from "@/components/HeartMark"
+import { WishButton } from "@/components/WishButton"
+import { useWishlist } from "@/context/WishlistContext"
 import { formatINR } from "@/lib/format"
-import type { Product } from "@/data/products"
 
 export default function WishlistPage() {
-  const [products, setProducts] = useState<Product[] | null>(null)
-  const load = () =>
-    api<{ products: Product[] }>("/api/wishlist")
-      .then((d) => setProducts(d.products))
-      .catch(() => setProducts([]))
-  useEffect(() => {
-    void load()
-  }, [])
-
-  const remove = async (slug: string) => {
-    try {
-      await api("/api/wishlist", { method: "POST", body: JSON.stringify({ productId: slug }) })
-      toast.success("Removed from wishlist")
-      await load()
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not update wishlist")
-    }
-  }
+  const { products, ready } = useWishlist()
 
   return (
     <div>
       <p className="eyebrow">Account</p>
       <h1 className="mt-2 text-4xl md:text-5xl">Wishlist</h1>
-      <p className="mt-2 text-sm text-ink/55">Rituals you saved for later · {products?.length ?? 0} items</p>
+      <p className="mt-2 text-sm text-ink/55">Rituals you saved for later · {products.length} items</p>
 
-      {products == null ? (
+      {!ready ? (
         <PageBusy label="Loading wishlist" />
       ) : products.length ? (
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {products.map((p) => (
             <li key={p.slug}>
               <AccountCard className="relative p-4">
-                <button
-                  type="button"
-                  className="absolute top-4 right-4 grid h-9 w-9 place-items-center rounded-full bg-[#faf6ec] text-gold-deep"
-                  aria-label={`Remove ${p.name}`}
-                  onClick={() => void remove(p.slug)}
-                >
-                  <Heart size={16} fill="currentColor" />
-                </button>
+                <WishButton product={p} size={36} className="absolute top-4 right-4 z-10" />
                 <Link href={`/product/${p.slug}`} className="block">
                   <span className="flex h-40 items-center justify-center rounded-2xl bg-[#faf6ec]">
                     <img src={thumbSrc(p.images)} alt={p.name} className="h-full w-full object-contain p-4" />
@@ -65,9 +39,11 @@ export default function WishlistPage() {
         </ul>
       ) : (
         <AccountCard className="mt-6 flex flex-col items-center py-14 text-center">
-          <Heart className="text-ink/25" />
+          <span className="grid h-12 w-12 place-items-center text-ink/25">
+            <HeartMark className="h-7 w-7" />
+          </span>
           <p className="mt-3 text-lg">Your wishlist is empty</p>
-          <p className="mt-1 max-w-sm text-sm text-ink/50">Save a ritual from the shop and it will wait for you here.</p>
+          <p className="mt-1 max-w-sm text-sm text-ink/50">Tap the heart on a product and it will wait for you here.</p>
           <GoldButton to="/shop" className="mt-5 px-5 py-2.5 text-[12px]">
             Browse shop
           </GoldButton>

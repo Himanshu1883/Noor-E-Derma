@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Box, ChevronRight, Droplets, MapPin, Play, RefreshCw, Sparkles, Sun, Truck } from "lucide-react"
+import { Box, ChevronRight, Droplets, Play, RefreshCw, Sparkles, Sun } from "lucide-react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
@@ -13,6 +13,7 @@ import { ProductCard } from "@/components/ProductCard"
 import { QuantityStepper } from "@/components/QuantityStepper"
 import { StarRating } from "@/components/StarRating"
 import { StickyAtcBar } from "@/components/StickyAtcBar"
+import { WishButton } from "@/components/WishButton"
 import { TrustBadges } from "@/components/TrustBadges"
 import { useCart } from "@/context/CartContext"
 import { useUI } from "@/context/UIContext"
@@ -67,8 +68,6 @@ export function ProductPage({ slug }: { slug: string }) {
   const [active, setActive] = useState(0)
   const [zoom, setZoom] = useState({ x: 50, y: 50, on: false })
   const [viewer, setViewer] = useState(false)
-  const [pin, setPin] = useState("")
-  const [pinMsg, setPinMsg] = useState("")
   const [sticky, setSticky] = useState(false)
   const buyRef = useRef<HTMLDivElement>(null)
   const timelineRef = useRef<HTMLOListElement>(null)
@@ -160,7 +159,7 @@ export function ProductPage({ slug }: { slug: string }) {
           <div className="lg:sticky lg:top-28 lg:col-span-7 lg:self-start">
             <div
               className="glass relative aspect-square overflow-hidden rounded-[36px] bg-peach lg:aspect-auto lg:h-[min(36rem,calc(100svh-15rem))]"
-              onMouseEnter={() => !viewer && !isVideo && setZoom((z) => ({ ...z, on: true }))}
+              onMouseEnter={() => !viewer && !isVideo && !image.contain && setZoom((z) => ({ ...z, on: true }))}
               onMouseLeave={() => setZoom((z) => ({ ...z, on: false }))}
               onMouseMove={(e) => {
                 const r = e.currentTarget.getBoundingClientRect()
@@ -169,7 +168,7 @@ export function ProductPage({ slug }: { slug: string }) {
                   spin.current = x
                   return
                 }
-                if (isVideo) return
+                if (isVideo || image.contain) return
                 setZoom({ on: true, x: x * 100, y: ((e.clientY - r.top) / r.height) * 100 })
               }}
             >
@@ -198,7 +197,10 @@ export function ProductPage({ slug }: { slug: string }) {
                   animate={{ opacity: 1 }}
                   src={image.src}
                   alt={image.alt}
-                  className="h-full w-full object-cover transition-transform duration-300 ease-out"
+                  className={cn(
+                    "h-full w-full transition-transform duration-300 ease-out",
+                    image.contain ? "object-contain bg-[#f6ead6]" : "object-cover",
+                  )}
                   style={{
                     objectPosition: image.position ?? "center",
                     transform: `scale(${(image.scale ?? 1) * (zoom.on ? 1.5 : 1)})`,
@@ -238,7 +240,7 @@ export function ProductPage({ slug }: { slug: string }) {
                     <img
                       src={img.src}
                       alt=""
-                      className="h-full w-full object-cover"
+                      className={cn("h-full w-full", img.contain ? "object-contain bg-[#f6ead6]" : "object-cover")}
                       style={{ objectPosition: img.position ?? "center", transform: `scale(${img.scale ?? 1})`, transformOrigin: img.position ?? "center" }}
                     />
                   )}
@@ -289,36 +291,9 @@ export function ProductPage({ slug }: { slug: string }) {
               <div ref={buyRef} className="mt-7 flex flex-wrap items-center gap-3">
                 <QuantityStepper value={qty} onChange={setQty} />
                 <GoldButton variant="black" className="flex-1 py-3.5" onClick={addToCart}>Add to Cart</GoldButton>
+                <WishButton product={product} size={48} />
                 <GoldButton variant="outline" className="w-full py-3.5" onClick={addToCart}>Buy Now</GoldButton>
               </div>
-
-              <form
-                className="mt-5 rounded-3xl bg-white/70 p-4 ring-1 ring-sage-100"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  setPinMsg(/^\d{6}$/.test(pin) ? `Delivery to ${pin} in 3–5 days (placeholder).` : "Please enter a valid 6-digit pincode.")
-                }}
-              >
-                <label className="flex items-center gap-2 text-sm font-medium" htmlFor="pincode">
-                  <Truck size={16} className="text-sage-600" /> Check delivery
-                </label>
-                <div className="mt-2 flex gap-2">
-                  <div className="flex flex-1 items-center gap-2 rounded-full bg-white px-4 ring-1 ring-sage-100">
-                    <MapPin size={14} className="text-ink/40" />
-                    <input
-                      id="pincode"
-                      value={pin}
-                      inputMode="numeric"
-                      maxLength={6}
-                      onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-                      placeholder="Enter pincode"
-                      className="w-full bg-transparent py-2.5 text-sm outline-none"
-                    />
-                  </div>
-                  <GoldButton type="submit" variant="outline" className="py-2.5">Check</GoldButton>
-                </div>
-                {pinMsg ? <p className="mt-2 text-xs text-sage-600">{pinMsg}</p> : null}
-              </form>
 
               <div className="mt-5">
                 <TrustBadges />
@@ -356,26 +331,14 @@ export function ProductPage({ slug }: { slug: string }) {
         <Bubbles count={8} />
         <div className="relative mx-auto max-w-7xl px-5 md:px-8">
           <SectionTitle eyebrow="Key ingredients" title="Clean" accent="science" />
-          <p className="mt-3 text-center text-xs text-ink/45">Percentages are placeholders for this design draft.</p>
+          <p className="mt-3 text-center text-sm text-ink/55">Named actives, as printed on the pack.</p>
           <div className={cn("mt-10 grid gap-4", product.actives.length > 2 ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-2")}>
             {product.actives.map((a) => (
               <div key={a.name} className="group glass rounded-[32px] p-6">
                 <div className="flex h-28 items-center justify-center rounded-3xl bg-white/70">
                   <Molecule kind={moleculeFor[a.name] ?? "aloe"} className="w-36" />
                 </div>
-                <div className="mt-5 flex items-baseline justify-between">
-                  <h3 className="text-2xl font-medium">{a.name}</h3>
-                  {a.percent ? <span className="font-display text-2xl text-gold-deep">{a.percent}</span> : null}
-                </div>
-                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-sage-100">
-                  <motion.div
-                    className="h-full gold-fill"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${Math.min(100, parseFloat(a.percent ?? "1") * 20)}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.2, ease: "easeOut" }}
-                  />
-                </div>
+                <h3 className="mt-5 text-2xl font-medium">{a.name}</h3>
                 <p className="mt-3 text-sm text-ink/60">{a.note}</p>
               </div>
             ))}
@@ -410,7 +373,6 @@ export function ProductPage({ slug }: { slug: string }) {
 
       <section className="mx-auto max-w-7xl px-5 pt-24 md:px-8">
         <SectionTitle eyebrow="Reviews" title="Loved by" accent="you" />
-        <p className="mt-3 text-center text-xs text-ink/45">Placeholder reviews for this design draft.</p>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {(productReviews.length ? productReviews : reviews.slice(0, 3)).map((r) => (
             <figure key={r.id} className="glass rounded-[28px] p-6">

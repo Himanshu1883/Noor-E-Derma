@@ -21,6 +21,6 @@ export const homeFaqs = [
   },
   {
     q: "Shipping & returns?",
-    a: "See Shipping and Refunds under Policies. This draft: dispatch in 2–4 business days, replacements for wrong or damaged parcels. Opened skincare is not returned for hygiene reasons. Final policy will be confirmed before launch.",
+    a: "See Shipping and Refunds under Policies. We dispatch in 2–4 business days and replace wrong or damaged parcels. Opened skincare is not returned for hygiene reasons.",
   },
 ]

@@ -19,19 +19,32 @@ export const GET = withHandler(async () => {
   await connectDb()
   const list = await Wishlist.findOne({ userId: user._id })
   const products = await Product.find({ _id: { $in: list?.productIds ?? [] }, active: true })
-  return json({ products: products.map(toStoreProduct) })
+  const mapped = products.map(toStoreProduct)
+  return json({
+    products: mapped,
+    keys: mapped.flatMap((p) => [p.slug, p.id, p._id].filter(Boolean)),
+  })
 })
 
 export const POST = withHandler(async (request) => {
   const user = await requireUser()
-  const body = await parseJson(request, z.object({ productId: z.string().min(1) }))
+  const body = await parseJson(
+    request,
+    z.object({
+      productId: z.string().min(1),
+      wished: z.boolean().optional(),
+    }),
+  )
   await connectDb()
   const product = await findProduct(body.productId)
   if (!product) return json({ error: "Product not found" }, 404)
   const list = (await Wishlist.findOne({ userId: user._id })) ?? (await Wishlist.create({ userId: user._id, productIds: [] }))
   const id = String(product._id)
   const has = list.productIds.some((p) => String(p) === id)
-  list.productIds = has ? list.productIds.filter((p) => String(p) !== id) : [...list.productIds, product._id]
-  await list.save()
-  return json({ wished: !has })
+  const next = body.wished ?? !has
+  if (next !== has) {
+    list.productIds = next ? [...list.productIds, product._id] : list.productIds.filter((p) => String(p) !== id)
+    await list.save()
+  }
+  return json({ wished: next, slug: product.slug, id })
 })

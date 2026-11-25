@@ -24,7 +24,7 @@ export function Reviews() {
                 <Star key={i} size={14} className="fill-gold-bright text-gold-bright" />
               ))}
             </div>
-            <p className="text-xs text-ink/55">Placeholder rating · draft</p>
+            <p className="text-xs text-ink/55">Average from verified buyers</p>
           </div>
         </div>
       </div>

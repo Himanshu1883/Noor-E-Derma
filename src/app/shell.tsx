@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation"
 import { useEffect } from "react"
 import { AuthModal } from "@/components/auth/AuthModal"
 import { CartDrawer } from "@/components/CartDrawer"
-import { DraftBadge } from "@/components/DraftBadge"
 import { Footer } from "@/components/Footer"
 import { GrainOverlay } from "@/components/GrainOverlay"
 import { Loader } from "@/components/Loader"
@@ -61,7 +60,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Loader />
       <GrainOverlay />
       <ScrollProgress />
-      <DraftBadge />
       <Navbar />
       <AuthModal />
       <CartDrawer />

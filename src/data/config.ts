@@ -16,7 +16,7 @@ export const THEMES: { id: ThemeId; label: string }[] = [
   { id: "c", label: "Variant C" },
 ]
 
-/** Placeholder launch window for the CTA countdown. */
+/** Launch offer window for the Glow Duo countdown. */
 export const LAUNCH_OFFER_ENDS = "2026-12-01T23:59:59+05:30"
 
 export const BUNDLE = {
@@ -36,4 +36,5 @@ export const ASSETS = {
   cardDetox: mediaUrl("/assets/card-daily-detox.jpg"),
   kitTan: mediaUrl("/assets/tan-eraser-kit.jpg"),
   videoTan: mediaUrl("/assets/tan_eraser.mp4"),
+  tanBeforeAfter: encodeURI(mediaUrl("/assets/Tan Eraser Before and After Glow.png")),
 }

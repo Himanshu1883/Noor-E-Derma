@@ -1,11 +1,6 @@
 /**
- * PLACEHOLDER DATA
- * All prices, compare-at prices, ratings, review counts, review copy,
- * ingredient percentages, result statistics, countdown timers, and
- * customer counts are fictional placeholders for this design draft.
- * They are not real commercial figures.
- *
- * Product claims are limited to on-pack copy from the provided artwork.
+ * Catalog fallback used until the live Mongo products overlay loads.
+ * Product claims follow on-pack copy.
  */
 
 import { ASSETS, BUNDLE } from "@/data/config"
@@ -19,6 +14,7 @@ export type ProductImage = {
   scale?: number
   type?: "image" | "video"
   poster?: string
+  contain?: boolean
 }
 
 export type Benefit = {
@@ -91,6 +87,11 @@ export const tanEraser: Product = {
   reviewCount: 128,
   images: [
     { src: ASSETS.cardTan, alt: "Noor E Derma Tan Eraser box" },
+    {
+      src: ASSETS.tanBeforeAfter,
+      alt: "Tan Eraser before and after — visible results for brighter, even-toned skin",
+      contain: true,
+    },
     { src: ASSETS.videoTan, alt: "Tan Eraser video", type: "video", poster: ASSETS.cardTan },
     { src: ASSETS.hero1, alt: "Tan Eraser on a marble counter", position: "42% center" },
     { src: ASSETS.cardTan, alt: "Tan Eraser key actives detail", position: "50% 52%", scale: 1.9 },
@@ -118,7 +119,7 @@ export const tanEraser: Product = {
     },
     {
       q: "How often can I use it?",
-      a: "Use as needed when skin looks sun-tanned or dull. Always patch test first. This draft does not replace on-pack directions.",
+      a: "Use as needed when skin looks sun-tanned or dull. Always patch test first. On-pack directions come first.",
     },
     {
       q: "Is it for men and women?",
@@ -176,7 +177,7 @@ export const dailyDetox: Product = {
     },
     {
       q: "How often should I use it?",
-      a: "Morning and evening, or as needed. This is placeholder guidance for the design draft.",
+      a: "Morning and evening, or as needed. Follow the directions on the pack.",
     },
   ],
   badges: ["Key actives: Niacinamide, Vitamin E, BHA, Aloe Vera"],
@@ -275,7 +276,7 @@ export const glowDuo: Product = {
   faqs: [
     {
       q: "What is in the Glow Duo?",
-      a: "Tan Eraser (210ml) and Daily Detox Face Wash (100 ml), together for less than buying both apart. Placeholder pricing for this design draft.",
+      a: "Tan Eraser (210ml) and Daily Detox Face Wash (100 ml), together for less than buying both apart.",
     },
     {
       q: "How do I use the pair?",

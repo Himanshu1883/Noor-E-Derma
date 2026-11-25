@@ -65,7 +65,7 @@ export const env = {
     return optional("SMTP_PASS")
   },
   get smtpFrom() {
-    return optional("SMTP_FROM") || "NOOR E DERMA <hello@noorederma.example>"
+    return optional("SMTP_FROM") || "NOOR E DERMA <hello@noorederma.com>"
   },
 }
 

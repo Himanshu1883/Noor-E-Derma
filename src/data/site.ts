@@ -1,19 +1,17 @@
 /**
  * Storefront copy for the multi-page shop.
- * Contact details, hours, and legal entity fields are placeholders until backend launch.
- * Page map follows a typical Indian D2C skincare store (shop, combos, how-to, track, journal, policies).
  */
 
 export const COMPANY = {
   legalName: "Noor E Derma",
   tagline: "Skin That Glows • Confidence That Shows",
-  email: "hello@noorederma.example",
-  phone: "+91 00000 00000",
-  whatsapp: "+91 00000 00000",
+  email: "hello@noorederma.com",
+  phone: "",
+  whatsapp: "",
   hours: "Monday–Saturday, 10am–7pm IST",
-  address: ["Design-draft address", "India"],
-  gst: "To be confirmed before launch",
-  note: "Placeholder company details for this design draft — not a live storefront.",
+  address: ["India"],
+  gst: "",
+  note: "Questions on an order or the ritual — write to us and we will reply in business hours.",
 } as const
 
 export const NAV_PRIMARY = [

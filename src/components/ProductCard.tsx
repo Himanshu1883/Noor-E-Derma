@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { GoldButton } from "@/components/GoldButton"
 import { StarRating } from "@/components/StarRating"
+import { WishButton } from "@/components/WishButton"
 import { useCart } from "@/context/CartContext"
 import { useUI } from "@/context/UIContext"
 import type { Product } from "@/data/products"
@@ -66,6 +67,11 @@ export function ProductCard({
           Edit
         </button>
       ) : null}
+      <WishButton
+        product={product}
+        size={compact ? 32 : 38}
+        className={cn("absolute z-20", compact ? "top-3.5 right-3.5" : "top-5 right-5")}
+      />
       <button
         type="button"
         onClick={view}
@@ -88,11 +94,11 @@ export function ProductCard({
         ) : (
           <div className={cn("bg-peach", compact ? "aspect-[4/3]" : "aspect-square")} />
         )}
-        <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-          {save > 0 ? (
-            <span className="ml-auto rounded-full bg-sage-800 px-3 py-1 text-[11px] font-medium text-white">-{save}%</span>
-          ) : null}
-        </div>
+        {save > 0 ? (
+          <span className="absolute bottom-3 left-3 rounded-full bg-sage-800 px-3 py-1 text-[11px] font-medium text-white">
+            -{save}%
+          </span>
+        ) : null}
         <span
           className={cn(
             "glass absolute right-3 bottom-3 flex items-center justify-center rounded-full opacity-0 transition group-hover:opacity-100",

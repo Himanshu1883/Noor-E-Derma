@@ -73,7 +73,7 @@ export function CtaBanner() {
           >
             Get the Glow Duo <ArrowRight size={16} />
           </GoldButton>
-          <p className="mt-3 text-[11px] text-white/45">Placeholder price and countdown for this design draft.</p>
+          <p className="mt-3 text-[11px] text-white/55">Tan Eraser + Daily Detox, while the launch offer lasts.</p>
         </div>
         <div className="relative min-h-[300px]">
           <img

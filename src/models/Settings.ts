@@ -4,7 +4,7 @@ const settingsSchema = new mongoose.Schema(
   {
     key: { type: String, default: "default", unique: true },
     storeName: { type: String, default: "NOOR E DERMA" },
-    supportEmail: { type: String, default: "hello@noorederma.example" },
+    supportEmail: { type: String, default: "hello@noorederma.com" },
     supportPhone: { type: String, default: "" },
     shippingFee: { type: Number, default: 99 },
     freeShippingOver: { type: Number, default: 999 },

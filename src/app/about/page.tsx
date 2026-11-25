@@ -35,7 +35,7 @@ export default function Page() {
               This is not a catalogue of fifty SKUs. It is a ritual: cleanse deeply, erase the look of tan in twenty minutes, step into the day. The Tan Eraser Ritual Kit holds the full at-home set — lotion, travel, jar, brush and bowl.
             </p>
             <p className="mt-4 text-lg leading-relaxed text-ink/75">
-              Claims stay on the pack. Prices and reviews you see now are placeholders for this design draft.
+              Claims stay on the pack. Patch-test if you have sensitive skin, and follow the directions printed on every product.
             </p>
             <GoldButton to="/shop" className="mt-8 self-start">
               Shop the ritual

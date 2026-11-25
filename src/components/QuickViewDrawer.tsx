@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Check, X } from "lucide-react"
 import { GoldButton } from "@/components/GoldButton"
 import { StarRating } from "@/components/StarRating"
+import { WishButton } from "@/components/WishButton"
 import { useCart } from "@/context/CartContext"
 import { useUI } from "@/context/UIContext"
 import { formatINR } from "@/lib/format"
@@ -35,6 +36,7 @@ export function QuickViewDrawer() {
           >
             <div className="relative">
               <img src={product.images[0].src} alt={product.images[0].alt} className="aspect-[4/3] w-full object-cover" />
+              <WishButton product={product} size={36} className="absolute top-4 left-4 z-10" />
               <button type="button" onClick={closeQuickView} aria-label="Close" className="glass absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full">
                 <X size={16} />
               </button>
