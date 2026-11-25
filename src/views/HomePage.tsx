@@ -25,9 +25,9 @@ export function HomePage() {
       <Results />
       <WhoItsFor />
       <Reviews />
+      <KitBanner />
       <FAQ />
       <CtaBanner />
-      <KitBanner />
     </main>
   )
 }
