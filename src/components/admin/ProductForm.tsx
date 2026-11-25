@@ -15,6 +15,8 @@ export type AdminProductImage = {
   type?: "image" | "video"
   fileId?: string
   poster?: string
+  position?: string
+  scale?: number
 }
 
 export type AdminProduct = {
@@ -267,7 +269,7 @@ export function ProductForm({
         .split(",")
         .map((b) => b.trim())
         .filter(Boolean),
-      images: images.map((img, i) => ({
+      images: images.map((img) => ({
         src: img.src,
         alt: img.alt || name,
         type: img.type ?? "image",
