@@ -2,6 +2,8 @@
  * Storefront reviews shown on product and home pages.
  */
 
+import { ASSETS } from "@/data/config"
+
 export type Review = {
   id: string
   name: string
@@ -12,19 +14,29 @@ export type Review = {
   body: string
   productId: string
   verified: boolean
+  image?: string
+  beforeImage?: string
+  afterImage?: string
+  /** CSS object-position for photo crops. */
+  imagePosition?: string
+  imageFit?: "cover" | "contain"
+  pairLabels?: boolean
 }
 
 export const reviews: Review[] = [
   {
     id: "r1",
-    name: "Ayesha K.",
-    initials: "AK",
-    city: "Mumbai",
+    name: "Verified buyer",
+    initials: "VB",
+    city: "Client result",
     rating: 5,
-    title: "My post-holiday ritual",
-    body: "Used Tan Eraser after a beach week. Skin looked brighter and more even by the evening. The 20-minute wait is easy to build into a Sunday reset.",
+    title: "Neck tan, visibly softer",
+    body: "Sun-tanned neck before the ritual. After one 20-minute leave-on, the tone looks more even and brighter.",
     productId: "tan-eraser",
     verified: true,
+    beforeImage: ASSETS.reviewBefore,
+    afterImage: ASSETS.reviewAfter,
+    imagePosition: "50% 62%",
   },
   {
     id: "r2",
@@ -50,25 +62,31 @@ export const reviews: Review[] = [
   },
   {
     id: "r4",
-    name: "Fatima N.",
-    initials: "FN",
-    city: "Hyderabad",
+    name: "Verified buyer",
+    initials: "VB",
+    city: "Client result",
     rating: 5,
-    title: "Dull skin, meet light",
-    body: "I wanted something that felt luxurious without looking gimmicky. The gold packaging is gorgeous and the skin looks more even.",
+    title: "Hands: before & after",
+    body: "Same 20-minute ritual, both hands. The treated side looks brighter and more even.",
     productId: "tan-eraser",
     verified: true,
+    image: ASSETS.reviewBoth,
+    imagePosition: "center",
+    imageFit: "contain",
+    pairLabels: true,
   },
   {
     id: "r5",
-    name: "Arjun P.",
-    initials: "AP",
-    city: "Delhi",
+    name: "Verified buyer",
+    initials: "VB",
+    city: "Client result",
     rating: 5,
-    title: "Cleanse, erase, go",
-    body: "Simple two-step. Face wash in the shower, Tan Eraser when I have twenty minutes. Skin looks less tired.",
+    title: "Hands, too — face & body",
+    body: "Used it on the hands as well. Pack says face and body. Skin looked fresher after the same 20-minute wait.",
     productId: "tan-eraser",
     verified: true,
+    image: ASSETS.reviewHands,
+    imagePosition: "50% 48%",
   },
   {
     id: "r6",

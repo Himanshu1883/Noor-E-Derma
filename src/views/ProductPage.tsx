@@ -11,6 +11,7 @@ import { GoldButton } from "@/components/GoldButton"
 import { Molecule, type MoleculeKind } from "@/components/Molecule"
 import { ProductCard } from "@/components/ProductCard"
 import { QuantityStepper } from "@/components/QuantityStepper"
+import { PhotoReviewCard } from "@/components/PhotoReviewCard"
 import { StarRating } from "@/components/StarRating"
 import { StickyAtcBar } from "@/components/StickyAtcBar"
 import { WishButton } from "@/components/WishButton"
@@ -372,21 +373,34 @@ export function ProductPage({ slug }: { slug: string }) {
       </section>
 
       <section className="mx-auto max-w-7xl px-5 pt-24 md:px-8">
-        <SectionTitle eyebrow="Reviews" title="Loved by" accent="you" />
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {(productReviews.length ? productReviews : reviews.slice(0, 3)).map((r) => (
-            <figure key={r.id} className="glass rounded-[28px] p-6">
-              <StarRating rating={r.rating} />
-              <p className="mt-3 font-display text-xl">“{r.title}”</p>
-              <p className="mt-2 text-[14px] leading-relaxed text-ink/70">{r.body}</p>
-              <figcaption className="mt-4 flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-sage-800 text-xs font-semibold text-white">{r.initials}</span>
-                <span className="text-sm font-medium">{r.name}</span>
-                <span className="ml-auto rounded-full bg-sage-50 px-2.5 py-1 text-[11px] text-sage-600">Verified Buyer</span>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+        <SectionTitle eyebrow="Reviews" title={product.id === "tan-eraser" ? "Real" : "Loved by"} accent={product.id === "tan-eraser" ? "results" : "you"} />
+        {product.id === "tan-eraser" ? (
+          <>
+            <div className="mt-10 flex flex-wrap justify-center gap-5">
+              {productReviews.map((r) => (
+                <PhotoReviewCard key={r.id} review={r} />
+              ))}
+            </div>
+            <p className="mx-auto mt-5 max-w-md text-center text-[12px] leading-relaxed text-ink/45">
+              Client photos after one 20-minute Tan Eraser ritual. Individual results vary. Always patch-test and follow pack directions.
+            </p>
+          </>
+        ) : (
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {(productReviews.length ? productReviews : reviews.slice(0, 3)).map((r) => (
+              <figure key={r.id} className="glass rounded-[28px] p-6">
+                <StarRating rating={r.rating} />
+                <p className="mt-3 font-display text-xl">“{r.title}”</p>
+                <p className="mt-2 text-[14px] leading-relaxed text-ink/70">{r.body}</p>
+                <figcaption className="mt-4 flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-sage-800 text-xs font-semibold text-white">{r.initials}</span>
+                  <span className="text-sm font-medium">{r.name}</span>
+                  <span className="ml-auto rounded-full bg-sage-50 px-2.5 py-1 text-[11px] text-sage-600">Verified Buyer</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="mx-auto max-w-3xl px-5 pt-24 md:px-8">
