@@ -21,7 +21,6 @@ import { useTheme } from "@/context/ThemeContext"
 import { useShouldRender3D } from "@/hooks/useMedia"
 import { gsap, registerGsap } from "@/lib/gsap"
 import { formatINR } from "@/lib/format"
-import { cn } from "@/lib/cn"
 
 const ProductBoxScene = dynamic(() => import("@/three/ProductBoxScene"), { ssr: false })
 
@@ -54,7 +53,7 @@ export function ProductShowcase() {
   const { theme } = useTheme()
   const enable3d = useShouldRender3D({ allowNarrow: true })
   const [stage, setStage] = useState(0)
-  const [local, setLocal] = useState(0)
+  const barRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     registerGsap()
@@ -71,8 +70,9 @@ export function ProductShowcase() {
           onUpdate: (self) => {
             progress.current = self.progress
             const s = self.progress >= 0.5 ? 1 : 0
-            setStage(s)
-            setLocal(s === 0 ? self.progress / 0.5 : (self.progress - 0.5) / 0.5)
+            const bar = barRef.current
+            if (bar) bar.style.width = `${self.progress * 100}%`
+            setStage((prev) => (prev === s ? prev : s))
           },
         },
       })
@@ -86,7 +86,7 @@ export function ProductShowcase() {
     <section ref={ref} className="relative h-svh min-h-[640px] overflow-hidden dewy-sage">
       <div className="pointer-events-none absolute top-1/2 left-1/2 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.95),rgba(255,255,255,0)_68%)]" />
 
-      <div className="relative mx-auto grid h-full max-w-7xl grid-rows-[auto_minmax(220px,1fr)_auto] items-center gap-3 px-5 pt-20 pb-8 md:grid-cols-12 md:grid-rows-1 md:gap-6 md:px-8 md:pt-20 md:pb-10">
+      <div className="relative mx-auto grid h-full max-w-7xl grid-rows-[auto_1fr_auto] items-center gap-4 px-5 pt-24 pb-10 md:grid-cols-12 md:grid-rows-1 md:gap-6 md:px-8 md:pt-20">
         <div className="md:col-span-4">
           <p className="eyebrow">In focus · 0{stage + 1} / 02</p>
           <AnimatePresence mode="wait">
@@ -97,22 +97,22 @@ export function ProductShowcase() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.45 }}
             >
-              <h2 className="mt-2 text-[clamp(2.1rem,9vw,4.2rem)] leading-[0.95] font-medium md:mt-3 md:text-[clamp(2.4rem,4.6vw,4.2rem)]">
+              <h2 className="mt-3 text-[clamp(2.4rem,4.6vw,4.2rem)] leading-[0.95] font-medium">
                 {current.product.name.split(" ").slice(0, 2).join(" ")}
               </h2>
-              <p className="mt-2 max-w-sm text-base text-ink/65 md:mt-3 md:text-lg">{current.product.tagline}</p>
-              <div className="mt-4 flex items-center gap-3 md:mt-6">
+              <p className="mt-3 max-w-sm text-lg text-ink/65">{current.product.tagline}</p>
+              <div className="mt-6 flex items-center gap-3">
                 <span className="text-2xl font-semibold">{formatINR(current.product.price)}</span>
                 <span className="rounded-full bg-white px-3 py-1 text-xs text-ink/60 ring-1 ring-sage-100">{current.product.netWeight}</span>
               </div>
-              <GoldButton to={`/product/${current.product.slug}`} className="mt-4 md:mt-6">
+              <GoldButton to={`/product/${current.product.slug}`} className="mt-6">
                 Explore {stage === 0 ? "Tan Eraser" : "Face Wash"} <ArrowRight size={16} />
               </GoldButton>
             </motion.div>
           </AnimatePresence>
         </div>
 
-        <div className="relative h-full min-h-[220px] touch-pan-y md:col-span-5">
+        <div className="relative h-full min-h-[300px] touch-pan-y md:col-span-5">
           {enable3d ? (
             <SceneGuard
               fallback={
@@ -140,22 +140,15 @@ export function ProductShowcase() {
           )}
         </div>
 
-        <ul className="grid grid-cols-2 gap-2 md:col-span-3 md:grid-cols-1 md:gap-3">
-          {current.callouts.map((c, i) => {
-            const shown = local > i * 0.18 || !enable3d
+        <ul className="grid grid-cols-2 gap-2.5 md:col-span-3 md:grid-cols-1 md:gap-3">
+          {current.callouts.map((c) => {
             const Icon = c.icon
             return (
-              <li
-                key={`${stage}-${c.title}`}
-                className={cn(
-                  "relative flex items-center gap-3 transition-all duration-500",
-                  shown ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0",
-                )}
-              >
+              <li key={`${stage}-${c.title}`} className="relative flex items-center gap-3">
                 <span className="absolute top-1/2 -left-14 hidden h-px w-12 bg-[linear-gradient(90deg,transparent,#b8860b)] md:block" />
                 <span className="absolute top-1/2 -left-2 hidden h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-gold md:block" />
-                <div className="glass flex w-full items-center gap-2.5 rounded-2xl p-2 pr-3 md:gap-3 md:p-2.5 md:pr-4">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sage-50 text-sage-600 md:h-10 md:w-10">
+                <div className="glass flex w-full items-center gap-3 rounded-2xl p-2.5 pr-4">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sage-50 text-sage-600">
                     <Icon size={18} />
                   </span>
                   <span className="leading-tight">
@@ -170,7 +163,7 @@ export function ProductShowcase() {
       </div>
 
       <div className="absolute inset-x-0 bottom-0 h-1 bg-sage-100">
-        <div className="h-full gold-fill transition-[width] duration-150" style={{ width: `${((stage + local) / 2) * 100}%` }} />
+        <div ref={barRef} className="h-full gold-fill" style={{ width: "0%" }} />
       </div>
     </section>
   )
