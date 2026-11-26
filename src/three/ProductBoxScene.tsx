@@ -2,10 +2,9 @@
 
 import { ContactShadows, Environment, Lightformer, useTexture } from "@react-three/drei"
 import { Canvas, useFrame } from "@react-three/fiber"
-import { Suspense, useEffect, useMemo, useRef, useState } from "react"
+import { Suspense, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { useTheme } from "@/context/ThemeContext"
-import { useMediaQuery } from "@/hooks/useMedia"
 
 /** Local pack shots for WebGL — same files stored in GridFS, served as static textures so a media-API blip cannot crash the homepage. */
 const BOX_TAN = "/assets/card-tan-eraser.jpg"
@@ -57,7 +56,6 @@ function Box({
     const p = progress.current
     const v = visibility(p)
     g.visible = v > 0.01
-    if (!g.visible) return
     g.scale.setScalar(0.6 + 0.4 * v)
     g.position.y = -0.1 + (1 - v) * -0.6 + Math.sin(state.clock.elapsedTime * 1.2) * 0.04
     g.rotation.y = spin(p) + state.pointer.x * 0.12
@@ -87,58 +85,44 @@ export default function ProductBoxScene({
 }) {
   const single = urls.length === 1
   const { theme } = useTheme()
-  const mobile = useMediaQuery("(max-width: 767px)")
-  const wrap = useRef<HTMLDivElement>(null)
-  const [onScreen, setOnScreen] = useState(true)
-
-  useEffect(() => {
-    const el = wrap.current
-    if (!el) return
-    const io = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting), { rootMargin: "160px", threshold: 0.01 })
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
 
   return (
-    <div ref={wrap} className="h-full w-full">
-      <Canvas
-        camera={{ position: [0, 0.3, 6.4], fov: 30 }}
-        dpr={[1, 1.75]}
-        frameloop={onScreen ? "always" : "never"}
-        gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-        shadows
-        className="h-full w-full"
-        style={{ touchAction: "pan-y", pointerEvents: mobile ? "none" : undefined }}
-      >
-        <ambientLight intensity={0.55} />
-        <directionalLight position={[3, 5, 4]} intensity={1.6} castShadow />
-        <Suspense fallback={null}>
-          {single ? (
-            <Box url={urls[0]} progress={progress} visibility={() => 1} spin={(p) => (p - 0.5) * Math.PI * 1.6} />
-          ) : (
-            <>
-              <Box
-                url={urls[0]}
-                progress={progress}
-                visibility={(p) => 1 - smooth(0.4, 0.52, p)}
-                spin={(p) => -0.55 + (p / 0.5) * 1.1}
-              />
-              <Box
-                url={urls[1]}
-                progress={progress}
-                visibility={(p) => smooth(0.48, 0.6, p)}
-                spin={(p) => -0.55 + Math.max(0, (p - 0.5) / 0.5) * 1.1}
-              />
-            </>
-          )}
-          <Environment resolution={256}>
-            <Lightformer intensity={2.2} position={[0, 4, 3]} scale={[8, 2, 1]} />
-            <Lightformer intensity={1.4} position={[-5, 1, 2]} rotation-y={Math.PI / 2} scale={[4, 4, 1]} color="#fff4dc" />
-            <Lightformer intensity={1.2} position={[5, 0, 1]} rotation-y={-Math.PI / 2} scale={[4, 4, 1]} color="#e8f2e2" />
-          </Environment>
-          <ContactShadows position={[0, -1.35, 0]} opacity={0.32} scale={7} blur={2.6} far={3} color={theme === "a" ? "#3a2a12" : "#3a5130"} />
-        </Suspense>
-      </Canvas>
-    </div>
+    <Canvas
+      camera={{ position: [0, 0.3, 6.4], fov: 30 }}
+      dpr={[1, 1.75]}
+      gl={{ alpha: true, antialias: true }}
+      shadows
+      className="h-full w-full"
+      style={{ touchAction: "pan-y" }}
+    >
+      <ambientLight intensity={0.55} />
+      <directionalLight position={[3, 5, 4]} intensity={1.6} castShadow />
+      <Suspense fallback={null}>
+        {single ? (
+          <Box url={urls[0]} progress={progress} visibility={() => 1} spin={(p) => (p - 0.5) * Math.PI * 1.6} />
+        ) : (
+          <>
+            <Box
+              url={urls[0]}
+              progress={progress}
+              visibility={(p) => 1 - smooth(0.4, 0.52, p)}
+              spin={(p) => -0.55 + (p / 0.5) * 1.1}
+            />
+            <Box
+              url={urls[1]}
+              progress={progress}
+              visibility={(p) => smooth(0.48, 0.6, p)}
+              spin={(p) => -0.55 + Math.max(0, (p - 0.5) / 0.5) * 1.1}
+            />
+          </>
+        )}
+        <Environment resolution={256}>
+          <Lightformer intensity={2.2} position={[0, 4, 3]} scale={[8, 2, 1]} />
+          <Lightformer intensity={1.4} position={[-5, 1, 2]} rotation-y={Math.PI / 2} scale={[4, 4, 1]} color="#fff4dc" />
+          <Lightformer intensity={1.2} position={[5, 0, 1]} rotation-y={-Math.PI / 2} scale={[4, 4, 1]} color="#e8f2e2" />
+        </Environment>
+        <ContactShadows position={[0, -1.35, 0]} opacity={0.32} scale={7} blur={2.6} far={3} color={theme === "a" ? "#3a2a12" : "#3a5130"} />
+      </Suspense>
+    </Canvas>
   )
 }
