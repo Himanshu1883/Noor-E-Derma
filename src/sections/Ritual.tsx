@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Bubbles } from "@/components/Bubbles"
 import { ASSETS } from "@/data/config"
+import { useTheme } from "@/context/ThemeContext"
 import { gsap, registerGsap } from "@/lib/gsap"
 import { cn } from "@/lib/cn"
 
@@ -45,6 +46,7 @@ export function Ritual() {
   const pin = useRef<HTMLElement>(null)
   const track = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
+  const { theme } = useTheme()
 
   useEffect(() => {
     registerGsap()
@@ -68,7 +70,7 @@ export function Ritual() {
       })
     }, section)
     return () => ctx.revert()
-  }, [])
+  }, [theme])
 
   return (
     <section id="ritual" ref={pin} className="relative h-svh min-h-[620px] overflow-hidden dewy-sage">

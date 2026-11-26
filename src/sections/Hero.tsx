@@ -105,10 +105,11 @@ function SlideText({ slide, play }: { slide: HeroSlide; play: boolean }) {
   )
 }
 
-function SlideImage({ slide, play }: { slide: HeroSlide; play: boolean }) {
+function SlideImage({ slide, play, themeKey }: { slide: HeroSlide; play: boolean; themeKey: string }) {
   const right = slide.layout === "text-right"
   return (
     <motion.div
+      key={themeKey}
       initial={{ opacity: 0, scale: 0.94 }}
       animate={play ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.94 }}
       transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
@@ -162,12 +163,14 @@ function Slide({
   className,
   style,
   children,
+  themeKey,
 }: {
   slide: HeroSlide
   play: boolean
   className?: string
   style?: React.CSSProperties
   children?: React.ReactNode
+  themeKey?: string
 }) {
   const right = slide.layout === "text-right"
   return (
@@ -178,7 +181,7 @@ function Slide({
           <SlideText slide={slide} play={play} />
         </div>
         <div className={cn("h-full max-h-[640px] min-h-[260px] md:col-span-7 md:h-[74vh]", right ? "md:order-1" : "md:order-2")}>
-          <SlideImage slide={slide} play={play} />
+          <SlideImage slide={slide} play={play} themeKey={themeKey ?? "c"} />
         </div>
       </div>
     </div>
@@ -188,6 +191,7 @@ function Slide({
 export function Hero() {
   const root = useRef<HTMLElement>(null)
   const slides = getHeroSlides()
+  const { theme } = useTheme()
   const { loading } = useUI()
   const [active, setActive] = useState(0)
   const [progress, setProgress] = useState(0)
@@ -224,7 +228,7 @@ export function Hero() {
         .fromTo(".slide-b .ken", { scale: 1.2 }, { scale: 1, ease: "none", duration: 0.7 }, 0.3)
     }, el)
     return () => ctx.revert()
-  }, [])
+  }, [theme])
 
   const goTo = (i: number) => {
     const st = stRef.current
@@ -239,10 +243,11 @@ export function Hero() {
     <section ref={root} className="relative h-svh min-h-[640px] overflow-hidden dewy">
       <Bubbles className="opacity-70" count={8} />
       <GoldSwirl className="bottom-[4%] left-[-5%] h-[38%] w-[70%] opacity-80" />
-      <Slide slide={slides[0]} play={!loading} className="slide-a" />
+      <Slide slide={slides[0]} play={!loading} themeKey={theme} className="slide-a" />
       <Slide
         slide={slides[1]}
         play={!loading && active === 1}
+        themeKey={theme}
         className="slide-b dewy-sage"
         style={{ clipPath: "circle(0% at 50% 55%)" }}
       >

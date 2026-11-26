@@ -1,4 +1,5 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
+import { refreshMotionLayout } from "@/lib/motion-refresh"
 import Lenis from "lenis"
 import { gsap, registerGsap, ScrollTrigger } from "@/lib/gsap"
 
@@ -20,6 +21,9 @@ export function scrollToHash(hash: string) {
 }
 
 export function useLenis(enabled: boolean, duration = 1.15) {
+  const durationRef = useRef(duration)
+  durationRef.current = duration
+
   useEffect(() => {
     if (typeof window === "undefined") return
     registerGsap()
@@ -28,7 +32,7 @@ export function useLenis(enabled: boolean, duration = 1.15) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     const instance = new Lenis({
       autoRaf: false,
-      duration: reduced ? 0.4 : duration,
+      duration: reduced ? 0.4 : durationRef.current,
       smoothWheel: !reduced,
       prevent: (node) => node.closest("[data-lenis-prevent]") != null,
     })
@@ -44,12 +48,14 @@ export function useLenis(enabled: boolean, duration = 1.15) {
 
     const onResize = () => ScrollTrigger.refresh()
     window.addEventListener("resize", onResize)
+    const sync = window.setTimeout(() => refreshMotionLayout(), 0)
 
     return () => {
+      window.clearTimeout(sync)
       window.removeEventListener("resize", onResize)
       gsap.ticker.remove(ticker)
       instance.destroy()
       if (lenis === instance) lenis = null
     }
-  }, [enabled, duration])
+  }, [enabled])
 }

@@ -27,17 +27,19 @@ function hasWebGL() {
   }
 }
 
-/** 3D only on wider, capable devices that haven't asked for reduced motion. */
-export function useShouldRender3D() {
+/** 3D only on capable devices that haven't asked for reduced motion. Desktop-gated unless `allowNarrow`. */
+export function useShouldRender3D(opts?: { allowNarrow?: boolean }) {
   const reduced = usePrefersReducedMotion()
   const wide = useMediaQuery("(min-width: 768px)")
+  const allowNarrow = Boolean(opts?.allowNarrow)
   const [capable, setCapable] = useState(false)
 
   useEffect(() => {
     const cores = navigator.hardwareConcurrency || 8
     const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
-    setCapable(cores >= 4 && !conn?.saveData && hasWebGL())
-  }, [])
+    const powerOk = allowNarrow || (cores >= 4 && !conn?.saveData)
+    setCapable(powerOk && hasWebGL())
+  }, [allowNarrow])
 
-  return wide && !reduced && capable
+  return !reduced && capable && (allowNarrow || wide)
 }

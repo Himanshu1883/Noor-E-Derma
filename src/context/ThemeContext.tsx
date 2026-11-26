@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { DEFAULT_THEME, type ThemeId } from "@/data/config"
-import { ScrollTrigger } from "@/lib/gsap"
+import { refreshMotionLayout } from "@/lib/motion-refresh"
 
 const STORAGE_KEY = "nd-theme"
 
@@ -27,8 +27,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (!mounted) return
     document.documentElement.dataset.theme = theme
     localStorage.setItem(STORAGE_KEY, theme)
-    // Font metrics differ between themes, so pinned sections need fresh measurements.
-    const id = window.setTimeout(() => ScrollTrigger.refresh(), 250)
+    refreshMotionLayout({ clearHero: true })
+    const id = window.setTimeout(() => refreshMotionLayout({ clearHero: true }), 320)
     return () => window.clearTimeout(id)
   }, [theme, mounted])
 

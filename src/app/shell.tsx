@@ -5,6 +5,7 @@ import { useEffect } from "react"
 import { AnnouncementBar } from "@/components/AnnouncementBar"
 import { AuthModal } from "@/components/auth/AuthModal"
 import { CartDrawer } from "@/components/CartDrawer"
+import { DraftBadge } from "@/components/DraftBadge"
 import { Footer } from "@/components/Footer"
 import { GrainOverlay } from "@/components/GrainOverlay"
 import { Loader } from "@/components/Loader"
@@ -64,6 +65,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <>
         <AuthModal />
         <MaintenanceScreen />
+        <DraftBadge />
       </>
     )
   }
@@ -82,6 +84,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {children}
         <Footer />
       </div>
+      <DraftBadge />
     </>
   )
 }

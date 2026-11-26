@@ -87,7 +87,14 @@ export default function ProductBoxScene({
   const { theme } = useTheme()
 
   return (
-    <Canvas camera={{ position: [0, 0.3, 6.4], fov: 30 }} dpr={[1, 1.75]} gl={{ alpha: true, antialias: true }} shadows>
+    <Canvas
+      camera={{ position: [0, 0.3, 6.4], fov: 30 }}
+      dpr={[1, 1.75]}
+      gl={{ alpha: true, antialias: true }}
+      shadows
+      className="h-full w-full"
+      style={{ touchAction: "pan-y" }}
+    >
       <ambientLight intensity={0.55} />
       <directionalLight position={[3, 5, 4]} intensity={1.6} castShadow />
       <Suspense fallback={null}>
