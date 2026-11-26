@@ -8,7 +8,7 @@ export function PhotoReviewCard({ review }: { review: Review }) {
   const pos = review.imagePosition ?? "50% 55%"
 
   return (
-    <figure className="flex w-full max-w-[300px] flex-col overflow-hidden rounded-[24px] bg-white/70 shadow-[0_18px_40px_-28px_rgb(var(--tint)/0.45)] ring-1 ring-sage-100">
+    <figure className="flex w-full max-w-[min(300px,100%)] min-w-0 flex-col overflow-hidden rounded-[24px] bg-white/70 shadow-[0_18px_40px_-28px_rgb(var(--tint)/0.45)] ring-1 ring-sage-100">
       {split ? (
         <div className="grid aspect-[4/5] grid-cols-2">
           <div className="relative min-h-0 overflow-hidden">

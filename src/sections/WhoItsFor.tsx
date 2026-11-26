@@ -59,8 +59,8 @@ export function WhoItsFor() {
                 className="absolute inset-x-0 -top-[10%] h-[120%] w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 style={{ objectPosition: c.pos }}
               />
-              <div className="glass absolute inset-x-4 bottom-4 flex items-end justify-between gap-4 rounded-[28px] p-5">
-                <div>
+              <div className="glass absolute inset-x-4 bottom-4 flex min-w-0 items-end justify-between gap-4 rounded-[28px] p-5">
+                <div className="min-w-0">
                   <h3 className="text-3xl font-medium">{c.title}</h3>
                   <p className="mt-1.5 max-w-sm text-[15px] text-ink/70">{c.copy}</p>
                 </div>

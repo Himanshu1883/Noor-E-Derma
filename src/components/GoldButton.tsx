@@ -50,7 +50,7 @@ export function GoldButton({
 }: Props) {
   const busy = Boolean(loading)
   const classes = cn(
-    "inline-flex items-center justify-center gap-2 rounded-full font-medium uppercase transition duration-300 active:translate-y-0 active:scale-[0.98]",
+    "inline-flex min-w-0 items-center justify-center gap-2 rounded-full font-medium uppercase transition duration-300 active:translate-y-0 active:scale-[0.98]",
     sizes[size],
     styles[variant],
     (disabled || busy) && "pointer-events-none opacity-60",

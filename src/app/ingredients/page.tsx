@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="dewy pt-28 pb-8">
+    <main className="dewy min-w-0 max-w-full overflow-x-clip pt-28 pb-8">
       <PageHeader
         crumbs={[{ label: "Home", href: "/" }, { label: "Ingredients" }]}
         eyebrow="Clean science"

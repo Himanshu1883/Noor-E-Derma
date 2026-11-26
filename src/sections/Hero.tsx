@@ -129,8 +129,8 @@ function SlideImage({ slide, play, themeKey }: { slide: HeroSlide; play: boolean
         const Icon = chipIcons[chip.icon]
         const pos =
           i === 0
-            ? right ? "top-6 -right-3 md:right-5" : "top-8 -left-3 md:-left-8"
-            : right ? "bottom-8 -left-3 md:-left-8" : "bottom-10 -right-3 md:-right-6"
+            ? right ? "top-6 right-2 md:right-5" : "top-8 left-2 md:-left-8"
+            : right ? "bottom-8 left-2 md:-left-8" : "bottom-10 right-2 md:-right-6"
         return (
           <motion.div
             key={chip.title}

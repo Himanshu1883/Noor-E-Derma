@@ -19,7 +19,7 @@ export function StickyAtcBar({ product, quantity, visible }: { product: Product;
           animate={{ y: 0 }}
           exit={{ y: 120 }}
           transition={{ type: "spring", damping: 26, stiffness: 260 }}
-          className="fixed inset-x-3 bottom-3 z-40 md:inset-x-auto md:right-6 md:bottom-6 md:w-[460px]"
+          className="fixed inset-x-3 bottom-3 z-40 max-w-full md:inset-x-auto md:right-6 md:bottom-6 md:w-[460px]"
         >
           <div className="glass flex items-center gap-3 rounded-full p-2 pl-2.5">
             <img src={product.images[0].src} alt="" className="h-12 w-12 rounded-full object-cover" />
@@ -29,7 +29,7 @@ export function StickyAtcBar({ product, quantity, visible }: { product: Product;
             </div>
             <GoldButton
               variant="black"
-              className="px-5 py-3"
+              className="shrink-0 px-4 py-3 text-[12px] sm:px-5"
               onClick={() => {
                 void add(product, quantity)
                 setCartOpen(true)

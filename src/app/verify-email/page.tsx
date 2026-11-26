@@ -17,7 +17,7 @@ function VerifyInner() {
       .catch((e) => setMessage(e instanceof Error ? e.message : "Verification failed"))
   }, [token])
   return (
-    <main className="dewy flex min-h-svh items-center px-5 py-16">
+    <main className="dewy flex min-h-svh min-w-0 max-w-full items-center overflow-x-clip px-5 py-16">
       <div className="mx-auto max-w-md rounded-[28px] bg-ivory p-8 text-center ring-1 ring-sage-100">
         <h1 className="text-4xl">Email</h1>
         <p className="mt-4 text-ink/70">{message}</p>

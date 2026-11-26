@@ -22,7 +22,7 @@ function SuccessInner() {
   }
 
   return (
-    <main className="dewy pt-28 pb-24">
+    <main className="dewy min-w-0 max-w-full overflow-x-clip pt-28 pb-24">
       <div className="mx-auto max-w-lg px-5 text-center">
         <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#3cba54] text-white shadow-[0_16px_40px_-12px_rgba(60,186,84,0.8)]">
           <Check size={36} strokeWidth={3} />

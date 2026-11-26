@@ -14,7 +14,7 @@ export function QuantityStepper({
   max?: number
 }) {
   return (
-    <div className="inline-flex items-center rounded-full border border-sage-200 bg-white">
+    <div className="inline-flex shrink-0 items-center rounded-full border border-sage-200 bg-white">
       <button
         type="button"
         disabled={value <= min}

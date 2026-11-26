@@ -77,7 +77,7 @@ function IngredientCard({ item, open, onToggle, big }: { item: Ingredient; open:
         {open ? (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
             <p className="pt-3 text-[14px] leading-relaxed text-ink/70">{item.detail}</p>
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex min-w-0 flex-wrap gap-2">
               {item.foundIn.map((f) => (
                 <span key={f} className="rounded-full bg-sage-800 px-3 py-1 text-[11px] font-medium text-white">
                   Found in {f}

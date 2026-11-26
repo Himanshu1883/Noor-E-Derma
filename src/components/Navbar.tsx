@@ -99,7 +99,7 @@ export function Navbar() {
     <header className="fixed inset-x-0 z-50 px-3 pt-3 md:px-6" style={{ top: announceOffset }}>
       <div
         className={cn(
-          "relative z-20 mx-auto flex max-w-7xl items-center justify-between gap-4 overflow-visible rounded-full px-4 py-2 transition-all duration-500 md:px-6",
+          "relative z-20 mx-auto flex w-full min-w-0 max-w-7xl items-center justify-between gap-2 overflow-hidden rounded-full px-3 py-2 transition-all duration-500 sm:gap-4 sm:overflow-visible md:px-6",
           open || scrolled ? "bg-ivory ring-1 ring-sage-100 shadow-[0_12px_40px_-24px_rgb(var(--tint)/0.45)]" : "border border-transparent",
         )}
       >

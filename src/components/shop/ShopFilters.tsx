@@ -116,11 +116,11 @@ export function ShopFilterBar({
   onOpen: () => void
 }) {
   return (
-    <div className="mb-5 flex items-center justify-between gap-3 lg:hidden">
+    <div className="mb-5 flex min-w-0 items-center justify-between gap-3 lg:hidden">
       <button
         type="button"
         onClick={onOpen}
-        className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3.5 py-2 text-[13px] ring-1 ring-sage-100"
+        className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white/70 px-3.5 py-2 text-[13px] ring-1 ring-sage-100"
       >
         <SlidersHorizontal size={15} />
         Filters
@@ -128,7 +128,7 @@ export function ShopFilterBar({
       <select
         value={sort}
         onChange={(e) => onSort(e.target.value as ShopSort)}
-        className="rounded-full bg-white/70 py-2 pr-7 pl-3 text-[13px] text-ink outline-none ring-1 ring-sage-100"
+        className="min-w-0 max-w-[60%] rounded-full bg-white/70 py-2 pr-7 pl-3 text-[13px] text-ink outline-none ring-1 ring-sage-100"
         aria-label="Sort products"
       >
         {SORT_OPTIONS.map((option) => (

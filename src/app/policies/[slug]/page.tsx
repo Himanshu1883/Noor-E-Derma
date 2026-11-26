@@ -21,7 +21,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!doc) notFound()
 
   return (
-    <main className="dewy pt-28 pb-24">
+    <main className="dewy min-w-0 max-w-full overflow-x-clip pt-28 pb-24">
       <PageHeader
         crumbs={[{ label: "Home", href: "/" }, { label: "Policies" }, { label: doc.accent }]}
         eyebrow={doc.updated}

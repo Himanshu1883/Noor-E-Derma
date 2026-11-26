@@ -95,7 +95,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   )
 
   return (
-    <div className="min-h-svh bg-[#fbf6ea] text-ink">
+    <div className="min-h-svh min-w-0 max-w-full overflow-x-clip bg-[#fbf6ea] text-ink">
       <div className="lg:grid lg:grid-cols-[260px_1fr]">
         <aside className="border-b border-sage-100 bg-ivory lg:sticky lg:top-0 lg:flex lg:h-svh lg:flex-col lg:border-r lg:border-b-0">
           <div className="flex items-center justify-between gap-3 px-4 py-4 lg:block lg:px-5 lg:pt-6">

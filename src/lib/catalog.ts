@@ -48,7 +48,10 @@ function mapStoreProduct(doc: ProductDoc): StoreProduct & { stock: number; sku: 
     rating: doc.rating ?? 0,
     reviewCount: doc.reviewCount ?? 0,
     images: (doc.images ?? []).map((img) => ({
-      src: img.src,
+      src:
+        img.type === "video" && (img.src.includes("tan_eraser") || img.src.includes("6b042224b3a1f66fedeb5e6c"))
+          ? ASSETS.videoTan
+          : img.src,
       alt: img.alt ?? "",
       position: img.position && img.position !== "front" ? img.position : undefined,
       scale: img.scale ?? undefined,

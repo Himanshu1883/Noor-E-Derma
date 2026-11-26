@@ -8,7 +8,7 @@ export const BRAND = {
 
 export const DRAFT_LABEL = "Draft v2"
 
-/** "a" = champagne marble editorial, "c" = ivory sage & glass. Visitors can switch with the on-page toggle. */
+/** "a" = champagne marble editorial, "c" = ivory sage & glass. Storefront is locked to Variant A. */
 export type ThemeId = "a" | "c"
 export const DEFAULT_THEME: ThemeId = "a"
 export const THEMES: { id: ThemeId; label: string }[] = [
@@ -35,7 +35,7 @@ export const ASSETS = {
   cardTan: mediaUrl("/assets/card-tan-eraser.jpg"),
   cardDetox: mediaUrl("/assets/card-daily-detox.jpg"),
   kitTan: mediaUrl("/assets/tan-eraser-kit.jpg"),
-  videoTan: mediaUrl("/assets/tan_eraser.mp4"),
+  videoTan: "/assets/tan_eraser.mp4",
   tanBeforeAfter: encodeURI(mediaUrl("/assets/Tan Eraser Before and After Glow.png")),
   tanKitBanner: encodeURI(mediaUrl("/assets/Tan Eraser Kit for Brighter Skin.png")),
   reviewBefore: "/assets/before-image-of-client.jpeg",

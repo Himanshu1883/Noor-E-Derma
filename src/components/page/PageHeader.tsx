@@ -17,7 +17,7 @@ export function PageHeader({
   crumbs?: Crumb[]
 }) {
   return (
-    <header className="mx-auto max-w-7xl px-5 md:px-8">
+    <header className="mx-auto min-w-0 max-w-7xl px-5 md:px-8">
       {crumbs?.length ? (
         <nav className="flex flex-wrap items-center gap-1.5 text-[13px] text-ink/50" aria-label="Breadcrumb">
           {crumbs.map((c, i) => (
@@ -35,7 +35,7 @@ export function PageHeader({
         </nav>
       ) : null}
       <p className={`eyebrow ${crumbs?.length ? "mt-8" : ""}`}>{eyebrow}</p>
-      <h1 className="mt-4 text-[clamp(2.6rem,6vw,5.2rem)] leading-[0.95] font-medium">
+      <h1 className="mt-4 break-words text-[clamp(2.6rem,6vw,5.2rem)] leading-[0.95] font-medium">
         {title}
         {accent ? (
           <>

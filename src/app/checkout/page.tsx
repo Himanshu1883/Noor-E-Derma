@@ -323,7 +323,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="dewy pt-24 pb-28 md:pt-28">
+    <main className="dewy min-w-0 max-w-full overflow-x-clip pt-24 pb-28 md:pt-28">
       <form onSubmit={onSubmit} className="mx-auto grid max-w-6xl gap-8 px-5 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start lg:gap-12 lg:px-8">
         <div className="space-y-8">
           <header>

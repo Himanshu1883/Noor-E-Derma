@@ -22,7 +22,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!post) notFound()
 
   return (
-    <main className="dewy pt-28 pb-24">
+    <main className="dewy min-w-0 max-w-full overflow-x-clip pt-28 pb-24">
       <PageHeader
         crumbs={[{ label: "Home", href: "/" }, { label: "Journal", href: "/blog" }, { label: post.title }]}
         eyebrow={`${post.category} · ${post.date}`}

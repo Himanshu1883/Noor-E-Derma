@@ -56,16 +56,16 @@ export function CtaBanner() {
             <span className="text-4xl font-semibold">{formatINR(BUNDLE.price)}</span>
             <span className="text-white/50 line-through">{formatINR(BUNDLE.compareAt)}</span>
           </div>
-          <div className="mt-6 flex gap-2">
+          <div className="mt-6 grid min-w-0 grid-cols-4 gap-2">
             {time.map((t, i) => (
-              <div key={labels[i]} className="w-16 rounded-2xl bg-white/12 py-2 text-center ring-1 ring-white/15 backdrop-blur">
+              <div key={labels[i]} className="min-w-0 rounded-2xl bg-white/12 py-2 text-center ring-1 ring-white/15 backdrop-blur">
                 <span className="block font-display text-2xl tabular-nums">{String(t).padStart(2, "0")}</span>
                 <span className="block text-[10px] tracking-wider text-white/60 uppercase">{labels[i]}</span>
               </div>
             ))}
           </div>
           <GoldButton
-            className="mt-8 px-8 py-4 text-[15px]"
+            className="mt-8 max-w-full px-6 py-4 text-[15px] sm:px-8"
             onClick={() => {
               void add(glowDuo)
               setCartOpen(true)

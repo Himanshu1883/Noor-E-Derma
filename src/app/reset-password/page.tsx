@@ -43,7 +43,7 @@ function ResetInner() {
   }
 
   return (
-    <main className="dewy flex min-h-svh items-center px-5 py-16">
+    <main className="dewy flex min-h-svh min-w-0 max-w-full items-center overflow-x-clip px-5 py-16">
       <div className="mx-auto w-full max-w-[420px]">
         <div className="mb-8 flex justify-center">
           <Logo />

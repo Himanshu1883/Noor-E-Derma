@@ -46,7 +46,7 @@ export function Footer() {
   }
 
   return (
-    <footer className="bg-sage-800 text-white">
+    <footer className="min-w-0 max-w-full overflow-x-clip bg-sage-800 text-white">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 pt-16 pb-10 md:grid-cols-12 md:px-8">
         <div className="md:col-span-4">
           <div className="inline-flex rounded-3xl bg-ivory px-5 py-3">

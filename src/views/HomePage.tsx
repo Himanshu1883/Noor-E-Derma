@@ -15,7 +15,7 @@ import { WhoItsFor } from "@/sections/WhoItsFor"
 
 export function HomePage() {
   return (
-    <main>
+    <main className="min-w-0 max-w-full overflow-x-clip">
       <Hero />
       <BrandIntro />
       <ProductShowcase />

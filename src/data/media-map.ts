@@ -5,7 +5,6 @@ export const MEDIA: Record<string, string> = {
   "/assets/tan-eraser-kit.jpg": "/api/media/6b04221fb3a1f66fedeb5e66",
   "/assets/card-tan-eraser.jpg": "/api/media/6b042220b3a1f66fedeb5e68",
   "/assets/card-daily-detox.jpg": "/api/media/6b042222b3a1f66fedeb5e6a",
-  "/assets/tan_eraser.mp4": "/api/media/6b042224b3a1f66fedeb5e6c",
 }
 
 export function mediaUrl(publicPath: string) {

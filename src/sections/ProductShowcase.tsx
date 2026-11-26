@@ -86,8 +86,8 @@ export function ProductShowcase() {
     <section ref={ref} className="relative h-svh min-h-[640px] overflow-hidden dewy-sage">
       <div className="pointer-events-none absolute top-1/2 left-1/2 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.95),rgba(255,255,255,0)_68%)]" />
 
-      <div className="relative mx-auto grid h-full max-w-7xl grid-rows-[auto_minmax(220px,1fr)_auto] items-center gap-3 px-5 pt-20 pb-8 md:grid-cols-12 md:grid-rows-1 md:gap-6 md:px-8 md:pt-20 md:pb-10">
-        <div className="md:col-span-4">
+      <div className="relative mx-auto grid h-full min-w-0 max-w-7xl grid-rows-[auto_minmax(220px,1fr)_auto] items-center gap-3 px-5 pt-20 pb-8 md:grid-cols-12 md:grid-rows-1 md:gap-6 md:px-8 md:pt-20 md:pb-10">
+        <div className="min-w-0 md:col-span-4">
           <p className="eyebrow">In focus · 0{stage + 1} / 02</p>
           <AnimatePresence mode="wait">
             <motion.div
@@ -112,7 +112,7 @@ export function ProductShowcase() {
           </AnimatePresence>
         </div>
 
-        <div className="relative h-full min-h-[220px] touch-pan-y md:col-span-5">
+        <div className="relative h-full min-h-[220px] min-w-0 touch-pan-y md:col-span-5">
           {enable3d ? (
             <SceneGuard
               fallback={
@@ -140,7 +140,7 @@ export function ProductShowcase() {
           )}
         </div>
 
-        <ul className="grid grid-cols-2 gap-2 md:col-span-3 md:grid-cols-1 md:gap-3">
+        <ul className="grid min-w-0 grid-cols-2 gap-2 md:col-span-3 md:grid-cols-1 md:gap-3">
           {current.callouts.map((c, i) => {
             const shown = local > i * 0.18 || !enable3d
             const Icon = c.icon
@@ -149,16 +149,16 @@ export function ProductShowcase() {
                 key={`${stage}-${c.title}`}
                 className={cn(
                   "relative flex items-center gap-3 transition-all duration-500",
-                  shown ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0",
+                  shown ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
                 )}
               >
                 <span className="absolute top-1/2 -left-14 hidden h-px w-12 bg-[linear-gradient(90deg,transparent,#b8860b)] md:block" />
                 <span className="absolute top-1/2 -left-2 hidden h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-gold md:block" />
-                <div className="glass flex w-full items-center gap-2.5 rounded-2xl p-2 pr-3 md:gap-3 md:p-2.5 md:pr-4">
+                <div className="glass flex min-w-0 w-full items-center gap-2.5 rounded-2xl p-2 pr-3 md:gap-3 md:p-2.5 md:pr-4">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sage-50 text-sage-600 md:h-10 md:w-10">
                     <Icon size={18} />
                   </span>
-                  <span className="leading-tight">
+                  <span className="min-w-0 leading-tight">
                     <span className="block text-[14px] font-semibold">{c.title}</span>
                     <span className="block text-xs text-ink/55">{c.sub}</span>
                   </span>

@@ -9,7 +9,7 @@ export function DraftBadge() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="glass fixed bottom-4 left-4 z-[60] flex items-center gap-1 rounded-full p-1 text-[11px] font-medium text-ink">
+    <div className="glass fixed bottom-4 left-4 z-[60] flex max-w-[calc(100vw-2rem)] flex-wrap items-center gap-1 rounded-full p-1 text-[11px] font-medium text-ink">
       <span className="px-2 text-ink/60">{DRAFT_LABEL}</span>
       {THEMES.map((t) => (
         <button

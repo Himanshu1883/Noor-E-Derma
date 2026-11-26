@@ -31,7 +31,7 @@ export function Reviews() {
       <div className="mt-10 [mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]">
         <div className="marquee-track flex w-max gap-5 px-5">
           {loop.map((review, i) => (
-            <figure key={`${review.id}-${i}`} className="glass w-[340px] shrink-0 rounded-[28px] p-6">
+            <figure key={`${review.id}-${i}`} className="glass w-[min(340px,calc(100vw-2.5rem))] shrink-0 rounded-[28px] p-6">
               <StarRating rating={review.rating} />
               <p className="mt-3 font-display text-xl">“{review.title}”</p>
               <p className="mt-2 text-[14px] leading-relaxed text-ink/70">{review.body}</p>

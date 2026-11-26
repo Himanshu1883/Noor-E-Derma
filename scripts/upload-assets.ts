@@ -13,7 +13,6 @@ const USED = [
   { key: "kitTan", publicPath: "/assets/tan-eraser-kit.jpg", file: "public/assets/tan-eraser-kit.jpg", type: "image/jpeg" },
   { key: "cardTan", publicPath: "/assets/card-tan-eraser.jpg", file: "public/assets/card-tan-eraser.jpg", type: "image/jpeg" },
   { key: "cardDetox", publicPath: "/assets/card-daily-detox.jpg", file: "public/assets/card-daily-detox.jpg", type: "image/jpeg" },
-  { key: "videoTan", publicPath: "/assets/tan_eraser.mp4", file: "public/assets/tan_eraser.mp4", type: "video/mp4" },
 ] as const
 
 async function uploadOne(bucket: GridFSBucket, abs: string, filename: string, contentType: string) {

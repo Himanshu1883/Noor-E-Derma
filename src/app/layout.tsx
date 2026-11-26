@@ -24,11 +24,11 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
-const themeScript = `(function(){try{var t=localStorage.getItem("nd-theme");document.documentElement.dataset.theme=(t==="a"||t==="c")?t:"a"}catch(e){document.documentElement.dataset.theme="a"}})()`
+const themeScript = `(function(){document.documentElement.dataset.theme="a";try{localStorage.setItem("nd-theme","a")}catch(e){}})()`
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme="a" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

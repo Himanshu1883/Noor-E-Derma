@@ -82,7 +82,7 @@ export function Ritual() {
             Four steps to <span className="gold-text italic">glow</span>
           </h2>
         </div>
-        <div className="flex gap-1.5">
+        <div className="flex max-w-full flex-wrap justify-end gap-1.5">
           {panels.map((p, i) => (
             <span
               key={p.num}
