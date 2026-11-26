@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import { toast } from "sonner"
 import { api } from "@/lib/client"
 import type { PublicUser } from "@/lib/auth/types"
 
@@ -11,7 +12,7 @@ type AuthValue = {
   loading: boolean
   refresh: () => Promise<void>
   applyUser: (user: PublicUser | null) => void
-  logout: () => Promise<void>
+  logout: (opts?: { silent?: boolean }) => Promise<void>
 }
 
 const AuthContext = createContext<AuthValue | null>(null)
@@ -66,8 +67,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         refresh,
         applyUser: persist,
-        logout: async () => {
-          await api("/api/auth/logout", { method: "POST" })
+        logout: async (opts) => {
+          if (!opts?.silent) {
+            toast.success("Signed out", { id: "auth-signed-out", duration: 4000 })
+          }
+          try {
+            sessionStorage.setItem("nd_signout", "1")
+          } catch {
+            /* private mode */
+          }
+          try {
+            await api("/api/auth/logout", { method: "POST" })
+          } catch {
+            /* still clear the local session */
+          }
           persist(null)
         },
       }}

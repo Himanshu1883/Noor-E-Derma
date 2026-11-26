@@ -116,51 +116,53 @@ export default function AdminCustomerPage() {
         }
       />
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[280px_1fr]">
-        <AdminCard className="p-5">
-          <div className="flex items-center gap-3">
-            <span className="grid h-12 w-12 place-items-center rounded-full bg-sage-800 text-sm text-white">{initials(user.name)}</span>
-            <div>
-              <p className="font-medium">{user.name}</p>
-              <Pill tone={user.role === "admin" ? "gold" : "neutral"}>{user.role}</Pill>
+      <div className="mt-6 grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <aside className="lg:sticky lg:top-8 lg:col-start-2 lg:row-start-1">
+          <AdminCard className="p-5">
+            <div className="flex items-center gap-3">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-sage-800 text-sm text-white">{initials(user.name)}</span>
+              <div>
+                <p className="font-medium">{user.name}</p>
+                <Pill tone={user.role === "admin" ? "gold" : "neutral"}>{user.role}</Pill>
+              </div>
             </div>
-          </div>
-          <dl className="mt-5 space-y-3 text-sm">
-            <div>
-              <dt className="text-[11px] tracking-[0.16em] text-ink/40 uppercase">Email</dt>
-              <dd>{user.email}</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] tracking-[0.16em] text-ink/40 uppercase">Phone</dt>
-              <dd>{user.phone || "—"}</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] tracking-[0.16em] text-ink/40 uppercase">Status</dt>
-              <dd>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const status = user.status === "active" ? "disabled" : "active"
-                    await api(`/api/admin/users/${user._id}`, { method: "PATCH", body: JSON.stringify({ status }) })
-                    await load()
-                  }}
-                >
-                  <Pill tone={statusTone(user.status)}>{user.status}</Pill>
-                </button>
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[11px] tracking-[0.16em] text-ink/40 uppercase">Joined</dt>
-              <dd>{formatDate(user.createdAt)}</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] tracking-[0.16em] text-ink/40 uppercase">Last login</dt>
-              <dd>{formatDate(user.lastLoginAt)}</dd>
-            </div>
-          </dl>
-        </AdminCard>
+            <dl className="mt-5 space-y-3 text-sm">
+              <div>
+                <dt className="text-[11px] tracking-[0.16em] text-ink/40 uppercase">Email</dt>
+                <dd className="break-all">{user.email}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] tracking-[0.16em] text-ink/40 uppercase">Phone</dt>
+                <dd>{user.phone || "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] tracking-[0.16em] text-ink/40 uppercase">Status</dt>
+                <dd>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const status = user.status === "active" ? "disabled" : "active"
+                      await api(`/api/admin/users/${user._id}`, { method: "PATCH", body: JSON.stringify({ status }) })
+                      await load()
+                    }}
+                  >
+                    <Pill tone={statusTone(user.status)}>{user.status}</Pill>
+                  </button>
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] tracking-[0.16em] text-ink/40 uppercase">Joined</dt>
+                <dd>{formatDate(user.createdAt)}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] tracking-[0.16em] text-ink/40 uppercase">Last login</dt>
+                <dd>{formatDate(user.lastLoginAt)}</dd>
+              </div>
+            </dl>
+          </AdminCard>
+        </aside>
 
-        <div className="space-y-4">
+        <div className="space-y-4 lg:col-start-1 lg:row-start-1">
           <AdminCard className="p-5">
             <h2 className="text-2xl">Addresses</h2>
             {user.addresses?.length ? (

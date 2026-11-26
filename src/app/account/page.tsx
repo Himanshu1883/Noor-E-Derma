@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { AccountCard, Avatar, StatusChip, fieldClass, formatDate, thumbSrc } from "@/components/account/ui"
 import { InlineBusy } from "@/components/Busy"
 import { GoldButton } from "@/components/GoldButton"
+import { PasswordField } from "@/components/PasswordField"
 import { useAuth } from "@/context/AuthContext"
 import { useWishlist } from "@/context/WishlistContext"
 import { api } from "@/lib/client"
@@ -164,8 +165,8 @@ export default function AccountPage() {
             </div>
             {pwOpen ? (
               <form onSubmit={changePassword} className="space-y-2 rounded-2xl bg-[#faf6ec] p-4">
-                <input name="currentPassword" type="password" required placeholder="Current password" className={fieldClass} />
-                <input name="newPassword" type="password" required minLength={8} placeholder="New password" className={fieldClass} />
+                <PasswordField name="currentPassword" placeholder="Current password" autoComplete="current-password" className={fieldClass} />
+                <PasswordField name="newPassword" placeholder="New password" autoComplete="new-password" minLength={8} className={fieldClass} />
                 <GoldButton type="submit" className="px-5 py-2 text-[12px]">
                   Update password
                 </GoldButton>

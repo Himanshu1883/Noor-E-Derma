@@ -100,8 +100,8 @@ export function Pill({
 }
 
 export function statusTone(status: string): "neutral" | "good" | "warn" | "bad" | "gold" {
-  if (["paid", "confirmed", "delivered", "active"].includes(status)) return "good"
-  if (["shipped", "packed"].includes(status)) return "gold"
+  if (["paid", "confirmed", "delivered", "active", "completed"].includes(status)) return "good"
+  if (["shipped", "packed", "sent"].includes(status)) return "gold"
   if (["pending_payment", "pending", "low"].includes(status)) return "warn"
   if (["cancelled", "refunded", "failed", "disabled"].includes(status)) return "bad"
   return "neutral"

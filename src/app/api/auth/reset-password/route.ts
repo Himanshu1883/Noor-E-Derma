@@ -4,6 +4,7 @@ import { destroyAllSessions } from "@/lib/auth/session"
 import { hashToken } from "@/lib/crypto"
 import { connectDb } from "@/lib/db"
 import { resetSchema } from "@/lib/validators"
+import { PasswordResetRequest } from "@/models/PasswordResetRequest"
 import { Token } from "@/models/Token"
 import { User } from "@/models/User"
 
@@ -19,6 +20,10 @@ export const POST = withHandler(async (request) => {
   user.lockedUntil = undefined
   await user.save()
   await rec.deleteOne()
+  await PasswordResetRequest.updateMany(
+    { userId: user._id, status: { $in: ["pending", "sent"] } },
+    { $set: { status: "completed", usedAt: new Date() } },
+  )
   await destroyAllSessions(String(user._id))
   return json({ message: "Password updated. Please sign in." })
 })

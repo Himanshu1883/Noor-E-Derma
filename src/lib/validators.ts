@@ -22,10 +22,13 @@ export const emailSchema = z.object({
   email: z.string().trim().email("Enter a valid email"),
 })
 
-export const resetSchema = z.object({
-  token: z.string().min(20),
-  password: passwordSchema,
-})
+export const resetSchema = z
+  .object({
+    token: z.string().min(20),
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, "Confirm your new password"),
+  })
+  .refine((d) => d.password === d.confirmPassword, { message: "Passwords do not match", path: ["confirmPassword"] })
 
 export const profileSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -124,14 +127,33 @@ export const couponSchema = z.object({
 
 export const settingsSchema = z.object({
   storeName: z.string().trim().min(2).max(80),
+  tagline: z.string().trim().max(120).optional().default(""),
+  legalName: z.string().trim().max(80).optional().default(""),
   supportEmail: z.string().trim().email(),
   supportPhone: z.string().trim().max(20).optional().default(""),
+  whatsapp: z.string().trim().max(20).optional().default(""),
+  hours: z.string().trim().max(80).optional().default(""),
+  address: z.string().trim().max(160).optional().default(""),
+  gst: z.string().trim().max(24).optional().default(""),
+  footerNote: z.string().trim().max(240).optional().default(""),
+  announcement: z.string().max(160).optional().default(""),
+  announcementEnabled: z.boolean().optional().default(false),
+  announcementLink: z.string().trim().max(200).optional().default(""),
   shippingFee: z.number().min(0),
   freeShippingOver: z.number().min(0),
   taxPercent: z.number().min(0).max(40),
+  estimatedDelivery: z.string().trim().max(80).optional().default(""),
   lowStockThreshold: z.number().int().min(0),
-  announcement: z.string().max(200).optional().default(""),
   paymentsEnabled: z.boolean(),
+  codEnabled: z.boolean().optional().default(true),
+  onlinePaymentsEnabled: z.boolean().optional().default(true),
+  minOrderAmount: z.number().min(0).optional().default(0),
+  instagramUrl: z.string().trim().max(200).optional().default(""),
+  youtubeUrl: z.string().trim().max(200).optional().default(""),
+  facebookUrl: z.string().trim().max(200).optional().default(""),
+  maintenanceMode: z.boolean().optional().default(false),
+  maintenanceMessage: z.string().trim().max(200).optional().default(""),
+  newsletterEnabled: z.boolean().optional().default(true),
 })
 
 export const inventoryAdjustSchema = z.object({

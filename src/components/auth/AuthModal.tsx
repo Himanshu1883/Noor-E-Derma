@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect, useState, type FormEvent } from "react"
 import { toast } from "sonner"
 import { GoldButton } from "@/components/GoldButton"
+import { PasswordField } from "@/components/PasswordField"
 import { useAuth } from "@/context/AuthContext"
 import type { PublicUser } from "@/lib/auth/types"
 import { useUI, type AuthMode } from "@/context/UIContext"
@@ -70,6 +71,7 @@ function AuthModalInner() {
   const pathname = usePathname()
   const params = useSearchParams()
   const [pending, setPending] = useState(false)
+  const [forgotSent, setForgotSent] = useState(false)
   const authQuery = params.get("auth")
   const errorQuery = params.get("error")
   const nextQuery = params.get("next") ?? ""
@@ -83,6 +85,10 @@ function AuthModalInner() {
     url.searchParams.delete("next")
     router.replace(url.pathname + url.search, { scroll: false })
   }, [authQuery, errorQuery, nextQuery, openAuth, router])
+
+  useEffect(() => {
+    if (!authOpen) setForgotSent(false)
+  }, [authOpen])
 
   useEffect(() => {
     if (!authOpen) return
@@ -117,12 +123,11 @@ function AuthModalInner() {
     setPending(true)
     try {
       if (authMode === "forgot") {
-        const data = await api<{ message: string }>("/api/auth/forgot-password", {
+        await api("/api/auth/forgot-password", {
           method: "POST",
           body: JSON.stringify({ email: form.get("email") }),
         })
-        toast.success(data.message)
-        openAuth("login", { next: authNext })
+        setForgotSent(true)
         return
       }
       if (authMode === "register") {
@@ -153,7 +158,14 @@ function AuthModalInner() {
     }
   }
 
-  const title = authMode === "register" ? "Create account" : authMode === "forgot" ? "Reset password" : "Sign in"
+  const title =
+    authMode === "register"
+      ? "Create account"
+      : authMode === "forgot"
+        ? forgotSent
+          ? "Request received"
+          : "Forgot password"
+        : "Sign in"
   const googleLabel = authMode === "register" ? "Sign up with Google" : "Sign in with Google"
 
   return (
@@ -193,7 +205,7 @@ function AuthModalInner() {
                 ) : null}
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="eyebrow">{authMode === "register" ? "Join the ritual" : "Welcome back"}</p>
+                    <p className="eyebrow">{authMode === "register" ? "Join the ritual" : authMode === "forgot" ? "Account" : "Welcome back"}</p>
                     <h2 id="auth-title" className="mt-2 text-3xl">
                       {title}
                     </h2>
@@ -210,63 +222,93 @@ function AuthModalInner() {
 
                 {authError ? <p className="mt-3 text-sm text-red-700">{authError}</p> : null}
 
-                {authMode !== "forgot" ? (
-                  <>
-                    <div className="mt-6">
-                      <GoogleButton label={googleLabel} next={authNext || pathname} />
-                    </div>
-                    <div className="my-5 flex items-center gap-3 text-[11px] tracking-[0.18em] text-ink/40 uppercase">
-                      <span className="h-px flex-1 bg-sage-100" />
-                      or email
-                      <span className="h-px flex-1 bg-sage-100" />
-                    </div>
-                  </>
+                {authMode === "forgot" && forgotSent ? (
+                  <div className="mt-6">
+                    <p className="text-sm leading-relaxed text-ink/70">
+                      We’ve received your request. A password reset link will be sent to your email shortly. Please check your inbox and follow the link to choose a new password.
+                    </p>
+                    <GoldButton
+                      type="button"
+                      className="mt-6 w-full"
+                      onClick={() => {
+                        setForgotSent(false)
+                        openAuth("login", { next: authNext })
+                      }}
+                    >
+                      Back to sign in
+                    </GoldButton>
+                  </div>
                 ) : (
-                  <p className="mt-4 text-sm text-ink/60">We’ll send a reset link if that email has an account.</p>
+                  <>
+                    {authMode !== "forgot" ? (
+                      <>
+                        <div className="mt-6">
+                          <GoogleButton label={googleLabel} next={authNext || pathname} />
+                        </div>
+                        <div className="my-5 flex items-center gap-3 text-[11px] tracking-[0.18em] text-ink/40 uppercase">
+                          <span className="h-px flex-1 bg-sage-100" />
+                          or email
+                          <span className="h-px flex-1 bg-sage-100" />
+                        </div>
+                      </>
+                    ) : (
+                      <p className="mt-4 text-sm text-ink/60">Enter the email on your account. We’ll take it from there.</p>
+                    )}
+
+                    <form onSubmit={onSubmit} className="space-y-3">
+                      {authMode === "register" ? <Field name="name" label="Name" autoComplete="name" /> : null}
+                      <Field name="email" label="Email" type="email" autoComplete="email" />
+                      {authMode !== "forgot" ? (
+                        <PasswordField
+                          name="password"
+                          label="Password"
+                          autoComplete={authMode === "login" ? "current-password" : "new-password"}
+                          className="w-full rounded-full bg-white px-4 py-3 text-sm outline-none ring-1 ring-sage-100 focus:ring-gold/50"
+                          minLength={authMode === "register" ? 8 : undefined}
+                        />
+                      ) : null}
+                      {authMode === "login" ? (
+                        <p className="text-right text-[12px]">
+                          <button
+                            type="button"
+                            className="text-sage-600 hover:underline"
+                            onClick={() => {
+                              setForgotSent(false)
+                              openAuth("forgot", { next: authNext })
+                            }}
+                          >
+                            Forgot password?
+                          </button>
+                        </p>
+                      ) : authMode === "register" ? (
+                        <p className="text-[12px] text-ink/50">Use at least 8 characters with a letter and a number.</p>
+                      ) : null}
+                      <GoldButton type="submit" className="mt-1 w-full" loading={pending}>
+                        {authMode === "forgot" ? "Request reset" : authMode === "register" ? "Create account" : "Sign in"}
+                      </GoldButton>
+                    </form>
+                  </>
                 )}
 
-                <form onSubmit={onSubmit} className="space-y-3">
-                  {authMode === "register" ? <Field name="name" label="Name" autoComplete="name" /> : null}
-                  <Field name="email" label="Email" type="email" autoComplete="email" />
-                  {authMode !== "forgot" ? (
-                    <Field
-                      name="password"
-                      label="Password"
-                      type="password"
-                      autoComplete={authMode === "login" ? "current-password" : "new-password"}
-                    />
-                  ) : null}
-                  {authMode === "login" ? (
-                    <p className="text-right text-[12px]">
-                      <button type="button" className="text-sage-600 hover:underline" onClick={() => openAuth("forgot", { next: authNext })}>
-                        Forgot password?
-                      </button>
-                    </p>
-                  ) : authMode === "register" ? (
-                    <p className="text-[12px] text-ink/50">Use at least 8 characters with a letter and a number.</p>
-                  ) : null}
-                  <GoldButton type="submit" className="mt-1 w-full" loading={pending}>
-                    {authMode === "forgot" ? "Send reset link" : authMode === "register" ? "Create account" : "Sign in"}
-                  </GoldButton>
-                </form>
-
-                <p className="mt-5 text-center text-sm text-ink/60">
-                  {authMode === "register" ? (
-                    <>
-                      Already have an account?{" "}
-                      <button type="button" className="text-sage-700 underline-offset-2 hover:underline" onClick={() => openAuth("login", { next: authNext })}>
-                        Sign in
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      New here?{" "}
-                      <button type="button" className="text-sage-700 underline-offset-2 hover:underline" onClick={() => openAuth("register", { next: authNext })}>
-                        Create an account
-                      </button>
-                    </>
-                  )}
-                </p>
+                {forgotSent && authMode === "forgot" ? null : (
+                  <p className="mt-5 text-center text-sm text-ink/60">
+                    {authMode === "register" ? (
+                      <>
+                        Already have an account?{" "}
+                        <button type="button" className="text-sage-700 underline-offset-2 hover:underline" onClick={() => openAuth("login", { next: authNext })}>
+                          Sign in
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        New here?{" "}
+                        <button type="button" className="text-sage-700 underline-offset-2 hover:underline" onClick={() => openAuth("register", { next: authNext })}>
+                          Create an account
+                        </button>
+                      </>
+                    )}
+                  </p>
+                )}
               </div>
             </motion.div>
           </div>

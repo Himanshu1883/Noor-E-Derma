@@ -15,12 +15,16 @@ export function PaymentPanel({
   total,
   pending,
   disabled,
+  onlineEnabled = true,
+  codEnabled = true,
 }: {
   method: Method
   onMethod: (method: Method) => void
   total: number
   pending: boolean
   disabled: boolean
+  onlineEnabled?: boolean
+  codEnabled?: boolean
 }) {
   const online = method === "razorpay"
 
@@ -30,6 +34,7 @@ export function PaymentPanel({
       <p className="mt-1 text-[13px] text-ink/50">Choose a payment method to complete your order</p>
 
       <div className="mt-5 space-y-3">
+        {onlineEnabled ? (
         <button
           type="button"
           onClick={() => onMethod("razorpay")}
@@ -59,7 +64,9 @@ export function PaymentPanel({
             </span>
           </span>
         </button>
+        ) : null}
 
+        {codEnabled ? (
         <button
           type="button"
           onClick={() => onMethod("cod")}
@@ -75,6 +82,10 @@ export function PaymentPanel({
             <span className="mt-0.5 block text-[12px] text-ink/50">Pay in cash when your order is delivered</span>
           </span>
         </button>
+        ) : null}
+        {!onlineEnabled && !codEnabled ? (
+          <p className="rounded-2xl bg-ivory px-4 py-3 text-sm text-ink/60">Checkout is paused. No payment methods are available.</p>
+        ) : null}
       </div>
 
       <div className="mt-5 flex justify-center">

@@ -6,6 +6,7 @@ import { useState, type FormEvent } from "react"
 import { toast } from "sonner"
 import { AccountCard, fieldClass } from "@/components/account/ui"
 import { GoldButton } from "@/components/GoldButton"
+import { PasswordField } from "@/components/PasswordField"
 import { useAuth } from "@/context/AuthContext"
 import { api } from "@/lib/client"
 
@@ -25,7 +26,7 @@ export default function SecurityPage() {
         body: JSON.stringify({ currentPassword: form.get("currentPassword"), newPassword: form.get("newPassword") }),
       })
       toast.success(data.message)
-      await logout()
+      await logout({ silent: true })
       router.push("/?auth=login")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not change password")
@@ -46,8 +47,8 @@ export default function SecurityPage() {
             <Lock size={18} className="text-gold-deep" /> Change password
           </h2>
           <form onSubmit={changePassword} className="space-y-3">
-            <input name="currentPassword" type="password" required placeholder="Current password" className={fieldClass} />
-            <input name="newPassword" type="password" required minLength={8} placeholder="New password (8+ chars)" className={fieldClass} />
+            <PasswordField name="currentPassword" placeholder="Current password" autoComplete="current-password" className={fieldClass} />
+            <PasswordField name="newPassword" placeholder="New password (8+ chars)" autoComplete="new-password" minLength={8} className={fieldClass} />
             <GoldButton type="submit" size="sm" loading={pending}>
               {pending ? "Updating" : "Update password"}
             </GoldButton>

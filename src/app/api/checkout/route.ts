@@ -42,6 +42,16 @@ export const POST = withHandler(async (request) => {
 
   const totals = await quoteTotals(serialized.subtotal, body.couponCode || cart.couponCode, user ? String(user._id) : undefined)
   if (!totals.settings.paymentsEnabled) throw new ApiError(503, "Checkout is temporarily paused")
+  const minOrder = totals.settings.minOrderAmount ?? 0
+  if (minOrder > 0 && totals.total < minOrder) {
+    throw new ApiError(400, `Minimum order is ₹${minOrder}`)
+  }
+  if (body.paymentMethod === "cod" && totals.settings.codEnabled === false) {
+    throw new ApiError(400, "Cash on delivery is not available")
+  }
+  if (body.paymentMethod !== "cod" && totals.settings.onlinePaymentsEnabled === false) {
+    throw new ApiError(400, "Online payment is not available")
+  }
 
   const order = await Order.create({
     orderNumber: orderNumber(),
@@ -152,7 +162,11 @@ export const GET = withHandler(async () => {
   return json({
     cart: serialized,
     totals,
-    razorpayEnabled: razorpayEnabled(),
+    razorpayEnabled: razorpayEnabled() && totals.settings.onlinePaymentsEnabled !== false,
+    codEnabled: totals.settings.codEnabled !== false,
+    paymentsEnabled: totals.settings.paymentsEnabled !== false,
+    minOrderAmount: totals.settings.minOrderAmount ?? 0,
+    estimatedDelivery: totals.settings.estimatedDelivery ?? "",
     profile: {
       name: user.name,
       email: user.email,

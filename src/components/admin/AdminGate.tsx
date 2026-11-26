@@ -12,7 +12,14 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (loading) return
     if (!user) {
-      router.replace("/?auth=login&next=/admin")
+      let signedOut = false
+      try {
+        signedOut = sessionStorage.getItem("nd_signout") === "1"
+        if (signedOut) sessionStorage.removeItem("nd_signout")
+      } catch {
+        /* private mode */
+      }
+      router.replace(signedOut ? "/" : "/?auth=login&next=/admin")
       return
     }
     if (user.role !== "admin") router.replace("/")

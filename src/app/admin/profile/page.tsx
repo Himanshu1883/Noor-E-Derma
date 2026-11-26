@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react"
 import { toast } from "sonner"
 import { AdminCard, AdminHeader, fieldClass, initials, labelClass } from "@/components/admin/ui"
 import { GoldButton } from "@/components/GoldButton"
+import { PasswordField } from "@/components/PasswordField"
 import { useAuth } from "@/context/AuthContext"
 import { api } from "@/lib/client"
 import type { PublicUser } from "@/lib/auth/types"
@@ -82,14 +83,19 @@ export default function AdminProfilePage() {
         <AdminCard className="p-6">
           <h2 className="text-2xl">Password</h2>
           <form onSubmit={changePassword} className="mt-5 space-y-4">
-            <label className="block">
-              <span className={labelClass}>Current password</span>
-              <input name="currentPassword" type="password" required className={fieldClass} />
-            </label>
-            <label className="block">
-              <span className={labelClass}>New password</span>
-              <input name="newPassword" type="password" required minLength={8} className={fieldClass} />
-            </label>
+            <PasswordField
+              name="currentPassword"
+              label="Current password"
+              autoComplete="current-password"
+              className={fieldClass}
+            />
+            <PasswordField
+              name="newPassword"
+              label="New password"
+              autoComplete="new-password"
+              minLength={8}
+              className={fieldClass}
+            />
             <GoldButton type="submit" loading={pwPending}>
               {pwPending ? "Updating" : "Update password"}
             </GoldButton>

@@ -2,14 +2,17 @@
 
 import { usePathname } from "next/navigation"
 import { useEffect } from "react"
+import { AnnouncementBar } from "@/components/AnnouncementBar"
 import { AuthModal } from "@/components/auth/AuthModal"
 import { CartDrawer } from "@/components/CartDrawer"
 import { Footer } from "@/components/Footer"
 import { GrainOverlay } from "@/components/GrainOverlay"
 import { Loader } from "@/components/Loader"
+import { MaintenanceScreen } from "@/components/MaintenanceScreen"
 import { Navbar } from "@/components/Navbar"
 import { QuickViewDrawer } from "@/components/QuickViewDrawer"
 import { ScrollProgress } from "@/components/ScrollProgress"
+import { useStoreSettings } from "@/context/StoreSettingsContext"
 import { useTheme } from "@/context/ThemeContext"
 import { useUI } from "@/context/UIContext"
 import { getLenis, scrollToHash, useLenis } from "@/hooks/useLenis"
@@ -21,6 +24,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { loading } = useUI()
   const pathname = usePathname()
   const { theme } = useTheme()
+  const { maintenanceMode } = useStoreSettings()
   const bare = pathname.startsWith("/admin") || pathname.startsWith("/account") || BARE.has(pathname)
   useLenis(!loading && !bare, theme === "a" ? 1.7 : 1.15)
 
@@ -55,11 +59,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (bare) return <>{children}</>
 
+  if (maintenanceMode) {
+    return (
+      <>
+        <AuthModal />
+        <MaintenanceScreen />
+      </>
+    )
+  }
+
   return (
     <>
       <Loader />
       <GrainOverlay />
       <ScrollProgress />
+      <AnnouncementBar />
       <Navbar />
       <AuthModal />
       <CartDrawer />

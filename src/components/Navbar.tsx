@@ -11,6 +11,7 @@ import { Logo } from "@/components/Logo"
 import { useAuth } from "@/context/AuthContext"
 import { useCart } from "@/context/CartContext"
 import { useUI } from "@/context/UIContext"
+import { useAnnouncementOffset } from "@/components/AnnouncementBar"
 import { NAV_MORE, NAV_PRIMARY } from "@/data/site"
 import { getLenis } from "@/hooks/useLenis"
 import { cn } from "@/lib/cn"
@@ -54,6 +55,7 @@ export function Navbar() {
   const [more, setMore] = useState(false)
   const pathname = usePathname()
   const onCheckout = pathname === "/checkout" || pathname.startsWith("/checkout/")
+  const announceOffset = useAnnouncementOffset()
   const [badge, setBadge] = useState(count)
   const badgeLocked = useRef(false)
 
@@ -94,7 +96,7 @@ export function Navbar() {
   }, [open])
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 md:px-6">
+    <header className="fixed inset-x-0 z-50 px-3 pt-3 md:px-6" style={{ top: announceOffset }}>
       <div
         className={cn(
           "relative z-20 mx-auto flex max-w-7xl items-center justify-between gap-4 overflow-visible rounded-full px-4 py-2 transition-all duration-500 md:px-6",

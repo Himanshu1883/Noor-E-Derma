@@ -17,7 +17,6 @@ import {
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
-import { toast } from "sonner"
 import { Avatar } from "@/components/account/ui"
 import { InlineBusy } from "@/components/Busy"
 import { Logo } from "@/components/Logo"
@@ -46,7 +45,6 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await logout()
-    toast.success("Signed out")
     router.push("/")
   }
 

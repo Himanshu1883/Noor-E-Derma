@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowUpRight,
+  KeyRound,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -24,7 +25,6 @@ import { useAuth } from "@/context/AuthContext"
 import { initials } from "@/components/admin/ui"
 import { api } from "@/lib/client"
 import { cn } from "@/lib/cn"
-import { toast } from "sonner"
 
 const links = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -32,6 +32,7 @@ const links = [
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/inventory", label: "Inventory", icon: Warehouse },
   { href: "/admin/users", label: "Customers", icon: Users },
+  { href: "/admin/password-resets", label: "Password resets", icon: KeyRound },
   { href: "/admin/coupons", label: "Coupons", icon: Tag },
   { href: "/admin/settings", label: "Settings", icon: Settings },
   { href: "/admin/profile", label: "Profile", icon: UserRound },
@@ -56,6 +57,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         api("/api/admin/products"),
         api("/api/admin/inventory"),
         api("/api/admin/users"),
+        api("/api/admin/password-resets"),
         api("/api/admin/coupons"),
         api("/api/admin/orders"),
         api("/api/admin/settings"),
@@ -66,8 +68,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await logout()
-    toast.success("Signed out")
-    router.push("/?auth=login")
+    router.push("/")
   }
 
   const nav = (

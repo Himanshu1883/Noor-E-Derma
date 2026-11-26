@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { toast } from "sonner"
-import { PageBusy } from "@/components/Busy"
+import { PageBusy, PrefillOverlay } from "@/components/Busy"
 import { QuantityStepper } from "@/components/QuantityStepper"
 import { RazorpaySecure } from "@/components/pay/PayMarks"
 import { PaymentPanel } from "@/components/pay/PaymentPanel"
@@ -28,6 +28,10 @@ type Quote = {
   }
   profile: { name: string; email: string; phone: string; addresses: PublicAddress[] }
   razorpayEnabled?: boolean
+  codEnabled?: boolean
+  paymentsEnabled?: boolean
+  minOrderAmount?: number
+  estimatedDelivery?: string
 }
 
 declare global {
@@ -37,8 +41,30 @@ declare global {
 }
 
 const field =
-  "mt-1.5 w-full rounded-xl bg-white px-3.5 py-2.5 text-sm text-ink outline-none ring-1 ring-sage-100 placeholder:text-ink/35 focus:ring-gold/45"
+  "mt-1.5 w-full rounded-xl bg-white px-3.5 py-2.5 text-sm text-ink outline-none ring-1 ring-sage-100 placeholder:text-ink/35 focus:ring-gold/45 disabled:opacity-70"
 const label = "text-[12px] font-medium tracking-[0.04em] text-ink/70"
+
+type Ship = {
+  name: string
+  email: string
+  phone: string
+  line1: string
+  line2: string
+  city: string
+  state: string
+  pincode: string
+}
+
+const emptyShip: Ship = {
+  name: "",
+  email: "",
+  phone: "",
+  line1: "",
+  line2: "",
+  city: "",
+  state: "",
+  pincode: "",
+}
 
 function cover(images?: { src: string; type?: string }[]) {
   return images?.find((img) => img.type !== "video" && img.src) ?? images?.[0]
@@ -54,6 +80,8 @@ export default function CheckoutPage() {
   const [couponBusy, setCouponBusy] = useState(false)
   const [coupon, setCoupon] = useState("")
   const [method, setMethod] = useState<"razorpay" | "cod">("razorpay")
+  const [ship, setShip] = useState<Ship>(emptyShip)
+  const [prefilled, setPrefilled] = useState(false)
   const lines = draft ?? bag
   const qtyTimers = useRef<Record<string, number>>({})
   const qtyPending = useRef<Record<string, { productId: string; quantity: number }>>({})
@@ -65,13 +93,50 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (!ready) return
+    let cancelled = false
+    let reveal: number | undefined
+    const started = Date.now()
+    const finish = () => {
+      const wait = Math.max(0, 560 - (Date.now() - started))
+      reveal = window.setTimeout(() => {
+        if (!cancelled) setPrefilled(true)
+      }, wait)
+    }
     api<Quote>("/api/checkout")
       .then((data) => {
+        if (cancelled) return
         setQuote(data)
         setCoupon((code) => code || data.totals.couponCode || "")
+        if (data.razorpayEnabled === false && data.codEnabled !== false) setMethod("cod")
+        else if (data.codEnabled === false && data.razorpayEnabled) setMethod("razorpay")
+        const saved = data.profile.addresses.find((a) => a.isDefault) ?? data.profile.addresses[0]
+        setShip({
+          name: data.profile.name || saved?.name || user?.name || "",
+          email: data.profile.email || user?.email || "",
+          phone: data.profile.phone || saved?.phone || user?.phone || "",
+          line1: saved?.line1 || "",
+          line2: saved?.line2 || "",
+          city: saved?.city || "",
+          state: saved?.state || "",
+          pincode: saved?.pincode || "",
+        })
       })
-      .catch((e) => toast.error(e instanceof Error ? e.message : "Could not load checkout"))
-  }, [ready])
+      .catch((e) => {
+        if (cancelled) return
+        setShip({
+          ...emptyShip,
+          name: user?.name || "",
+          email: user?.email || "",
+          phone: user?.phone || "",
+        })
+        toast.error(e instanceof Error ? e.message : "Could not load checkout")
+      })
+      .finally(finish)
+    return () => {
+      cancelled = true
+      if (reveal) window.clearTimeout(reveal)
+    }
+  }, [ready, user?.id, user?.name, user?.email, user?.phone])
 
   useEffect(() => {
     const s = document.createElement("script")
@@ -81,8 +146,9 @@ export default function CheckoutPage() {
     return () => s.remove()
   }, [])
 
-  const addr = quote?.profile.addresses.find((a) => a.isDefault) ?? quote?.profile.addresses[0]
   const empty = lines.length === 0
+  const patchShip = (key: keyof Ship) => (e: { target: { value: string } }) =>
+    setShip((current) => ({ ...current, [key]: e.target.value }))
   const subtotal = lines.reduce((sum, line) => sum + line.product.price * line.quantity, 0)
 
   const lineId = (line: CartLine) => line.product.slug || line.productId
@@ -142,8 +208,15 @@ export default function CheckoutPage() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (empty) return toast.error("Your bag is empty")
+    if (quote?.paymentsEnabled === false) return toast.error("Checkout is temporarily paused")
+    if ((quote?.minOrderAmount ?? 0) > 0 && total < (quote?.minOrderAmount ?? 0)) {
+      return toast.error(`Minimum order is ${formatINR(quote!.minOrderAmount!)}`)
+    }
     if (method === "razorpay" && !quote?.razorpayEnabled) {
       return toast.error("Online payment is not available yet. Please choose Cash on Delivery.")
+    }
+    if (method === "cod" && quote?.codEnabled === false) {
+      return toast.error("Cash on delivery is not available")
     }
     const form = new FormData(e.currentTarget)
     setPending(true)
@@ -258,52 +331,73 @@ export default function CheckoutPage() {
             <h1 className="mt-2 text-4xl md:text-5xl">Shipping</h1>
           </header>
 
-          <section>
-            <h2 className="text-lg text-ink/80">Contact</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <label className="block">
-                <span className={label}>Full name</span>
-                <input name="name" defaultValue={user?.name ?? addr?.name} required className={field} />
-              </label>
-              <label className="block">
-                <span className={label}>Phone</span>
-                <input name="phone" defaultValue={user?.phone ?? addr?.phone} required className={field} />
-              </label>
-              <label className="block sm:col-span-2">
-                <span className={label}>Email</span>
-                <input name="email" type="email" defaultValue={user?.email} required className={field} />
-              </label>
-            </div>
-          </section>
+          <div className="relative overflow-hidden rounded-[28px] bg-white/55 p-5 ring-1 ring-sage-100 md:p-6">
+            <PrefillOverlay
+              show={!prefilled}
+              title="Prefilling your details"
+              hint={
+                !quote
+                  ? "Checking your saved profile and address"
+                  : quote.profile.addresses.length
+                    ? "Using your saved profile and address"
+                    : "Adding your profile details"
+              }
+            />
+            <section>
+              <h2 className="text-lg text-ink/80">Contact</h2>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <label className="block">
+                  <span className={label}>Full name</span>
+                  <input name="name" value={ship.name} onChange={patchShip("name")} autoComplete="name" required disabled={!prefilled} className={field} />
+                </label>
+                <label className="block">
+                  <span className={label}>Phone</span>
+                  <input name="phone" value={ship.phone} onChange={patchShip("phone")} autoComplete="tel" required disabled={!prefilled} className={field} />
+                </label>
+                <label className="block sm:col-span-2">
+                  <span className={label}>Email</span>
+                  <input name="email" type="email" value={ship.email} onChange={patchShip("email")} autoComplete="email" required disabled={!prefilled} className={field} />
+                </label>
+              </div>
+            </section>
 
-          <section>
-            <h2 className="text-lg text-ink/80">Address</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <label className="block sm:col-span-2">
-                <span className={label}>Address line 1</span>
-                <input name="line1" defaultValue={addr?.line1} required className={field} />
-              </label>
-              <label className="block sm:col-span-2">
-                <span className={label}>Address line 2</span>
-                <input name="line2" defaultValue={addr?.line2} className={field} />
-              </label>
-              <label className="block">
-                <span className={label}>City</span>
-                <input name="city" defaultValue={addr?.city} required className={field} />
-              </label>
-              <label className="block">
-                <span className={label}>State</span>
-                <input name="state" defaultValue={addr?.state} required className={field} />
-              </label>
-              <label className="block sm:col-span-2 sm:max-w-[12rem]">
-                <span className={label}>PIN code</span>
-                <input name="pincode" defaultValue={addr?.pincode} required className={field} />
-              </label>
-            </div>
-          </section>
+            <section className="mt-8">
+              <h2 className="text-lg text-ink/80">Address</h2>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <label className="block sm:col-span-2">
+                  <span className={label}>Address line 1</span>
+                  <input name="line1" value={ship.line1} onChange={patchShip("line1")} autoComplete="address-line1" required disabled={!prefilled} className={field} />
+                </label>
+                <label className="block sm:col-span-2">
+                  <span className={label}>Address line 2</span>
+                  <input name="line2" value={ship.line2} onChange={patchShip("line2")} autoComplete="address-line2" disabled={!prefilled} className={field} />
+                </label>
+                <label className="block">
+                  <span className={label}>City</span>
+                  <input name="city" value={ship.city} onChange={patchShip("city")} autoComplete="address-level2" required disabled={!prefilled} className={field} />
+                </label>
+                <label className="block">
+                  <span className={label}>State</span>
+                  <input name="state" value={ship.state} onChange={patchShip("state")} autoComplete="address-level1" required disabled={!prefilled} className={field} />
+                </label>
+                <label className="block sm:col-span-2 sm:max-w-[12rem]">
+                  <span className={label}>PIN code</span>
+                  <input name="pincode" value={ship.pincode} onChange={patchShip("pincode")} autoComplete="postal-code" required disabled={!prefilled} className={field} />
+                </label>
+              </div>
+            </section>
+          </div>
 
           <div className="max-w-xl space-y-3">
-            <PaymentPanel method={method} onMethod={setMethod} total={total} pending={pending} disabled={empty} />
+            <PaymentPanel
+              method={method}
+              onMethod={setMethod}
+              total={total}
+              pending={pending}
+              disabled={!prefilled || empty || quote?.paymentsEnabled === false}
+              onlineEnabled={quote?.razorpayEnabled !== false && quote?.paymentsEnabled !== false}
+              codEnabled={quote?.codEnabled !== false && quote?.paymentsEnabled !== false}
+            />
             <LegalNote method={method} />
           </div>
         </div>
@@ -387,6 +481,9 @@ export default function CheckoutPage() {
                 <dt>Shipping</dt>
                 <dd>{shippingFee === 0 ? "Free" : formatINR(shippingFee)}</dd>
               </div>
+              {quote?.estimatedDelivery ? (
+                <p className="text-[12px] text-ink/45">{quote.estimatedDelivery}</p>
+              ) : null}
               <div className="flex justify-between border-t border-sage-50 pt-3 text-base font-medium">
                 <dt>Total</dt>
                 <dd>{formatINR(total)}</dd>

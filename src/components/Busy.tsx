@@ -48,3 +48,32 @@ export function PageBusy({ label = "Loading" }: { label?: string }) {
     </div>
   )
 }
+
+export function PrefillOverlay({
+  show,
+  title = "Prefilling your details",
+  hint = "Using your saved profile and address",
+}: {
+  show: boolean
+  title?: string
+  hint?: string
+}) {
+  if (!show) return null
+  return (
+    <div
+      className="absolute inset-0 z-20 grid place-items-center rounded-[inherit] bg-ivory/80 backdrop-blur-[3px]"
+      role="status"
+      aria-live="polite"
+      aria-label={title}
+    >
+      <div className="flex flex-col items-center px-6 text-center">
+        <span className="relative grid h-12 w-12 place-items-center">
+          <span className="absolute inset-0 rounded-full bg-white shadow-sm ring-1 ring-sage-100" />
+          <span className="absolute inset-[3px] animate-spin rounded-full border-2 border-sage-100 border-t-gold-deep" />
+        </span>
+        <p className="mt-4 font-display text-2xl text-ink">{title}</p>
+        <p className="mt-1 max-w-[16rem] text-[12px] leading-relaxed text-ink/50">{hint}</p>
+      </div>
+    </div>
+  )
+}
